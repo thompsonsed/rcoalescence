@@ -1,0 +1,4 @@
+PKG_CXXFLAGS += -std=c++11 -Isrc -Duse_csv
+PKG_LIBS += -lboost_filesystem $(LAPACK_LIBS) $(BLAS_LIBS)
+SOURCES_CPP= $(wildcard necsim/*.cpp)
+OBJECTS = RSpatialTree.o $(SOURCES_CPP:.cpp=.o)

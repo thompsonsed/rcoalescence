@@ -1,3 +1,3 @@
-[submodule "lib/necsim"]
-	path = lib/necsim
+[submodule "src/necsim"]
+	path = src/necsim
 	url = git@bitbucket.com:thompsonsed/necsim.git

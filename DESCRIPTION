@@ -1,0 +1,19 @@
+Package: rcoalescence
+Type: Package
+Title: Efficient spatially-explicit neutral ecology simulator written in C++
+Version: 0.1.0
+Author: Sam Thompson
+Maintainer: Sam Thompson <thompsonsed@gmail.com>
+Description: Package for simulating according to ecological neutral theory on spatially explicit
+    landscapes using coalescence techniques and c++ for high performance operation.
+License: BSD-3-Clause
+Encoding: UTF-8
+LazyData: true
+Depends: Rcpp (>= 0.12.14)
+LinkingTo: Rcpp (>= 0.12.14), BH
+RcppModules: coalescenceModule
+RoxygenNote: 6.0.1
+Suggests: testthat
+Collate: 
+    'RcppExports.R'
+    'RcppCoalescenceModule.R'
