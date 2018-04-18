@@ -6,20 +6,24 @@
 \alias{rcoalescence-package}
 \title{rcoalescence: Efficient spatially-explicit neutral ecology simulator written in C++}
 \description{
-A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for spatially-explicit neutral
-models based in c++.
+A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for 
+spatially-explicit neutral models based in c++.
 
-rcoalescence allows for large-scale simulations to be performed on fully spatial files, with features to suit a 
-wide variety of use cases.
+rcoalescence allows for large-scale simulations to be performed on fully spatial files, with 
+features to suit a wide variety of use cases.
 
-Methods are contained within the \linkS4class{SpatialTree} class for setting up, running and analysing
-simulations. The general process is
+Methods are contained within the \link{SpatialTree} class for setting up, running and 
+analysing simulations. The general process is
 \itemize{
-    \item Set up the simulation with the provided SimulationParameters list and import required files.
+    \item Create a new SpatialTree object
+    \item Set the simulation parameters and add additional pristine maps.
     \item Run the simulation (generally the most time-consuming step).
-    \item Apply speciation rates and other requirements post simulation using SpeciationParameters.
-    \item Acquire the desired biodiversity metrics, such as species richness or species abundances.
+    \item Apply speciation rates and other requirements post simulation using 
+    SpeciationParameters.
+    \item Get the species richness from the simulation.
     \item Optionally write results to an SQLite database for further manual analysis.
+    \item If written to an output database, acquire the desired biodiversity metrics, such as 
+    species locations or species abundances.
 
 }
 }

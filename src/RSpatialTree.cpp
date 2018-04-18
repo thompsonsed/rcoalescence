@@ -1,10 +1,15 @@
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(BH)]]
+//This file is part of rcoalescence project which is released under BSD-3 license.
+//Visit https://opensource.org/licenses/BSD-3-Clause) for full license details.
 #include "RSpatialTree.h"
+#include <utility> 
+#include "RLogging.h"
+
+bool logging_mode = false;
 
 RSpatialTree::RSpatialTree() : SpatialTree()
 {
-
+	output_database = "not_set";
+	setLoggingMode(false);
 }
 
 
@@ -18,14 +23,14 @@ void RSpatialTree::setKeyParameters(const long long &task_in, const long long &s
 {
 	sim_parameters.setKeyParameters(task_in, seed_in, output_directory_in, max_time_in, desired_specnum_in,
 									"null");
-	if(times_list.size() > 1)
+	if(!times_list.empty())
 	{
-		for(auto times: times_list)
+		for(auto &times: times_list)
 		{
-			reference_times.emplace_back(times);
+			sim_parameters.times.push_back(times);
 		}
-		has_times_file = true;
 		times_file = "set";
+		sim_parameters.times_file = "set";
 	}
 }
 
@@ -46,12 +51,36 @@ void RSpatialTree::setDispersalParameters(const double &sigma_in, const string &
 										  dispersal_file_in, reproduction_file_in);
 }
 
-void RSpatialTree::setPristineMapParameters(const string &pristine_fine_file_map_in,
-											  const string &pristine_coarse_map_file_in,
-											  const double &gen_since_pristine_in, const double &habitat_change_rate_in)
+void RSpatialTree::setHistoricalMapParameters(const string &historical_fine_file_map_in,
+											  const string &historical_coarse_map_file_in,
+											  const double &gen_since_historical_in,
+											  const double &habitat_change_rate_in)
 {
-	sim_parameters.setPristineMapParameters(pristine_fine_file_map_in, pristine_coarse_map_file_in,
-											gen_since_pristine_in, habitat_change_rate_in);
+	sim_parameters.setHistoricalMapParameters(historical_fine_file_map_in, historical_coarse_map_file_in,
+											gen_since_historical_in, habitat_change_rate_in);
+}
+
+void RSpatialTree::addHistoricalMap(const string &fine_map, const string &coarse_map, const double &time,
+									const double &rate)
+{
+	if(sim_parameters.historical_fine_map_file == "none")
+	{
+		sim_parameters.historical_fine_map_file = fine_map;
+		sim_parameters.historical_coarse_map_file = coarse_map;
+	}
+	paths_fine.push_back(fine_map);
+	paths_coarse.push_back(coarse_map);
+	unsigned long last_number = 0;
+	if(!numbers_fine.empty())
+	{
+		last_number = numbers_fine.back() + 1;
+	}
+	numbers_fine.push_back(last_number);
+	numbers_coarse.push_back(last_number);
+	times_fine.push_back(time);
+	times_coarse.push_back(time);
+	rates_fine.push_back(rate);
+	rates_coarse.push_back(rate);
 }
 
 void RSpatialTree::setMapParameters(const string &fine_map_file_in, const string &coarse_map_file_in,
@@ -77,14 +106,30 @@ void RSpatialTree::setMapParameters(const string &fine_map_file_in, const string
 									deme_in, deme_sample_in, uses_spatial_sampling_in);
 }
 
+string RSpatialTree::getSQLDatabase()
+{
+	return sql_output_database;
+}
 
 void RSpatialTree::setup()
 {
+	if(!paths_fine.empty())
+	{
+		sim_parameters.setHistoricalMapParameters(paths_fine, numbers_fine, rates_fine, times_fine, paths_coarse,
+												  numbers_coarse, rates_coarse, times_coarse);
+	}
 	SpatialTree::setup();
 }
 
 bool RSpatialTree::runSimulation()
 {
+	if(!paths_fine.empty())
+	{
+		sim_parameters.setHistoricalMapParameters(paths_fine, numbers_fine, rates_fine, times_fine, paths_coarse,
+												  numbers_coarse, rates_coarse, times_coarse);
+		sim_parameters.setHistorical(0);
+		landscape.resetHistorical();
+	}
 	return Tree::runSimulation();
 }
 
@@ -96,6 +141,7 @@ void RSpatialTree::apply(SpecSimParameters *specSimParameters)
 	}
 	else
 	{
+		community.setSimParameters(&sim_parameters);
 		community.doApplicationInternal(specSimParameters, &data);
 	}
 }
@@ -107,15 +153,12 @@ void RSpatialTree::applySpeciation(const string &file_in, const bool &use_spatia
 								   const unsigned long &metacommunity_size_in,
 								   const double &metacommunity_speciation_rate_in)
 {
-	SpecSimParameters spec_sim_parameters{};
-	spec_sim_parameters.setup(std::move(file_in), use_spatial_in, sample_file, "null",
-							  use_fragments_in, speciation_rates,
+	checkDatabaseSet();
+	spec_sim_parameters.wipe();
+	spec_sim_parameters.setup(file_in, use_spatial_in, sample_file, std::move(times_list),
+							  use_fragments_in, std::move(speciation_rates),
 							  min_speciation_gen_in, max_speciation_gen_in,
 							  metacommunity_size_in, metacommunity_speciation_rate_in);
-	for(auto &i : times_list)
-	{
-		spec_sim_parameters.all_times.emplace_back(i);
-	}
 	apply(&spec_sim_parameters);
 }
 
@@ -139,15 +182,30 @@ double RSpatialTree::getSpeciesRichness()
 	return community.getSpeciesNumber();
 }
 
+void RSpatialTree::checkDatabaseSet()
+{
+	if(!community.isSetDatabase())
+	{
+		openSQLDatabase();
+		community.setDatabase(database);
+	}
+}
+
 void RSpatialTree::output()
 {
-	outputData();
-	community.setDatabase(database);
+	sortData();
+	sqlCreate();
+//	outputData();
+	checkDatabaseSet();
+	spec_sim_parameters.filename = sql_output_database;
 	community.output();
 }
 
-//' @useDynLib rcoalescence, .registration=TRUE
-//' @export SpatialTree
+void RSpatialTree::setLoggingMode(bool log_mode)
+{
+	logging_mode = log_mode;
+}
+
 RCPP_EXPOSED_CLASS(RSpatialTree);
 RCPP_MODULE(coalescenceModule) {
 	using namespace Rcpp;
@@ -159,21 +217,26 @@ RCPP_MODULE(coalescenceModule) {
 					"Sets the speciation parameters for the simulation.")
 			.method("._setDispersalParameters", &RSpatialTree::setDispersalParameters,
 					"Sets the dispersal parameters for the simulation.")
-			.method("._setPristineMapParameters", &RSpatialTree::setPristineMapParameters,
-					"Sets the pristine map parameters for the simulation.")
+			.method("._setHistoricalMapParameters", &RSpatialTree::setHistoricalMapParameters,
+					"Sets the historical map parameters for the simulation.")
 			.method("._setMapParameters", &RSpatialTree::setMapParameters,
 					"Sets the map parameters for the simulation, including dimensions and offsets.")
 			.method("setup", &RSpatialTree::setup, "Completes all set-up routines for the simulation, "
 					"including assigning memory and importing the required files.")
+			.method("._addHistoricalMap", &RSpatialTree::addHistoricalMap, "Adds a historical map with the desired parameter "
+					"set")
 			.method("runSimulation", &RSpatialTree::runSimulation, "Performs the actual simulation, "
 					"returning true if the simulation is complete.")
 			.method("._applySpeciationRates", &RSpatialTree::applySpeciation, "Applies the provided speciation parameters"
 					"to the completed simulation.")
 			.method("getSpeciesAbundances", &RSpatialTree::getSpeciesAbundances, "Gets the species abundances for the "
 					"last calculated set of speciation parameters.")
-			.method("getSpeciesRichness", &RSpatialTree::getSpeciesRichness, "Gets the species richness for the last "
+			.method("._getSpeciesRichness", &RSpatialTree::getSpeciesRichness, "Gets the species richness for the last "
 					"calculated set of speciation parameters.")
-			.method("output", &RSpatialTree::output, "Writes the simulation to the output database.")
+			.method("._output", &RSpatialTree::output, "Writes the simulation to the output database.")
+			.method("setLoggingMode", &RSpatialTree::setLoggingMode, "Sets the logging mode for the simulation object.")
+			.method("._getSQLDatabase", &RSpatialTree::getSQLDatabase)
+			.field("output_database", &RSpatialTree::output_database)
 			;
 }
 
