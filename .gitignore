@@ -1,6 +1,6 @@
 *.DS_Store
 .Rproj.user
-
+.Rhistory
 lib/cmake-build-debug/CMakeFiles/
 
 lib/\.idea/
