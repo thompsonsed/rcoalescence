@@ -1,2 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^.*\.git$
+^.*\.idea.*$
+^.*/cmake-build.*$
+^.*\.o$

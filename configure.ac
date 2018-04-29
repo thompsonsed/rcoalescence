@@ -1,0 +1,154 @@
+AC_INIT(all, 1.0)
+AC_CONFIG_MACRO_DIR([inst/extdata/m4])
+CPPFLAGS="$CPPFLAGS"
+dnl Switch to a C++ compiler, and check if it works.
+
+dnl check for R home
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+  echo "could not determine R_HOME"
+  exit 1
+fi
+CC=`"${R_HOME}/bin/R" CMD config CC`
+CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
+CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+PKG_CXXFLAGS="-I. -std=c++11"
+CXX=`"${R_HOME}/bin/R" CMD config CXX`
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+AC_LANG(C++)
+AC_PROG_CXX
+PKG_LIBS=${PKGLIBS}
+dnl Check sqlite headers exist
+AC_CHECK_HEADERS(sqlite3.h, [has_sqlite3=1], [has_sqlite3=0])
+with_sqlite3="yes"
+if [[ "$has_sqlite3" == 0 ]]
+then
+	with_sqlite3="no"
+	AC_ERROR([A working sqlite3 library is required. Make sure it is correctly installed on your system.])
+fi
+LIBS="$LIBS -lsqlite3"
+
+dnl Check boost headers
+AC_LANG(C++)
+BOOST_REQUIRE([1.54], AC_ERROR([A working boost library v1.54 or greater is required. Make sure it is correctly installed on your system.]))
+ifdef(BOOST_CPPFLAGS,[boost_found="yes"],[boost_found="no"])
+substring="-I/"
+if [[ "$BOOST_CPPFLAGS" == "${BOOST_CPPFLAGS%$substring*}" ]];
+then
+	LIBS="$LIBS -lboost_filesystem -lboost_system -lpthread"
+	AC_MSG_WARN([Library locations not detecting: using default locations.])
+	boost_found="install detected: location unknown"
+else
+	dnl goofy workaround for boost libraries
+	lib_boost="${BOOST_CPPFLAGS}"
+	lib_boost="${lib_boost/-I/-L}"
+	lib_boost="${lib_boost/include/lib}"
+	CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
+	LDFLAGS="$LDFLAGS $lib_boost"
+	LIBS="$LIBS -lboost_filesystem -lboost_system -lpthread"
+	boost_found="yes"
+fi
+BOOST_FIND_HEADER([boost/filesystem.hpp])
+
+dnl Check for fast-csv-parser
+AC_CHECK_HEADERS([src/RLogging.cpp],[use_csv=1],[use_csv=0])
+if [[ "$use_csv" == 1 ]]
+then
+	fast_cpp_csv_parser="enabled"
+	defines="$defines -Duse_csv"
+else
+	AC_MSG_WARN([src/necim/fast-cpp-csv-parser not found. Download from https://github.com/ben-strasser/fast-cpp-csv-parser to enable])
+	fast_cpp_csv_parser="disabled"
+fi
+
+
+dnl Check for gdal library
+GDAL_CONFIG="gdal-config"
+
+GDAL_CONFIG_SET="no"
+
+AC_ARG_WITH([gdal-config],
+    AC_HELP_STRING([--with-gdal-config=GDAL_CONFIG],
+           [the location of gdal-config]),
+           [gdal_config=$withval])
+if test [ -n "$gdal_config" ] ; then
+    GDAL_CONFIG_SET="yes"
+    AC_SUBST([GDAL_CONFIG],["${gdal_config}"])
+    AC_MSG_NOTICE(gdal-config set to $GDAL_CONFIG)
+fi
+
+if test ["$GDAL_CONFIG_SET" = "no"] ; then
+  AC_PATH_PROG([GDAL_CONFIG], ["$GDAL_CONFIG"],["no"])
+  if test ["$GDAL_CONFIG" = "no"] ; then
+    AC_MSG_RESULT(no)
+    AC_MSG_ERROR([gdal-config not found or not executable.])
+  fi
+else
+  AC_MSG_CHECKING(gdal-config exists)
+  if test -r "${GDAL_CONFIG}"; then
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+    AC_MSG_ERROR([gdal-config not found - configure argument error.])
+  fi
+  AC_MSG_CHECKING(gdal-config executable)
+  if test -x "${GDAL_CONFIG}"; then
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+    AC_MSG_ERROR([gdal-config not executable.])
+  fi
+fi
+
+AC_MSG_CHECKING(gdal-config usability)
+if test `${GDAL_CONFIG} --version`;
+then
+
+	GDAL_CPPFLAGS=`${GDAL_CONFIG} --cflags`
+	GDAL_LIBS=`${GDAL_CONFIG} --libs`
+        GDAL_VERSION=`${GDAL_CONFIG} --version`
+        GDAL_DEP_LIBS=`${GDAL_CONFIG} --dep-libs`
+        GDAL_DATADIR=`${GDAL_CONFIG} --datadir`
+        gdalok=yes
+        AC_MSG_RESULT(yes)
+else
+        AC_MSG_RESULT(no)
+	echo "Error: gdal-config not found"
+	echo "The gdal-config script distributed with GDAL could not be found."
+	echo "If you have not installed the GDAL libraries, you can"
+	echo "download the source from  http://www.gdal.org/"
+	echo "If you have installed the GDAL libraries, then make sure that"
+	echo "gdal-config is in your path. Try typing gdal-config at a"
+	echo "shell prompt and see if it runs. If not, use:"
+	echo " --configure-args='--with-gdal-config=/usr/local/bin/gdal-config'"
+	echo "with appropriate values for your installation."
+	echo ""
+
+	exit 1
+
+fi
+
+AC_MSG_NOTICE([GDAL: ${GDAL_VERSION}])
+AC_MSG_CHECKING([GDAL version >= 1.6.3])
+GDAL_VER_DOT=`echo $GDAL_VERSION | tr -d "."`
+if test ${GDAL_VER_DOT} -lt 163 ; then
+  AC_MSG_RESULT(no)
+  AC_MSG_ERROR([upgrade GDAL to 1.6.3 or later])
+else
+  AC_MSG_RESULT(yes)
+fi
+use_gdal=0
+AC_CHECK_HEADERS([gdal_priv.h], [use_gdal=1],[use_gdal=0])
+AC_CHECK_HEADERS([cpl_conv.h], [use_cpl=1], [use_cpl=0])
+if test ["$use_gdal" = 1]; then
+	defines="$defines -Dwith_gdal"
+fi
+PKG_CXXFLAGS="$PKG_CXXFLAGS $GDAL_CPPFLAGS"
+PKG_LIBS="$PKG_LIBS $GDAL_DEP_LIBS $GDAL_LIBS"
+AC_SUBST(defines)
+dnl Create the output variables
+AC_SUBST(PKG_CXXFLAGS)
+AC_SUBST(PKG_LIBS)
+dnl Process Makevars.in to create Makevars
+AC_CONFIG_FILES([src/Makevars])
+AC_OUTPUT

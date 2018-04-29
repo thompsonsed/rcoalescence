@@ -8,11 +8,23 @@
 #include <Rcpp/DataFrame.h>
 #include <Rcpp/vector/instantiation.h>
 #include "necsim/SpatialTree.h"
-//' @export
-//' Class containing routines for spatially-explicit neutral models performed on the provided maps.
+// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::depends(BH)]]
+//' @useDynLib rcoalescence, .registration=TRUE
 class RSpatialTree : public SpatialTree
 {
+protected:
+	vector<string> paths_fine;
+	vector<unsigned long> numbers_fine;
+	vector<double> rates_fine;
+	vector<double> times_fine;
+	vector<string> paths_coarse;
+	vector<unsigned long> numbers_coarse;
+	vector<double> rates_coarse;
+	vector<double> times_coarse;
+	SpecSimParameters spec_sim_parameters{};
 public:
+	string output_database;
 	RSpatialTree();
 	~RSpatialTree() override;
 
@@ -59,14 +71,24 @@ public:
 								const string &reproduction_file_in);
 
 	/**
-	 * @brief Sets the pristine map parameters for the simulation.
-	 * @param pristine_fine_file_map_in the fine resolution pristine file
-	 * @param pristine_coarse_map_file_in the coarse resolution pristine file
-	 * @param gen_since_pristine_in the number of generations since the pristine state was achieved
-	 * @param habitat_change_rate_in the rate of habitat change towards the pristine state
+	 * @brief Sets the historical map parameters for the simulation.
+	 * @param historical_fine_file_map_in the fine resolution historical file
+	 * @param historical_coarse_map_file_in the coarse resolution historical file
+	 * @param gen_since_historical_in the number of generations since the historical state was achieved
+	 * @param habitat_change_rate_in the rate of habitat change towards the historical state
 	 */
-	void setPristineMapParameters(const string &pristine_fine_file_map_in, const string &pristine_coarse_map_file_in,
-								  const double &gen_since_pristine_in, const double &habitat_change_rate_in);
+	void setHistoricalMapParameters(const string &historical_fine_file_map_in,
+									const string &historical_coarse_map_file_in,
+									const double &gen_since_historical_in, const double &habitat_change_rate_in);
+
+	/**
+	 * @brief Adds the set of parameters for a historical map configuration.
+	 * @param fine_map the fine map file to use at the selected time
+	 * @param coarse_map the coarse map file to use at the selected time
+	 * @param time the time at which the map is relevant
+	 * @param rate the rate of change from the previous map to this map.
+	 */
+	void addHistoricalMap(const string &fine_map, const string &coarse_map, const double &time, const double &rate);
 
 	/**
 	 * @brief Sets the map parameters for the simulation.
@@ -102,6 +124,12 @@ public:
 						  const unsigned long &coarse_map_y_size_in, const unsigned long &coarse_map_x_offset_in,
 						  const unsigned long &coarse_map_y_offset_in, const unsigned long &coarse_map_scale_in,
 						  const unsigned long &deme_in, const double &deme_sample_in, bool uses_spatial_sampling_in);
+
+	/**
+	 * @brief Gets the sql database.
+	 * @return path to the sql database
+	 */
+	string getSQLDatabase();
 
 	/**
 	 * @brief Calls SpatialTree::setup() to act as a wrapper accessible by R without extra classes.
@@ -154,9 +182,20 @@ public:
 	double getSpeciesRichness();
 
 	/**
+	 * @brief Ensures that a connection is made to the output database.
+	 */
+	void checkDatabaseSet();
+
+	/**
 	 * @brief Writes the output to the previously specified database.
 	 */
 	void output();
+
+	/**
+	 * @brief Sets the logging mode to true or false.
+	 * @param log_mode if true, logs all messages to console
+	 */
+	void setLoggingMode(bool log_mode);
 
 
 };

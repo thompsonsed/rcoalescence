@@ -16,3 +16,11 @@ src/cmake-build*
 src/CMakeLists\.txt
 
 *.so
+
+autom4te\.cache/
+
+\.Rhistory
+
+config\.log
+
+config\.status
