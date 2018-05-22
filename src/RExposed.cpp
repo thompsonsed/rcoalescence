@@ -26,6 +26,8 @@ bool logging_mode;
 
 RCPP_EXPOSED_CLASS(RTree);
 RCPP_EXPOSED_CLASS(RSpatialTree);
+RCPP_EXPOSED_CLASS(RProtractedTree);
+RCPP_EXPOSED_CLASS(RProtractedSpatialTree);
 RCPP_MODULE(coalescenceModule) {
 	using namespace Rcpp;
 	class_<RTree>("RTree", "Simulates non-spatial neutral models.")
@@ -68,7 +70,6 @@ RCPP_MODULE(coalescenceModule) {
 			;
 	class_<RProtractedSpatialTree>("RProtractedSpatialTree", "Simulates spatially-explicit neutral models with protracted speciation.")
 			.constructor("initialises the spatial tree")
-			.derives<RProtractedTree>("RProtractedTree")
 			.derives<RSpatialTree>("RSpatialTree")
 			;
 }

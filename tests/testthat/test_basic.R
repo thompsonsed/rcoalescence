@@ -309,7 +309,7 @@ test_that("Basic simulation produces 100 species with low speciation generation"
 
 test_that("Basic simulation produces 1 species with high speciation generation", {
   tmp <- ProtractedSpatialTree$new()
-  tmp$setSimulationParameters(task=202, seed=3, speciation_rate=0.9999, deme=100,
+  tmp$setSimulationParameters(task=202, seed=3, speciation_rate=0.9999, deme=1, sigma=1,
                               uses_logging = FALSE, min_speciation_gens = c(1000000.0),
                               max_speciation_gens = c(11000000.0), fine_map_file="null",
                               fine_map_x_size = 10, fine_map_y_size = 10)
@@ -321,7 +321,7 @@ test_that("Basic simulation produces 1 species with high speciation generation",
 
 test_that("Basic simulation produces 100 species with low speciation generation", {
   tmp <- ProtractedSpatialTree$new()
-  tmp$setSimulationParameters(task=203, seed=3, speciation_rate=0.000001, deme=100,
+  tmp$setSimulationParameters(task=203, seed=3, speciation_rate=0.000001, deme=1, sigma=1,
                               uses_logging = FALSE, min_speciation_gens = 0.0,
                               max_speciation_gens = 0.01, fine_map_file="null",
                               fine_map_x_size = 10, fine_map_y_size = 10)

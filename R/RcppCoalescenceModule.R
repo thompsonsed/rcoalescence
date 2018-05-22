@@ -2,6 +2,7 @@
 # @useDynLib rcoalescence, .registration=TRUE
 
 #' @importFrom Rcpp evalCpp
+#' @importFrom Rcpp setRcppClass
 #' @importFrom methods new
 #' @import methods
 #' @import RSQLite
@@ -22,6 +23,7 @@
 #'     \item Install boost library for c++, available \href{https://www.boost.org/}{here}.
 #'     \item Install gdal library for c++, available \href{http://www.gdal.org/}{here}.
 #'     \item Install the sqlite3 library for c++, available \href{https://www.sqlite.org/index.html}{here}.
+#'     \item Several R packages are dependencies, including Rcpp and BH. These should be installed automatically.
 #' }
 #' 
 #' @section Starting a simulation:

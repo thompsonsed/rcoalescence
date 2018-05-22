@@ -8,9 +8,9 @@ Description: Package for simulating according to ecological neutral theory on sp
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: Rcpp (>= 0.12.14), RSQLite
+Depends: Rcpp, RSQLite
 Imports: methods
-LinkingTo: BH
+LinkingTo: Rcpp (>= 0.12.14), BH
 RoxygenNote: 6.0.1
 Suggests: testthat
 Collate:
