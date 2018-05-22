@@ -4,7 +4,7 @@
 \name{rcoalescence}
 \alias{rcoalescence}
 \alias{rcoalescence-package}
-\title{rcoalescence: Efficient spatially-explicit neutral ecology simulator written in C++}
+\title{rcoalescence: Efficient spatial and non-spatial neutral ecology simulator written in C++}
 \description{
 A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for 
 spatially-explicit neutral models based in c++.
@@ -12,11 +12,29 @@ spatially-explicit neutral models based in c++.
 rcoalescence allows for large-scale simulations to be performed on fully spatial files, with 
 features to suit a wide variety of use cases.
 
-Methods are contained within the \link{SpatialTree} class for setting up, running and 
-analysing simulations. The general process is
+Four classes exist to represent non-spatial/spatial and non-protracted/protracted simulations. 
+See \link[=NeutralTree]{here} for a full description.
+}
+\section{Installation}{
+
+There are several dependencies required before installation of this package will be successful.
 \itemize{
-    \item Create a new SpatialTree object
-    \item Set the simulation parameters and add additional pristine maps.
+    \item Install boost library for c++, available \href{https://www.boost.org/}{here}.
+    \item Install gdal library for c++, available \href{http://www.gdal.org/}{here}.
+    \item Install the sqlite3 library for c++, available \href{https://www.sqlite.org/index.html}{here}.
+    \item Several R packages are dependencies, including Rcpp and BH. These should be installed automatically.
+}
+}
+
+\section{Starting a simulation}{
+
+
+Methods are contained within the relevant classes \link[=NeutralTree]{(see here)} for setting up,
+running and analysing simulations. The general process is
+\itemize{
+    \item Create a new \link{Tree}, \link{SpatialTree}, \link{ProtractedTree} or
+          \link{ProtractedSpatialTree} object, depending on use case.
+    \item Set the simulation parameters and add additional historical maps.
     \item Run the simulation (generally the most time-consuming step).
     \item Apply speciation rates and other requirements post simulation using 
     SpeciationParameters.
@@ -27,6 +45,7 @@ analysing simulations. The general process is
 
 }
 }
+
 \author{
 Sam Thompson
 }
