@@ -1,5 +1,15 @@
-//This file is part of rcoalescence project which is released under BSD-3 license.
-//Visit https://opensource.org/licenses/BSD-3-Clause) for full license details.
+// This file is part of rcoalescence project which is released under MIT license.
+// See file **LICENSE.txt** or visit https://opensource.org/licenses/MIT) for full license details.
+/**
+ * @author Sam Thompson
+ * @file RLogging.cpp
+ * @brief Controls logging from R.
+ *
+ * Contact: samuel.thompson14@imperial.ac.uk or thompsonsed@gmail.com
+ * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
+ */
+#include <Rcpp/r/headers.h>
+#include <Rcpp.h>
 
 #include "RLogging.h"
 using namespace std;

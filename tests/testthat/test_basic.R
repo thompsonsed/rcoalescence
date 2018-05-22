@@ -1,9 +1,9 @@
 # Tests that coalescence simulations run as expected
 
-context("Basic coalescence simulations")
+context("Basic spatial coalescence simulations")
 test_that("Basic simulation on a null landscape completes", {
   tmp <- new("SpatialTree")
-  tmp$setKeyParameters(0, 0, "default", 1, 1, c(0.0))
+  tmp$setKeyParameters(0, 0, "default", 10, 1, c(0.0))
   tmp$setSpeciationParameters(0.1)
   tmp$setHistoricalMapParameters()
   tmp$setMapParameters(fine_map_x_size = 10, fine_map_y_size=10)
@@ -164,4 +164,173 @@ test_that("Simulation with multiple sampling times.", {
   expect_equal(1156, tmp$getSpeciesRichness(4))
 })
 
+
+context("Basic non-spatial coalescence simulations")
+test_that("Basic simulation with deme of 100 completes", {
+  tmp <- Tree$new()
+  tmp$setKeyParameters(101, 0, "default", 1, 1, c(0.0), deme=100)
+  tmp$setSpeciationParameters(0.1)
+  tmp$setup()
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.1)
+  expect_equal(24, tmp$getSpeciesRichness())
+})
+
+test_that("Basic simulation produces 100 species with maximum speciation rate", {
+  tmp <- Tree$new()
+  tmp$setSimulationParameters(task=102, seed=1, speciation_rate=0.99999, deme=100,
+                              uses_logging = FALSE)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.999999)
+  expect_equal(100, tmp$getSpeciesRichness())
+})
+
+test_that("Basic simulation produces 1 species with minimum speciation rate", {
+  tmp <- Tree$new()
+  tmp$setSimulationParameters(task=103, seed=2, speciation_rate=0.00000000001, deme=100,
+                              uses_logging = FALSE)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.00000000001)
+  expect_equal(1, tmp$getSpeciesRichness())
+})
+
+
+
+context("Basic non-spatial protracted coalescence simulations")
+test_that("Basic simulation with deme of 100 completes", {
+  tmp <- ProtractedTree$new()
+  tmp$setKeyParameters(201, 1, "output", 1, 1, c(0.0), deme=100)
+  tmp$setSpeciationParameters(0.01, min_speciation_gen = 2.0, max_speciation_gen=4000.0)
+  tmp$setup()
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=c(0.01, 0.02),
+                           min_speciation_gens=c(2.0), max_speciation_gens=c(4000.0))
+  tmp$output()
+  expect_equal(6, tmp$getSpeciesRichness())
+  expect_equal(4, tmp$getSpeciesRichness(1))
+  expect_equal(6, tmp$getSpeciesRichness(2))
+})
+
+test_that("Basic simulation produces 1 species with high speciation generation", {
+  tmp <- ProtractedTree$new()
+  tmp$setSimulationParameters(task=202, seed=3, speciation_rate=0.9999, deme=100,
+                              uses_logging = FALSE, min_speciation_gens = c(1000000.0),
+                              max_speciation_gens = c(11000000.0))
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.9999, min_speciation_gens = c(1000000.0),
+                           max_speciation_gens = c(11000000.0))
+  expect_equal(1, tmp$getSpeciesRichness())
+})
+
+test_that("Basic simulation produces 100 species with low speciation generation", {
+  tmp <- ProtractedTree$new()
+  tmp$setSimulationParameters(task=203, seed=3, speciation_rate=0.000001, deme=100,
+                              uses_logging = FALSE, min_speciation_gens = 0.0,
+                              max_speciation_gens = 0.01)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.000001, min_speciation_gens = 0.0,
+                           max_speciation_gens = 0.01)
+  expect_equal(100, tmp$getSpeciesRichness())
+})
+
+test_that("Basic simulation produces 100 species with maximum speciation rate", {
+  tmp <- ProtractedTree$new()
+  tmp$setSimulationParameters(task=204, seed=1, speciation_rate=0.1, deme=100,
+                              uses_logging = FALSE, min_speciation_gens=1.0, max_speciation_gens=30.0)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp2 <- ProtractedTree$new()
+  tmp2$setSimulationParameters(task=205, seed=1, speciation_rate=0.1, deme=100,
+                              uses_logging = FALSE, min_speciation_gens=1.0, max_speciation_gens=10.0)
+  expect_equal(TRUE, tmp2$runSimulation())
+  tmp3 <- ProtractedTree$new()
+  tmp3$setSimulationParameters(task=206, seed=1, speciation_rate=0.1, deme=100,
+                               uses_logging = FALSE, min_speciation_gens=5.0, max_speciation_gens=10.0)
+  expect_equal(TRUE, tmp3$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.1, min_speciation_gens=1.0, max_speciation_gens=30.0)
+  r1 <- tmp$getSpeciesRichness()
+  tmp2$applySpeciationRates(speciation_rates=0.1, min_speciation_gens=1.0, max_speciation_gens=10.0)
+  r2 <- tmp2$getSpeciesRichness()
+  tmp3$applySpeciationRates(speciation_rates=0.1, min_speciation_gens=5.0, max_speciation_gens=10.0)
+  r3 <- tmp3$getSpeciesRichness()
+  expect_equal(TRUE, r2 > r1)
+  expect_equal(TRUE, r2 > r3)
+  expect_equal(28, r2)
+  expect_equal(25, r1)
+  expect_equal(20, r3)
+})
+
+
+test_that("Can apply multiple protracted speciation parameters", {
+  tmp <- ProtractedTree$new()
+  tmp$setSimulationParameters(task=204, seed=1, speciation_rate=0.1, deme=100,
+                              uses_logging = FALSE, min_speciation_gens=10.0, max_speciation_gens=30.0)
+  expect_equal(TRUE, tmp$runSimulation())
+  expect_error(tmp$applySpeciationRates(speciation_rates=c(0.1, 0.2, 0.3),
+                                        min_speciation_gens=c(1.0, 5.0, 10.0), 
+                                        max_speciation_gens=c(10.0, 10.0)))
+  tmp$applySpeciationRates(speciation_rates=c(0.1, 0.2, 0.3),
+                           min_speciation_gens=c(1.0, 5.0, 10.0), 
+                           max_speciation_gens=c(10.0, 10.0, 20.0))
+  tmp$output()
+  crefs <- tmp$getCommunityReferences()
+  sr <- c(0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3)
+  ref <- seq(1, 9, 1)
+  min_speciation_gen <- c(1, 1, 1, 5, 5, 5, 10, 10, 10)
+  max_speciation_gen <- c(10, 10, 10, 10, 10, 10, 20, 20, 20)
+  expect_equal(sr, crefs$speciation_rate)
+  expect_equal(min_speciation_gen, crefs$min_speciation_gen)
+  expect_equal(max_speciation_gen, crefs$max_speciation_gen)
+  expect_equal(30, tmp$getSpeciesRichness(1))
+  expect_equal(42, tmp$getSpeciesRichness(2))
+  expect_equal(58, tmp$getSpeciesRichness(3))
+  expect_equal(21, tmp$getSpeciesRichness(4))
+  expect_equal(24, tmp$getSpeciesRichness(5))
+  expect_equal(24, tmp$getSpeciesRichness(6))
+  expect_equal(13, tmp$getSpeciesRichness(7))
+  expect_equal(15, tmp$getSpeciesRichness(8))
+  expect_equal(15, tmp$getSpeciesRichness(9))
+  
+})
+
+context("Basic spatial protracted coalescence simulations")
+test_that("Basic simulation produces 100 species with low speciation generation", {
+  tmp <- ProtractedSpatialTree$new()
+  tmp$setSimulationParameters(task=203, seed=3, speciation_rate=0.000001, deme=1,
+                              uses_logging = FALSE, min_speciation_gens = 0.0,
+                              max_speciation_gens = 0.01, sigma=1, fine_map_file="null",
+                              fine_map_x_size = 10, fine_map_y_size = 10)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.000001, min_speciation_gens = 0.0,
+                           max_speciation_gens = 0.01)
+  expect_equal(100, tmp$getSpeciesRichness())
+})
+
+
+
+test_that("Basic simulation produces 1 species with high speciation generation", {
+  tmp <- ProtractedSpatialTree$new()
+  tmp$setSimulationParameters(task=202, seed=3, speciation_rate=0.9999, deme=100,
+                              uses_logging = FALSE, min_speciation_gens = c(1000000.0),
+                              max_speciation_gens = c(11000000.0), fine_map_file="null",
+                              fine_map_x_size = 10, fine_map_y_size = 10)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.9999, min_speciation_gens = c(1000000.0),
+                           max_speciation_gens = c(11000000.0))
+  expect_equal(1, tmp$getSpeciesRichness())
+})
+
+test_that("Basic simulation produces 100 species with low speciation generation", {
+  tmp <- ProtractedSpatialTree$new()
+  tmp$setSimulationParameters(task=203, seed=3, speciation_rate=0.000001, deme=100,
+                              uses_logging = FALSE, min_speciation_gens = 0.0,
+                              max_speciation_gens = 0.01, fine_map_file="null",
+                              fine_map_x_size = 10, fine_map_y_size = 10)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.000001, min_speciation_gens = 0.0,
+                           max_speciation_gens = 0.01)
+  expect_equal(100, tmp$getSpeciesRichness())
+})
+
+
 unlink("output", recursive=TRUE)
+
