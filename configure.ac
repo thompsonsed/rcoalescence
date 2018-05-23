@@ -30,7 +30,8 @@ LIBS="$LIBS -lsqlite3"
 
 dnl Check boost headers
 AC_LANG(C++)
-BOOST_REQUIRE([1.54], AC_ERROR([A working boost library v1.54 or greater is required. Make sure it is correctly installed on your system.]))
+BOOST_REQUIRE([1.54.0], AC_ERROR([A working boost library v1.54 or greater is required. Make sure it is correctly installed on your system.]))
+
 ifdef(BOOST_CPPFLAGS,[boost_found="yes"],[boost_found="no"])
 substring="-I/"
 if [[ "$BOOST_CPPFLAGS" == "${BOOST_CPPFLAGS%$substring*}" ]];
@@ -51,7 +52,7 @@ fi
 BOOST_FIND_HEADER([boost/filesystem.hpp])
 
 dnl Check for fast-csv-parser
-AC_CHECK_HEADERS([src/RLogging.cpp],[use_csv=1],[use_csv=0])
+AC_CHECK_HEADERS([src/necsim/fast-cpp-csv-parse/csv.h],[use_csv=1],[use_csv=0])
 if [[ "$use_csv" == 1 ]]
 then
 	fast_cpp_csv_parser="enabled"
@@ -129,11 +130,11 @@ else
 fi
 
 AC_MSG_NOTICE([GDAL: ${GDAL_VERSION}])
-AC_MSG_CHECKING([GDAL version >= 1.6.3])
+AC_MSG_CHECKING([GDAL version >= 2.1.0])
 GDAL_VER_DOT=`echo $GDAL_VERSION | tr -d "."`
 if test ${GDAL_VER_DOT} -lt 163 ; then
   AC_MSG_RESULT(no)
-  AC_MSG_ERROR([upgrade GDAL to 1.6.3 or later])
+  AC_MSG_ERROR([upgrade GDAL to 2.1.0 or later])
 else
   AC_MSG_RESULT(yes)
 fi
@@ -142,6 +143,12 @@ AC_CHECK_HEADERS([gdal_priv.h], [use_gdal=1],[use_gdal=0])
 AC_CHECK_HEADERS([cpl_conv.h], [use_cpl=1], [use_cpl=0])
 if test ["$use_gdal" = 1]; then
 	defines="$defines -Dwith_gdal"
+else
+  AC_MSG_ERROR([Ensure gdal is properly installed - cannot find gdal_priv.h])
+fi
+
+if test ["$use_cpl" = 0]; then
+  AC_MSG_ERROR([Ensure gdal is properly installed - cannot find cpl_conv.h])
 fi
 PKG_CXXFLAGS="$PKG_CXXFLAGS $GDAL_CPPFLAGS"
 PKG_LIBS="$PKG_LIBS $GDAL_DEP_LIBS $GDAL_LIBS"

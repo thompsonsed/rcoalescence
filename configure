@@ -1301,7 +1301,7 @@ if test -n "$ac_init_help"; then
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-boost=DIR        prefix of Boost 1.54 [guess]
+  --with-boost=DIR        prefix of Boost 1.54.0 [guess]
   --with-gdal-config=GDAL_CONFIG
                           the location of gdal-config
 
@@ -3003,7 +3003,7 @@ $as_echo "$ac_cv_path_SED" >&6; }
 
 echo "$as_me: this is boost.m4 serial 26" >&5
 boost_save_IFS=$IFS
-boost_version_req=1.54
+boost_version_req=1.54.0
 IFS=.
 set x $boost_version_req 0 0 0
 IFS=$boost_save_IFS
@@ -3184,6 +3184,7 @@ $as_echo "$boost_cv_lib_version" >&6; }
 fi
 CPPFLAGS=$boost_save_CPPFLAGS
 
+
 boost_found="no"
 substring="-I/"
 if [ "$BOOST_CPPFLAGS" == "${BOOST_CPPFLAGS%$substring*}" ];
@@ -3231,12 +3232,12 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 fi
 
 
-for ac_header in src/RLogging.cpp
+for ac_header in src/necsim/fast-cpp-csv-parse/csv.h
 do :
-  ac_fn_cxx_check_header_mongrel "$LINENO" "src/RLogging.cpp" "ac_cv_header_src_RLogging_cpp" "$ac_includes_default"
-if test "x$ac_cv_header_src_RLogging_cpp" = xyes; then :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "src/necsim/fast-cpp-csv-parse/csv.h" "ac_cv_header_src_necsim_fast_cpp_csv_parse_csv_h" "$ac_includes_default"
+if test "x$ac_cv_header_src_necsim_fast_cpp_csv_parse_csv_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_SRC_RLOGGING_CPP 1
+#define HAVE_SRC_NECSIM_FAST_CPP_CSV_PARSE_CSV_H 1
 _ACEOF
  use_csv=1
 else
@@ -3377,13 +3378,13 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: GDAL: ${GDAL_VERSION}" >&5
 $as_echo "$as_me: GDAL: ${GDAL_VERSION}" >&6;}
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking GDAL version >= 1.6.3" >&5
-$as_echo_n "checking GDAL version >= 1.6.3... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking GDAL version >= 2.1.0" >&5
+$as_echo_n "checking GDAL version >= 2.1.0... " >&6; }
 GDAL_VER_DOT=`echo $GDAL_VERSION | tr -d "."`
 if test ${GDAL_VER_DOT} -lt 163 ; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-  as_fn_error $? "upgrade GDAL to 1.6.3 or later" "$LINENO" 5
+  as_fn_error $? "upgrade GDAL to 2.1.0 or later" "$LINENO" 5
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
@@ -3419,6 +3420,12 @@ done
 
 if test "$use_gdal" = 1; then
 	defines="$defines -Dwith_gdal"
+else
+  as_fn_error $? "Ensure gdal is properly installed - cannot find gdal_priv.h" "$LINENO" 5
+fi
+
+if test "$use_cpl" = 0; then
+  as_fn_error $? "Ensure gdal is properly installed - cannot find cpl_conv.h" "$LINENO" 5
 fi
 PKG_CXXFLAGS="$PKG_CXXFLAGS $GDAL_CPPFLAGS"
 PKG_LIBS="$PKG_LIBS $GDAL_DEP_LIBS $GDAL_LIBS"
