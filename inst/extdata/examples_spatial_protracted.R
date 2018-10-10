@@ -15,7 +15,7 @@ simulation$setSimulationParameters(seed=9, task =1, output_directory = "output",
 simulation$runSimulation()
 
 # Or rely on automatic detection of map dimensions and offsets, without logging
-simulation <- SpatialTree$new()
+simulation <- ProtractedSpatialTree$new()
 simulation$setSimulationParameters(seed=9, task =1, output_directory = "output",
                                    speciation_rate = 0.001, 
                                    sigma=2 * (2 ** 0.5), deme=1, deme_sample = 0.1, 

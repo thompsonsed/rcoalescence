@@ -6,9 +6,9 @@
 #define RCOALESCENCE_RPROTRACTEDTREE_H
 
 #include <necsim/ProtractedTree.h>
-#include "RTree.h"
+#include "RTreeSimulation.h"
 
-class RProtractedTree : public virtual RTree, public virtual ProtractedTree
+class RProtractedTreeSimulation : public virtual RTreeSimulation, public virtual ProtractedTree
 {
 
 };

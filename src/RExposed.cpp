@@ -13,10 +13,10 @@
 
 #include "Rcpp.h"
 #include <Rcpp/r/headers.h>
-#include "RTree.h"
-#include "RSpatialTree.h"
-#include "RProtractedTree.h"
-#include "RProtractedSpatialTree.h"
+#include "RTreeSimulation.h"
+#include "RSpatialTreeSimulation.h"
+#include "RProtractedTreeSimulation.h"
+#include "RProtractedSpatialTreeSimulation.h"
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(BH)]]
 //' @useDynLib rcoalescence, .registration=TRUE
@@ -24,121 +24,121 @@
 bool logging_mode;
 
 
-RCPP_EXPOSED_CLASS(RTree);
-RCPP_EXPOSED_CLASS(RSpatialTree);
-RCPP_EXPOSED_CLASS(RProtractedTree);
-RCPP_EXPOSED_CLASS(RProtractedSpatialTree);
+RCPP_EXPOSED_CLASS(RTreeSimulation);
+RCPP_EXPOSED_CLASS(RSpatialSimulation);
+RCPP_EXPOSED_CLASS(RProtractedTreeSimulation);
+RCPP_EXPOSED_CLASS(RProtractedSpatialTreeSimulation);
 RCPP_MODULE(coalescenceModule) {
 	using namespace Rcpp;
-	class_<RTree>("RTree", "Simulates non-spatial neutral models.")
+	class_<RTreeSimulation>("RTreeSimulation", "Simulates non-spatial neutral models.")
 			.constructor("initialises the tree")
-			.method("._setKeyParameters", &RTree::setKeyParameters,
+			.method("._setKeyParameters", &RTreeSimulation::setKeyParameters,
 					"Sets the main simulation parameters for house-keeping purposes.")
-			.method("._setSpeciationParameters", &RTree::setSpeciationParameters,
+			.method("._setSpeciationParameters", &RTreeSimulation::setSpeciationParameters,
 					"Sets the speciation parameters for the simulation.")
-			.method("setup", &RTree::setup, "Completes all set-up routines for the simulation, "
+			.method("setup", &RTreeSimulation::setup, "Completes all set-up routines for the simulation, "
 											"including assigning memory and importing the required files.")
-			.method("runSimulation", &RTree::runSimulation,
+			.method("runSimulation", &RTreeSimulation::runSimulation,
 					"Performs the actual simulation, returning true if the simulation is complete.")
-			.method("._applySpeciationRates", &RTree::applySpeciation,
+			.method("._applySpeciationRates", &RTreeSimulation::applySpeciation,
 					"Applies the provided speciation parameters to the completed simulation.")
-			.method("._getSpeciesAbundances", &RTree::getSpeciesAbundances,
+			.method("._getSpeciesAbundances", &RTreeSimulation::getSpeciesAbundances,
 					"Gets the species abundances for the last calculated set of speciation parameters.")
-			.method("._getSpeciesRichness", &RTree::getSpeciesRichness, "Gets the species richness for the last "
+			.method("._getSpeciesRichness", &RTreeSimulation::getSpeciesRichness, "Gets the species richness for the last "
 																		"calculated set of speciation parameters.")
-			.method("._output", &RTree::output, "Writes the simulation to the output database.")
-			.method("setLoggingMode", &RTree::setLoggingMode, "Sets the logging mode for the simulation object.")
-			.method("._getSQLDatabase", &RTree::getSQLDatabase)
-			.method("._setDeme", &RTree::setDeme)
-			.field("output_database", &RTree::output_database)
+			.method("._output", &RTreeSimulation::output, "Writes the simulation to the output database.")
+			.method("setLoggingMode", &RTreeSimulation::setLoggingMode, "Sets the logging mode for the simulation object.")
+			.method("._getSQLDatabase", &RTreeSimulation::getSQLDatabase)
+			.method("._setDeme", &RTreeSimulation::setDeme)
+			.field("output_database", &RTreeSimulation::output_database)
 			;
-	class_<RSpatialTree>("RSpatialTree", "Simulates spatially-explicit neutral models.")
+	class_<RSpatialSimulation>("RSpatialSimulation", "Simulates spatially-explicit neutral models.")
 			.constructor("initialises the spatial tree")
-			.derives<RTree>("RTree")
-			.method("._setDispersalParameters", &RSpatialTree::setDispersalParameters,
+			.derives<RTreeSimulation>("RTreeSimulation")
+			.method("._setDispersalParameters", &RSpatialTreeSimulation::setDispersalParameters,
 					"Sets the dispersal parameters for the simulation.")
-			.method("._setHistoricalMapParameters", &RSpatialTree::setHistoricalMapParameters,
+			.method("._setHistoricalMapParameters", &RSpatialTreeSimulation::setHistoricalMapParameters,
 					"Sets the historical map parameters for the simulation.")
-			.method("._setMapParameters", &RSpatialTree::setMapParameters,
+			.method("._setMapParameters", &RSpatialTreeSimulation::setMapParameters,
 					"Sets the map parameters for the simulation, including dimensions and offsets.")
-			.method("._addHistoricalMap", &RSpatialTree::addHistoricalMap, "Adds a historical map with the desired parameter "
+			.method("._addHistoricalMap", &RSpatialTreeSimulation::addHistoricalMap, "Adds a historical map with the desired parameter "
 					"set")
 			;
-	class_<RProtractedTree>("RProtractedTree", "Simulates non-spatial neutral models with protracted speciation.")
+	class_<RProtractedTreeSimulation>("RProtractedTreeSimulation", "Simulates non-spatial neutral models with protracted speciation.")
 			.constructor("initialises the tree")
-			.derives<RTree>("RTree")
+			.derives<RTreeSimulation>("RTreeSimulation")
 			;
-	class_<RProtractedSpatialTree>("RProtractedSpatialTree", "Simulates spatially-explicit neutral models with protracted speciation.")
+	class_<RProtractedSpatialTreeSimulation>("RProtractedSpatialTreeSimulation", "Simulates spatially-explicit neutral models with protracted speciation.")
 			.constructor("initialises the spatial tree")
-			.derives<RSpatialTree>("RSpatialTree")
+			.derives<RSpatialSimulation>("RSpatialSimulation")
 			;
 }
 //
-//RCPP_EXPOSED_CLASS(RTree);
+//RCPP_EXPOSED_CLASS(RTreeSimulation);
 //RCPP_MODULE(coalescenceModule) {
 //	using namespace Rcpp;
 //
 //}
 //
-//RCPP_EXPOSED_CLASS(RProtractedSpatialTree);
+//RCPP_EXPOSED_CLASS(RProtractedSpatialTreeSimulation);
 //RCPP_MODULE(coalescenceModule) {
 //	using namespace Rcpp;
-//	class_<RProtractedSpatialTree>("RProtractedSpatialTree", "Simulates spatially-explicit neutral models with"
+//	class_<RProtractedSpatialTreeSimulation>("RProtractedSpatialTreeSimulation", "Simulates spatially-explicit neutral models with"
 //														  " protracted speciation.")
 //			.constructor("initialises the tree")
-//			.method("._setKeyParameters", &RProtractedSpatialTree::setKeyParameters,
+//			.method("._setKeyParameters", &RProtractedSpatialTreeSimulation::setKeyParameters,
 //					"Sets the main simulation parameters for house-keeping purposes.")
-//			.method("._setSpeciationParameters", &RProtractedSpatialTree::setSpeciationParameters,
+//			.method("._setSpeciationParameters", &RProtractedSpatialTreeSimulation::setSpeciationParameters,
 //					"Sets the speciation parameters for the simulation.")
-//			.method("._setDispersalParameters", &RProtractedSpatialTree::setDispersalParameters,
+//			.method("._setDispersalParameters", &RProtractedSpatialTreeSimulation::setDispersalParameters,
 //					"Sets the dispersal parameters for the simulation.")
-//			.method("._setHistoricalMapParameters", &RProtractedSpatialTree::setHistoricalMapParameters,
+//			.method("._setHistoricalMapParameters", &RProtractedSpatialTreeSimulation::setHistoricalMapParameters,
 //					"Sets the historical map parameters for the simulation.")
-//			.method("._setMapParameters", &RProtractedSpatialTree::setMapParameters,
+//			.method("._setMapParameters", &RProtractedSpatialTreeSimulation::setMapParameters,
 //					"Sets the map parameters for the simulation, including dimensions and offsets.")
-//			.method("setup", &RProtractedSpatialTree::setup, "Completes all set-up routines for the simulation, "
+//			.method("setup", &RProtractedSpatialTreeSimulation::setup, "Completes all set-up routines for the simulation, "
 //												   "including assigning memory and importing the required files.")
-//			.method("._addHistoricalMap", &RProtractedSpatialTree::addHistoricalMap,
+//			.method("._addHistoricalMap", &RProtractedSpatialTreeSimulation::addHistoricalMap,
 //					"Adds a historical map with the desired parameter set")
-//			.method("runSimulation", &RProtractedSpatialTree::runSimulation, "Performs the actual simulation, "
+//			.method("runSimulation", &RProtractedSpatialTreeSimulation::runSimulation, "Performs the actual simulation, "
 //															"returning true if the simulation is complete.")
-//			.method("._applySpeciationRates", &RProtractedSpatialTree::applySpeciation,
+//			.method("._applySpeciationRates", &RProtractedSpatialTreeSimulation::applySpeciation,
 //					"Applies the provided speciation parameters to the completed simulation.")
-//			.method("getSpeciesAbundances", &RProtractedSpatialTree::getSpeciesAbundances,
+//			.method("getSpeciesAbundances", &RProtractedSpatialTreeSimulation::getSpeciesAbundances,
 //					"Gets the species abundances for the last calculated set of speciation parameters.")
-//			.method("._getSpeciesRichness", &RProtractedSpatialTree::getSpeciesRichness,
+//			.method("._getSpeciesRichness", &RProtractedSpatialTreeSimulation::getSpeciesRichness,
 //					"Gets the species richness for the last calculated set of speciation parameters.")
-//			.method("._output", &RProtractedSpatialTree::output, "Writes the simulation to the output database.")
-//			.method("setLoggingMode", &RProtractedSpatialTree::setLoggingMode,
+//			.method("._output", &RProtractedSpatialTreeSimulation::output, "Writes the simulation to the output database.")
+//			.method("setLoggingMode", &RProtractedSpatialTreeSimulation::setLoggingMode,
 //					"Sets the logging mode for the simulation object.")
-//			.method("._getSQLDatabase", &RProtractedSpatialTree::getSQLDatabase)
-//			.field("output_database", &RProtractedSpatialTree::output_database)
+//			.method("._getSQLDatabase", &RProtractedSpatialTreeSimulation::getSQLDatabase)
+//			.field("output_database", &RProtractedSpatialTreeSimulation::output_database)
 //			;
 //}
 //
 //
-//RCPP_EXPOSED_CLASS(RProtractedTree);
+//RCPP_EXPOSED_CLASS(RProtractedTreeSimulation);
 //RCPP_MODULE(coalescenceModule) {
 //	using namespace Rcpp;
-//	class_<RProtractedTree>("RTree", "Simulates non-spatial neutral models with protracted speciation.")
+//	class_<RProtractedTreeSimulation>("RTreeSimulation", "Simulates non-spatial neutral models with protracted speciation.")
 //			.constructor("initialises the tree")
-//			.method("._setKeyParameters", &RProtractedTree::setKeyParameters,
+//			.method("._setKeyParameters", &RProtractedTreeSimulation::setKeyParameters,
 //					"Sets the main simulation parameters for house-keeping purposes.")
-//			.method("._setSpeciationParameters", &RProtractedTree::setSpeciationParameters,
+//			.method("._setSpeciationParameters", &RProtractedTreeSimulation::setSpeciationParameters,
 //					"Sets the speciation parameters for the simulation.")
-//			.method("setup", &RProtractedTree::setup, "Completes all set-up routines for the simulation, "
+//			.method("setup", &RProtractedTreeSimulation::setup, "Completes all set-up routines for the simulation, "
 //											"including assigning memory and importing the required files.")
-//			.method("runSimulation", &RProtractedTree::runSimulation, "Performs the actual simulation, "
+//			.method("runSimulation", &RProtractedTreeSimulation::runSimulation, "Performs the actual simulation, "
 //															"returning true if the simulation is complete.")
-//			.method("._applySpeciationRates", &RProtractedTree::applySpeciation, "Applies the provided speciation parameters"
+//			.method("._applySpeciationRates", &RProtractedTreeSimulation::applySpeciation, "Applies the provided speciation parameters"
 //																	   "to the completed simulation.")
-//			.method("getSpeciesAbundances", &RProtractedTree::getSpeciesAbundances, "Gets the species abundances for the "
+//			.method("getSpeciesAbundances", &RProtractedTreeSimulation::getSpeciesAbundances, "Gets the species abundances for the "
 //																		  "last calculated set of speciation parameters.")
-//			.method("._getSpeciesRichness", &RProtractedTree::getSpeciesRichness, "Gets the species richness for the last "
+//			.method("._getSpeciesRichness", &RProtractedTreeSimulation::getSpeciesRichness, "Gets the species richness for the last "
 //																		"calculated set of speciation parameters.")
-//			.method("._output", &RProtractedTree::output, "Writes the simulation to the output database.")
-//			.method("setLoggingMode", &RProtractedTree::setLoggingMode, "Sets the logging mode for the simulation object.")
-//			.method("._getSQLDatabase", &RProtractedTree::getSQLDatabase)
-//			.field("output_database", &RProtractedTree::output_database)
+//			.method("._output", &RProtractedTreeSimulation::output, "Writes the simulation to the output database.")
+//			.method("setLoggingMode", &RProtractedTreeSimulation::setLoggingMode, "Sets the logging mode for the simulation object.")
+//			.method("._getSQLDatabase", &RProtractedTreeSimulation::getSQLDatabase)
+//			.field("output_database", &RProtractedTreeSimulation::output_database)
 //			;
 //}

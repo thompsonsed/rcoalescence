@@ -119,6 +119,23 @@ These are for rebuilding the coalescence tree under different conditions.
 }
 
 \examples{
+# Example simulation for non-spatial models
+library(rcoalescence)
+simulation <- Tree$new()
+# Simulate 100 individuals
+simulation$setSimulationParameters(seed=10, task =1, output_directory = "output", 
+                                   speciation_rate = 0.5, deme=100, uses_logging = TRUE)
+simulation$runSimulation()
+
+# Apply additional speciation rates
+simulation$applySpeciationRates(speciation_rates = c(0.001, 0.7, 0.8))
+# Output to a database
+simulation$output()
+# Get the species richness
+simulation$getSpeciesRichness(1)
+# Get the species abundances (last 5)
+tail(simulation$getSpeciesAbundances(1), 5)
+
 # Example simulation using the supplied dimensions and offsets, with logging
 library(rcoalescence)
 simulation <- SpatialTree$new()
@@ -154,23 +171,6 @@ simulation$getSpeciesRichness(1)
 # Get the species abundances (last 5)
 tail(simulation$getSpeciesAbundances(1), 5)
 
-
-# Example simulation for non-spatial models
-library(rcoalescence)
-simulation <- Tree$new()
-# Simulate 100 individuals
-simulation$setSimulationParameters(seed=10, task =1, output_directory = "output", 
-                                   speciation_rate = 0.5, deme=100, uses_logging = TRUE)
-simulation$runSimulation()
-
-# Apply additional speciation rates
-simulation$applySpeciationRates(speciation_rates = c(0.001, 0.7, 0.8))
-# Output to a database
-simulation$output()
-# Get the species richness
-simulation$getSpeciesRichness(1)
-# Get the species abundances (last 5)
-tail(simulation$getSpeciesAbundances(1), 5)
 
 # Example simulation for non-spatial models with protracted speciation
 library(rcoalescence)
@@ -209,7 +209,7 @@ simulation$setSimulationParameters(seed=9, task =1, output_directory = "output",
 simulation$runSimulation()
 
 # Or rely on automatic detection of map dimensions and offsets, without logging
-simulation <- SpatialTree$new()
+simulation <- ProtractedSpatialTree$new()
 simulation$setSimulationParameters(seed=9, task =1, output_directory = "output",
                                    speciation_rate = 0.001, 
                                    sigma=2 * (2 ** 0.5), deme=1, deme_sample = 0.1, 

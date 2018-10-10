@@ -13,7 +13,11 @@
 
 #define RCOALESCENCE_RTREE_H
 #include <string>
-
+#ifndef CXX14_SUPPORT
+#include "memory.h"
+#else
+#include <memory>
+#endif
 #include <Rcpp.h>
 //#include <Rcpp/r/headers.h>
 //#include <Rcpp/DataFrame.h>
@@ -22,15 +26,15 @@
 #include "RLogging.h"
 
 using namespace std;
-class RTree : public virtual Tree
+class RTreeSimulation : public virtual Tree
 {
 protected:
 
-	SpecSimParameters spec_sim_parameters{};
+	shared_ptr<SpecSimParameters> spec_sim_parameters;
 public:
 	string output_database;
-	RTree();
-	~RTree() override;
+	RTreeSimulation();
+	~RTreeSimulation() override;
 
 
 	/**
@@ -95,14 +99,14 @@ public:
 	 * @brief Calculates the abundance of each species and returns a dataframe containing species ids and abundances.
 	 * @return Dataframe containing species ids and abundances
 	 */
-	Rcpp::DataFrame getSpeciesAbundances();
+	Rcpp::DataFrame getSpeciesAbundances(const unsigned long community_reference);
 
 
 	/**
 	 * @brief Gets the number of species in the most recent calculation.
 	 * @return the number of species in the most recently-calculated coalescence tree
 	 */
-	unsigned long getSpeciesRichness();
+	unsigned long getSpeciesRichness(const unsigned long community_reference);
 
 	/**
 	 * @brief Ensures that a connection is made to the output database.
@@ -124,7 +128,7 @@ public:
 	 * @brief Applies the provided speciation parameters to the completed simulation.
 	 * @param specSimParameters
 	 */
-	void apply(SpecSimParameters *specSimParameters);
+	void apply(shared_ptr<SpecSimParameters> specSimParameters);
 
 	/**
 	 * @brief Calls Tree::setup() to act as a wrapper accessible by R without extra classes.

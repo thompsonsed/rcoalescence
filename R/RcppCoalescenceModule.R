@@ -11,39 +11,97 @@
 #' @description A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for 
 #' spatially-explicit neutral models based in c++.
 #' 
-#' rcoalescence allows for large-scale simulations to be performed on fully spatial files, with 
+#' rcoalescence allows for large-scale TreeSimulations to be performed on fully spatial files, with 
 #' features to suit a wide variety of use cases.
 #' 
-#' Four classes exist to represent non-spatial/spatial and non-protracted/protracted simulations. 
-#' See \link[=NeutralTree]{here} for a full description.
+#' Four classes exist to represent non-spatial/spatial and non-protracted/protracted TreeSimulations. 
+#' See \link[=NeutralTreeSimulation]{here} for a full description.
 #' 
 #' @section Installation:
 #' There are several dependencies required before installation of this package will be successful.
+#' 
+#' \subsection{Dependencies}{
+#' 
 #' \itemize{
-#'     \item Install boost library for c++, available \href{https://www.boost.org/}{here}.
-#'     \item Install gdal library for c++, available \href{http://www.gdal.org/}{here}.
-#'     \item Install the sqlite3 library for c++, available \href{https://www.sqlite.org/index.html}{here}.
-#'     \item Several R packages are dependencies, including Rcpp and BH. These should be installed automatically.
+#'     \item R package development prerequisites, which may require additional installation steps, 
+#'     depending on your platform
+#'     \href{https://support.rstudio.com/hc/en-us/articles/200486498}{(see here)}.
+#'     \item A c++ compiler that is detectable by R.
+#'     \item The devtools package.
+#'     \item Boost library for c++, available \href{https://www.boost.org/}{here}.
+#'     \item Gdal library for c++, available \href{http://www.gdal.org/}{here}.
+#'     \item Sqlite3 library for c++, available \href{https://www.sqlite.org/index.html}{here}.
+#'     
+#'     \item Several R packages are dependencies, including Rcpp and BH. These should be installed
+#'     automatically.
+#' }
 #' }
 #' 
-#' @section Starting a simulation:
+#' \subsection{Install method}{
 #' 
-#' Methods are contained within the relevant classes \link[=NeutralTree]{(see here)} for setting up,
-#' running and analysing simulations. The general process is
+#' First, make sure devtools and the c++ library dependencies are installed. Then run,
+#' \code{library(devtools)}
+#' \code{install_bitbucket("thompsonsed/rcoalescence")}
+#' 
+#' }
+#' 
+#' @section Installation issues:
+#' 
+#' \subsection{Cannot find c++ compiler}{
+#' 
+#' For Linux systems, the R development package is required. Use 
+#' \code{sudo apt-get install r-base-dev} for Ubuntu-based systems. For other distributions, check
+#' the documentation for installing core software development utilities required for R package 
+#' development.
+#' 
+#' On MacOS, this requires that XCode is installed properly, and the compiler is detectable by R.
+#' See \href{https://support.rstudio.com/hc/en-us/articles/200486498}{here} for additional info.
+#' 
+#' Windows is currently not supported.
+#' }
+#' 
+#' \subsection{Missing gdal requirements}{
+#' 
+#' If you get an error about gdal not being detected, check that
+#' gdal is properly installed. If the error indicates missing gdal_priv.h/cpl_conv.h, consider 
+#' compiling gdal directly from source, as many package management systems do not properly install
+#' these files. If you know the directory containing gdal, supply it manually to using PKG_LIBS=/dir/
+#' during installation.
+#' }
+#' 
+#' \subsection{Missing boost requirements}{
+#' 
+#' Ensure that boost has been properly compiled. Try installing the package BH from CRAN - if this 
+#' works then you should be fine. Alternatively, if you know the directory containing boost, supply
+#' it manually to using PKG_LIBS=/dir/ during installation.
+#' }
+#' 
+#' \subsection{Still facing issues}{
+#' 
+#' Try downloading the package from bitbucket manually and use \code{install_local()}. 
+#' If you have autotools installed, run \code{autoreconf} and \code{autoconf} from the before
+#' attempting package
+#' }
+#' 
+#' @section Starting a TreeSimulation:
+#' 
+#' Methods are contained within the relevant classes \link[=NeutralTreeSimulation]{(see here)} for setting up,
+#' running and analysing TreeSimulations. The general process is
 #' \itemize{
-#'     \item Create a new \link{Tree}, \link{SpatialTree}, \link{ProtractedTree} or
-#'           \link{ProtractedSpatialTree} object, depending on use case.
-#'     \item Set the simulation parameters and add additional historical maps.
-#'     \item Run the simulation (generally the most time-consuming step).
-#'     \item Apply speciation rates and other requirements post simulation using 
+#'     \item Create a new \link{TreeSimulation}, \link{SpatialTreeSimulation}, \link{ProtractedTreeSimulation} or
+#'           \link{ProtractedSpatialTreeSimulation} object, depending on use case.
+#'     \item Set the TreeSimulation parameters and add additional historical maps.
+#'     \item Run the TreeSimulation (generally the most time-consuming step).
+#'     \item Apply speciation rates and other requirements post TreeSimulation using 
 #'     SpeciationParameters.
-#'     \item Get the species richness from the simulation.
+#'     \item Get the species richness from the TreeSimulation.
 #'     \item Optionally write results to an SQLite database for further manual analysis.
 #'     \item If written to an output database, acquire the desired biodiversity metrics, such as 
 #'     species locations or species abundances.
 #'
 #' }
-#'
+#' 
+#' See examples in the \link[=NeutralTreeSimulation]{relevant classes}.
 #' 
 #' @docType package
 #' 
@@ -51,19 +109,19 @@ NULL
 
 #' Simulate neutral models on a variety of landscape conformations
 #'
-#' @name NeutralTree
-#' @description Four classes are provided here, \link{Tree}, \link{SpatialTree}, 
-#' \link{ProtractedTree} and \link{ProtractedSpatialTree}, for non-spatial/spatial and 
-#' non-protracted/protracted simulations. The process for setting up, running and analysing 
-#' simulations are the same, as described below.
+#' @name NeutralTreeSimulation
+#' @description Four classes are provided here, \link{TreeSimulation}, \link{SpatialTreeSimulation}, 
+#' \link{ProtractedTreeSimulation} and \link{ProtractedSpatialTreeSimulation}, for non-spatial/spatial and 
+#' non-protracted/protracted TreeSimulations. The process for setting up, running and analysing 
+#' TreeSimulations are the same, as described below.
 #' 
 #' @section Non-spatial Models:
 #' Run non-spatial neutral models. Here no map files are required, simply set up the
-#' simulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
+#' TreeSimulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
 #' 
 #' @section Spatial Models:
 #' Run spatial neutral models. You must provide map files which provide the spatial density for the 
-#' simulation. Additional maps are optional.
+#' TreeSimulation. Additional maps are optional.
 #' 
 #' @section Protracted Non-spatial Models:
 #' Run non-spatial neutral models with protracted speciation. Here no map files are required, but 
@@ -73,19 +131,19 @@ NULL
 #' Runs spatially-explicit neutral models with protracted speciation. Requires both the protracted
 #' speciation parameters and map files defining spatial density.
 #' 
-#' @section Simulation parameters:
-#' These parameters are required at simulation time. The vast majority have defaults, 
-#' which are defined in setSimulationParameters()
+#' @section TreeSimulation parameters:
+#' These parameters are required at TreeSimulation time. The vast majority have defaults, 
+#' which are defined in setTreeSimulationParameters()
 #' * *task*: the task reference number
 #' * *seed*: the seed for setting random number generation
-#' * *output_directory*: the path to the folder for storing simulation files
+#' * *output_directory*: the path to the folder for storing TreeSimulation files
 #' * *max_time*: the maximum number of seconds to simulate for before pausing
 #' * *desired_specnum*: the desired number of species to aim for
 #' * *times_list*: list of temporal sampling points
 #' * *uses_logging*: if true, all outputs are written to console
 #' * *deme*: the number of individuals per cell
 #' * *deme_sample*: the global sampling proportion
-#' * *speciation_rate*: the minimum speciation rate for the simulation
+#' * *speciation_rate*: the minimum speciation rate for the TreeSimulation
 #' @section Spatial parameters:
 #' These include dispersal parameters and maps files
 #' * *sigma*: mean dispersal: distance for a normally-distributed dispersal kernel
@@ -126,43 +184,44 @@ NULL
 #' the nth item in max_speciation_gens
 #' * *min_speciation_gens*: list of minimum number of generations required before speciation
 #' * *max_speciation_gens*: list of maximum number of generations required before speciation
-#' @section Post-simulation parameters:
-#' These are for rebuilding the coalescence tree under different conditions.
+#' @section Post-TreeSimulation parameters:
+#' These are for rebuilding the coalescence TreeSimulation under different conditions.
 #' * *output_file*: the directory to output to, defaults to "none"
 #' * *use_spatial*: if true, records full spatial locations of all individuals. Default=FALSE
 #' * *sample_file*: supply a mask for defining spatial sampling. Default="null"
 #' * *use_fragments*: supply a file containing fragment coordinates, or TRUE to let program calculate fragments
 #' * *speciation_rates*: list of speciation rates to apply
-#' * *times_list*: list of times to calculate coalescence tree for
+#' * *times_list*: list of times to calculate coalescence TreeSimulation for
 #' * *min_speciation_gens*: list of the minimum number of generations required before speciation
 #' * *max_speciation_gens*: list of the maximum number of generations required before speciation
 #' * *metacommunity_size*: the number of individuals in the metacommunity
 #' * *metacommunity_speciation_rate*: the effective speciation rate of the metacommunity
 #' @md
-#' @example inst/extdata/examples_1.R
-#' @example inst/extdata/examples_2.R
-#' @example inst/extdata/examples_3.R
-#' @example inst/extdata/examples_4.R
+#' @example inst/extdata/examples_nonspatial.R
+#' @example inst/extdata/examples_spatial.R
+#' @example inst/extdata/examples_nonspatial_protracted.R
+#' @example inst/extdata/examples_spatial_protracted.R
 #' 
 NULL
 
-#' Non-spatial neutral simulations
-#' @name Tree
-#' @export Tree
+#' Non-spatial neutral TreeSimulations
+#' @name TreeSimulation
+#' @export TreeSimulation
 #' @description Run non-spatial neutral models. Here no map files are required, simply set up the
-#' simulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
+#' TreeSimulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
 #' @section Alternative classes:
-#' For alternative classes providing similar functionality, see \link[=NeutralTree]{here}.
-#' @inheritSection NeutralTree Simulation parameters
-#' @inheritSection NeutralTree Post-simulation parameters
-Tree <- setRcppClass("Tree", "RTree", module="coalescenceModule",
+#' For alternative classes providing similar functionality, see \link[=NeutralTreeSimulation]{here}.
+#' @inheritSection NeutralTreeSimulation TreeSimulation parameters
+#' @inheritSection NeutralTreeSimulation Post-TreeSimulation parameters
+#' @example inst/extdata/examples_nonspatial.R
+TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coalescenceModule",
                      fields=list(output_database = "character"),
                      methods = list(
                        setKeyParameters = function(task, seed, output_directory="output",
                                                    max_time=3600, desired_specnum=1,
                                                    times_list=c(0.0), uses_logging=NA, 
                                                    deme=1, deme_sample=1.0) {
-                         "Sets the key parameters for the simulation"
+                         "Sets the key parameters for the TreeSimulation"
                          if(!is.na(uses_logging))
                          {
                            setLoggingMode(uses_logging)
@@ -174,27 +233,44 @@ Tree <- setRcppClass("Tree", "RTree", module="coalescenceModule",
                        
                        
                        setSpeciationParameters = function(speciation_rate) {
-                         "Sets the speciation parameters for the simulation"
+                         "Sets the speciation parameters for the TreeSimulation"
                          ._setSpeciationParameters(speciation_rate, FALSE, 0.0, 0.0)
                        },
                        
                        applySpeciationRates = function(speciation_rates, output_file="none", times_list=c(0.0),
                                                        metacommunity_size=0, metacommunity_speciation_rate=0.0){
-                         "Applies the provided speciation parameters to the simulation"
+                         "Applies the provided speciation parameters to the TreeSimulation"
+                         multiple_output = FALSE
+                         if(is.vector(speciation_rate))
+                         {
+                           if(length(speciation_rates) == 1)
+                           {
+                             speciation_rates = speciation_rates[1]
+                           }
+                           else
+                           {
+                             checkOutputDatabase()
+                             multiple_output = TRUE
+                           }
+                         }
                          ._applySpeciationRates(output_file, FALSE, "null",
                                                 "FALSE", speciation_rates, times_list,
                                                 c(0.0), c(0.0),
                                                 metacommunity_size, metacommunity_speciation_rate)
+                         if(multiple_output)
+                         {
+                           output()
+                         }
                        },
                        
                        
-                       setSimulationParameters = function(task, seed, speciation_rate, output_directory="output",
+                       setTreeSimulationParameters = function(task, seed, speciation_rate, output_directory="output",
                                                           max_time=3600, desired_specnum=1,
                                                           times_list=c(0.0), uses_logging=NA,
                                                           deme=1,
                                                           deme_sample=1.0
                        ){
-                         "Sets all simulation parameters"
+                         "Sets all TreeSimulation parameters"
                          setKeyParameters(task, seed, output_directory, max_time, 
                                           desired_specnum, times_list, uses_logging, deme, 
                                           deme_sample)
@@ -270,11 +346,11 @@ Tree <- setRcppClass("Tree", "RTree", module="coalescenceModule",
                          return(species_locations)
                        },
                        
-                       getSpeciesAbundances = function(community_reference = NA){
+                       getSpeciesAbundances = function(community_reference = 1){
                          "Gets a data frame of species abundances where the community reference matches the input"
-                         if(is.na(community_reference))
+                         if(is.na(output_database))
                          {
-                           return(.getSpeciesAbundances())
+                           return(._getSpeciesAbundances(community_reference))
                          }
                          checkOutputDatabase()
                          conn <- dbConnect(SQLite(), output_database)
@@ -284,11 +360,12 @@ Tree <- setRcppClass("Tree", "RTree", module="coalescenceModule",
                          return(species_locations)
                        },
                        
-                       getSpeciesRichness = function(community_reference=NA){
+                       getSpeciesRichness = function(community_reference=1){
                          "Gets the community reference from the output database, or from the internal object if no 
                          community reference is supplied (this will return the last calculated species richness)."
-                         if(is.na(community_reference)){
-                           return(._getSpeciesRichness())
+                         if(is.na(output_database))
+                         {
+                           return(._getSpeciesRichness(community_reference))
                          }
                          checkOutputDatabase()
                          conn <- dbConnect(SQLite(), output_database)
@@ -302,19 +379,20 @@ Tree <- setRcppClass("Tree", "RTree", module="coalescenceModule",
 )
 
 #' Spatially-explicit neutral models
-#' @name SpatialTree
-#' @export SpatialTree
+#' @name SpatialTreeSimulation
+#' @export SpatialTreeSimulation
 #' @description Run spatial neutral models. You must provide map files which provide the spatial 
-#' density for the simulation. Additional maps are optional.
-#' @inheritSection Tree Alternative classes
-#' @inheritSection NeutralTree Spatial Models
-#' @inheritSection NeutralTree Simulation parameters
-#' @inheritSection NeutralTree Spatial parameters
-#' @inheritSection NeutralTree Post-simulation parameters
-#' @inheritParams Tree
-SpatialTree <- setRcppClass("SpatialTree", "RSpatialTree", module="coalescenceModule",
+#' density for the TreeSimulation. Additional maps are optional.
+#' @inheritSection TreeSimulation Alternative classes
+#' @inheritSection NeutralTreeSimulation Spatial Models
+#' @inheritSection NeutralTreeSimulation TreeSimulation parameters
+#' @inheritSection NeutralTreeSimulation Spatial parameters
+#' @inheritSection NeutralTreeSimulation Post-TreeSimulation parameters
+#' @inheritParams TreeSimulation
+#' @example inst/extdata/examples_spatial.R
+SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimulation", module="coalescenceModule",
                             fields=list(output_database = "character"),
-                            contains=c("Tree"),
+                            contains=c("TreeSimulation"),
              methods = list(
                
                setDispersalParameters = function(sigma, dispersal_method="normal", tau=1.0,
@@ -322,7 +400,7 @@ SpatialTree <- setRcppClass("SpatialTree", "RSpatialTree", module="coalescenceMo
                                                  dispersal_relative_cost=1.0, restrict_self=FALSE,
                                                  landscape_type="closed", dispersal_file="null",
                                                  reproduction_file="null"){
-                 "Sets the dispersal parameters for the simulation"
+                 "Sets the dispersal parameters for the TreeSimulation"
                  ._setDispersalParameters(sigma, dispersal_method, tau, m_prob, cutoff,
                                           dispersal_relative_cost, restrict_self, landscape_type,
                                           dispersal_file, reproduction_file)
@@ -343,7 +421,7 @@ SpatialTree <- setRcppClass("SpatialTree", "RSpatialTree", module="coalescenceMo
                                            coarse_map_y_offset=0,
                                            coarse_map_scale=1, deme=1,
                                            deme_sample=1.0, uses_spatial_sampling=FALSE){
-                 "Sets the map parameters for the simulation"
+                 "Sets the map parameters for the TreeSimulation"
                  if(sample_mask_file == "null")
                  {
                    sample_x_size <- fine_map_x_size
@@ -382,7 +460,7 @@ SpatialTree <- setRcppClass("SpatialTree", "RSpatialTree", module="coalescenceMo
                setHistoricalMapParameters = function(historical_fine_map="none",
                                                    historical_coarse_map="none", gen_since_historical=100000000,
                                                    habitat_change_rate=0.0){
-                 "Sets the historical map parameters for the simulation testing"
+                 "Sets the historical map parameters for the TreeSimulation testing"
                  ._setHistoricalMapParameters(historical_fine_map, historical_coarse_map, gen_since_historical,
                                             habitat_change_rate)
                  },
@@ -397,7 +475,7 @@ SpatialTree <- setRcppClass("SpatialTree", "RSpatialTree", module="coalescenceMo
                applySpeciationRates = function(speciation_rates, output_file="none", use_spatial=FALSE,
                                                sample_file="null", use_fragments=FALSE, times_list=c(0.0),
                                                metacommunity_size=0, metacommunity_speciation_rate=0.0){
-                 "Applies the provided speciation parameters to the simulation"
+                 "Applies the provided speciation parameters to the TreeSimulation"
                  if(is.logical(use_fragments)){
                    use_fragments <- substr(as.character(use_fragments), 1, 1)
                    }
@@ -408,7 +486,7 @@ SpatialTree <- setRcppClass("SpatialTree", "RSpatialTree", module="coalescenceMo
                },
                
                
-               setSimulationParameters = function(task, seed, speciation_rate, sigma,  output_directory="output",
+               setTreeSimulationParameters = function(task, seed, speciation_rate, sigma,  output_directory="output",
                                                   max_time=3600, desired_specnum=1,
                                                   times_list=c(0.0), uses_logging=NA, 
                                                   dispersal_method="normal", tau=1.0, m_prob=0.0, cutoff=0,
@@ -433,7 +511,7 @@ SpatialTree <- setRcppClass("SpatialTree", "RSpatialTree", module="coalescenceMo
                                                   historical_coarse_map="none", gen_since_historical=100000000,
                                                   habitat_change_rate=0.0
                ){
-                 "Sets all simulation parameters"
+                 "Sets all TreeSimulation parameters"
                  setKeyParameters(task, seed, output_directory, max_time, desired_specnum, 
                                   times_list, uses_logging)
                  setSpeciationParameters(speciation_rate)
@@ -463,24 +541,25 @@ SpatialTree <- setRcppClass("SpatialTree", "RSpatialTree", module="coalescenceMo
 )
 
 #' Protracted non-spatial neutral models
-#' @name ProtractedTree
-#' @export ProtractedTree
+#' @name ProtractedTreeSimulation
+#' @export ProtractedTreeSimulation
 #' @description Run non-spatial neutral models with protracted speciation. Here no map files are 
 #' required, but the protracted speciation parameters should be specified.
-#' @inheritSection Tree Alternative classes
-#' @inheritSection NeutralTree Protracted Non-spatial Models
-#' @inheritSection NeutralTree Simulation parameters
-#' @inheritSection NeutralTree Protracted speciation parameters
-#' @inheritSection NeutralTree Post-simulation parameters
-#' @inheritParams Tree
-ProtractedTree <- setRcppClass("ProtractedTree", "RProtractedTree", module="coalescenceModule",
+#' @inheritSection TreeSimulation Alternative classes
+#' @inheritSection NeutralTreeSimulation Protracted Non-spatial Models
+#' @inheritSection NeutralTreeSimulation TreeSimulation parameters
+#' @inheritSection NeutralTreeSimulation Protracted speciation parameters
+#' @inheritSection NeutralTreeSimulation Post-TreeSimulation parameters
+#' @inheritParams TreeSimulation
+#' @example inst/extdata/examples_nonspatial_protracted.R
+ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtractedTreeSimulation", module="coalescenceModule",
                      fields=list(output_database = "character"),
-                     contains=c("Tree"),
+                     contains=c("TreeSimulation"),
                      methods = list(
                        setSpeciationParameters = function(speciation_rate, 
                                                           min_speciation_gens = c(0.0),
                                                           max_speciation_gens=c(0.0)) {
-                         "Sets the speciation parameters for the simulation"
+                         "Sets the speciation parameters for the TreeSimulation"
                          ._setSpeciationParameters(speciation_rate, TRUE, min_speciation_gens,
                                                    max_speciation_gens)
                        },
@@ -491,7 +570,7 @@ ProtractedTree <- setRcppClass("ProtractedTree", "RProtractedTree", module="coal
                                                        max_speciation_gens=c(0.0),
                                                        metacommunity_size=0, 
                                                        metacommunity_speciation_rate=0.0){
-                         "Applies the provided speciation parameters to the simulation"
+                         "Applies the provided speciation parameters to the TreeSimulation"
                          ._applySpeciationRates(output_file, FALSE, "null",
                                                 "FALSE", speciation_rates, times_list,
                                                 min_speciation_gens, max_speciation_gens,
@@ -499,7 +578,7 @@ ProtractedTree <- setRcppClass("ProtractedTree", "RProtractedTree", module="coal
                        },
 
 
-                       setSimulationParameters = function(task, seed, speciation_rate,
+                       setTreeSimulationParameters = function(task, seed, speciation_rate,
                                                           output_directory="output",
                                                           max_time=3600, desired_specnum=1,
                                                           times_list=c(0.0), uses_logging=NA,
@@ -507,7 +586,7 @@ ProtractedTree <- setRcppClass("ProtractedTree", "RProtractedTree", module="coal
                                                           max_speciation_gens = c(0.0),
                                                           deme=1,
                                                           deme_sample=1.0){
-                         "Sets all simulation parameters"
+                         "Sets all TreeSimulation parameters"
                          setKeyParameters(task, seed, output_directory, max_time, desired_specnum,
                                           times_list, uses_logging, deme, deme_sample)
                          setSpeciationParameters(speciation_rate, min_speciation_gens,
@@ -518,24 +597,25 @@ ProtractedTree <- setRcppClass("ProtractedTree", "RProtractedTree", module="coal
 
 )
 #' Protracted spatially-explicit neutral models
-#' @name ProtractedSpatialTree
-#' @export ProtractedSpatialTree
+#' @name ProtractedSpatialTreeSimulation
+#' @export ProtractedSpatialTreeSimulation
 #' @description  Runs spatially-explicit neutral models with protracted speciation. Requires both 
 #' the protracted speciation parameters and map files defining spatial density.
-#' @inheritSection Tree Alternative classes
-#' @inheritSection NeutralTree Protracted Spatial Models
-#' @inheritSection NeutralTree Simulation parameters
-#' @inheritSection NeutralTree Spatial parameters
-#' @inheritSection NeutralTree Protracted speciation parameters
-#' @inheritSection NeutralTree Post-simulation parameters
-#' @inheritParams Tree
-#' @inheritParams SpatialTree
-ProtractedSpatialTree <- setRcppClass("ProtractedSpatialTree", "RProtractedSpatialTree",
+#' @inheritSection TreeSimulation Alternative classes
+#' @inheritSection NeutralTreeSimulation Protracted Spatial Models
+#' @inheritSection NeutralTreeSimulation TreeSimulation parameters
+#' @inheritSection NeutralTreeSimulation Spatial parameters
+#' @inheritSection NeutralTreeSimulation Protracted speciation parameters
+#' @inheritSection NeutralTreeSimulation Post-TreeSimulation parameters
+#' @inheritParams TreeSimulation
+#' @inheritParams SpatialTreeSimulation
+#' @example inst/extdata/examples_spatial_protracted.R
+ProtractedSpatialTreeSimulation <- setRcppClass("ProtractedSpatialTreeSimulation", "RProtractedSpatialTreeSimulation",
                                       module="coalescenceModule",
                                fields=list(output_database = "character"),
-                               contains=c("ProtractedTree", "SpatialTree", "Tree"),
+                               contains=c("ProtractedTreeSimulation", "SpatialTreeSimulation", "TreeSimulation"),
                                methods=list(
-                                 setSimulationParameters = function(task, seed, speciation_rate, sigma,  output_directory="output",
+                                 setTreeSimulationParameters = function(task, seed, speciation_rate, sigma,  output_directory="output",
                                                                     max_time=3600, desired_specnum=1,
                                                                     times_list=c(0.0), uses_logging=NA, 
                                                                     dispersal_method="normal", tau=1.0, m_prob=0.0, cutoff=0,
@@ -562,7 +642,7 @@ ProtractedSpatialTree <- setRcppClass("ProtractedSpatialTree", "RProtractedSpati
                                                                     min_speciation_gens=c(0.0),
                                                                     max_speciation_gens=c(0.0)
                                  ){
-                                   "Sets all simulation parameters"
+                                   "Sets all TreeSimulation parameters"
                                    setKeyParameters(task, seed, output_directory, max_time, desired_specnum, 
                                                     times_list, uses_logging)
                                    setSpeciationParameters(speciation_rate, min_speciation_gens=min_speciation_gens,
@@ -593,7 +673,7 @@ ProtractedSpatialTree <- setRcppClass("ProtractedSpatialTree", "RProtractedSpati
                                                                  metacommunity_size=0, metacommunity_speciation_rate=0.0, 
                                                                  min_speciation_gens=c(0.0), 
                                                                  max_speciation_gens=c(0.0)){
-                                   "Applies the provided speciation parameters to the simulation"
+                                   "Applies the provided speciation parameters to the TreeSimulation"
                                    if(is.logical(use_fragments)){
                                      use_fragments <- substr(as.character(use_fragments), 1, 1)
                                    }

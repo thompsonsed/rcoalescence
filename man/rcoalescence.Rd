@@ -18,11 +18,70 @@ See \link[=NeutralTree]{here} for a full description.
 \section{Installation}{
 
 There are several dependencies required before installation of this package will be successful.
+
+\subsection{Dependencies}{
+
 \itemize{
-    \item Install boost library for c++, available \href{https://www.boost.org/}{here}.
-    \item Install gdal library for c++, available \href{http://www.gdal.org/}{here}.
-    \item Install the sqlite3 library for c++, available \href{https://www.sqlite.org/index.html}{here}.
-    \item Several R packages are dependencies, including Rcpp and BH. These should be installed automatically.
+    \item R package development prerequisites, which may require additional installation steps, 
+    depending on your platform
+    \href{https://support.rstudio.com/hc/en-us/articles/200486498}{(see here)}.
+    \item A c++ compiler that is detectable by R.
+    \item The devtools package.
+    \item Boost library for c++, available \href{https://www.boost.org/}{here}.
+    \item Gdal library for c++, available \href{http://www.gdal.org/}{here}.
+    \item Sqlite3 library for c++, available \href{https://www.sqlite.org/index.html}{here}.
+    
+    \item Several R packages are dependencies, including Rcpp and BH. These should be installed
+    automatically.
+}
+}
+
+\subsection{Install method}{
+
+First, make sure devtools and the c++ library dependencies are installed. Then run,
+\code{library(devtools)}
+\code{install_bitbucket("thompsonsed/rcoalescence")}
+
+}
+}
+
+\section{Installation issues}{
+
+
+\subsection{Cannot find c++ compiler}{
+
+For Linux systems, the R development package is required. Use 
+\code{sudo apt-get install r-base-dev} for Ubuntu-based systems. For other distributions, check
+the documentation for installing core software development utilities required for R package 
+development.
+
+On MacOS, this requires that XCode is installed properly, and the compiler is detectable by R.
+See \href{https://support.rstudio.com/hc/en-us/articles/200486498}{here} for additional info.
+
+Windows is currently not supported.
+}
+
+\subsection{Missing gdal requirements}{
+
+If you get an error about gdal not being detected, check that
+gdal is properly installed. If the error indicates missing gdal_priv.h/cpl_conv.h, consider 
+compiling gdal directly from source, as many package management systems do not properly install
+these files. If you know the directory containing gdal, supply it manually to using PKG_LIBS=/dir/
+during installation.
+}
+
+\subsection{Missing boost requirements}{
+
+Ensure that boost has been properly compiled. Try installing the package BH from CRAN - if this 
+works then you should be fine. Alternatively, if you know the directory containing boost, supply
+it manually to using PKG_LIBS=/dir/ during installation.
+}
+
+\subsection{Still facing issues}{
+
+Try downloading the package from bitbucket manually and use \code{install_local()}. 
+If you have autotools installed, run \code{autoreconf} and \code{autoconf} from the before
+attempting package
 }
 }
 
@@ -44,6 +103,8 @@ running and analysing simulations. The general process is
     species locations or species abundances.
 
 }
+
+See examples in the \link[=NeutralTree]{relevant classes}.
 }
 
 \author{

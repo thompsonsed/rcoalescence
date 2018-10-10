@@ -19,13 +19,8 @@ AC_LANG(C++)
 AC_PROG_CXX
 PKG_LIBS=${PKGLIBS}
 dnl Check sqlite headers exist
-AC_CHECK_HEADERS(sqlite3.h, [has_sqlite3=1], [has_sqlite3=0])
+AC_CHECK_HEADERS(sqlite3.h, [has_sqlite3=1], AC_ERROR([A working sqlite3 library is required. Make sure it is correctly installed on your system.]))
 with_sqlite3="yes"
-if [[ "$has_sqlite3" == 0 ]]
-then
-	with_sqlite3="no"
-	AC_ERROR([A working sqlite3 library is required. Make sure it is correctly installed on your system.])
-fi
 LIBS="$LIBS -lsqlite3"
 
 dnl Check boost headers
@@ -52,7 +47,7 @@ fi
 BOOST_FIND_HEADER([boost/filesystem.hpp])
 
 dnl Check for fast-csv-parser
-AC_CHECK_HEADERS([src/necsim/fast-cpp-csv-parse/csv.h],[use_csv=1],[use_csv=0])
+AC_CHECK_HEADERS([src/necsim/fast-cpp-csv-parser/csv.h],[use_csv=1],[use_csv=0])
 if [[ "$use_csv" == 1 ]]
 then
 	fast_cpp_csv_parser="enabled"
@@ -139,17 +134,9 @@ else
   AC_MSG_RESULT(yes)
 fi
 use_gdal=0
-AC_CHECK_HEADERS([gdal_priv.h], [use_gdal=1],[use_gdal=0])
-AC_CHECK_HEADERS([cpl_conv.h], [use_cpl=1], [use_cpl=0])
-if test ["$use_gdal" = 1]; then
-	defines="$defines -Dwith_gdal"
-else
-  AC_MSG_ERROR([Ensure gdal is properly installed - cannot find gdal_priv.h])
-fi
-
-if test ["$use_cpl" = 0]; then
-  AC_MSG_ERROR([Ensure gdal is properly installed - cannot find cpl_conv.h])
-fi
+AC_CHECK_HEADERS([gdal_priv.h], [use_gdal=1], AC_MSG_ERROR([Ensure gdal is properly installed - cannot find gdal_priv.h]))
+AC_CHECK_HEADERS([cpl_conv.h], [use_cpl=1], AC_MSG_ERROR([Ensure gdal is properly installed - cannot find cpl_conv.h])
+defines="$defines -Dwith_gdal"
 PKG_CXXFLAGS="$PKG_CXXFLAGS $GDAL_CPPFLAGS"
 PKG_LIBS="$PKG_LIBS $GDAL_DEP_LIBS $GDAL_LIBS"
 AC_SUBST(defines)

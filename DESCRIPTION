@@ -1,7 +1,7 @@
 Package: rcoalescence
 Type: Package
 Title: Efficient spatially-explicit neutral ecology simulator written in C++
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: person("Sam", "Thompson", email = "thompsonsed@gmail.com", role = c("aut", "cre"))
 Description: Package for simulating according to ecological neutral theory on spatially explicit
     landscapes using coalescence techniques and c++ for high performance operation.

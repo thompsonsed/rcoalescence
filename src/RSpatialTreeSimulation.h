@@ -12,9 +12,9 @@
 #define RCOALESCENCE_R_SPATIAL_TREE_H
 #include <Rcpp.h>
 #include "necsim/SpatialTree.h"
-#include "RTree.h"
+#include "RTreeSimulation.h"
 
-class RSpatialTree : public virtual RTree, public virtual SpatialTree
+class RSpatialTreeSimulation : public virtual RTreeSimulation, public virtual SpatialTree
 {
 protected:
 	vector<string> paths_fine;
@@ -26,8 +26,8 @@ protected:
 	vector<double> rates_coarse;
 	vector<double> times_coarse;
 public:
-	RSpatialTree();
-	~RSpatialTree() override;
+	RSpatialTreeSimulation();
+	~RSpatialTreeSimulation() override;
 
 	/**
 	 * @brief Sets the dispersal parameters for the simulation.

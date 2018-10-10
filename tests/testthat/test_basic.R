@@ -13,11 +13,13 @@ test_that("Basic simulation on a null landscape completes", {
 
 test_that("Basic simulation produces the expected number of individuals in edge cases", {
   tmp <- SpatialTree$new()
-  tmp$setSimulationParameters(task=12, seed=1, speciation_rate=0.01, deme=1, sigma=2,
+  tmp$setSimulationParameters(task=12, seed=1, speciation_rate=0.000000000001, deme=1, sigma=2,
                               fine_map_x_size=10, fine_map_y_size=10, uses_logging = FALSE)
   expect_equal(TRUE, tmp$runSimulation())
-  tmp$applySpeciationRates(speciation_rate=0.01)
-  expect_equal(6, tmp$getSpeciesRichness())
+  tmp$applySpeciationRates(speciation_rates=0.0000000001)
+  expect_equal(1, tmp$getSpeciesRichness())
+  tmp$applySpeciationRates(speciation_rates=0.99999)
+  expect_equal(100, tmp$getSpeciesRichness())
 })
 
 test_that("Running with a basic map file works as expected", {
@@ -31,7 +33,7 @@ test_that("Running with a basic map file works as expected", {
                               sample_mask_file = "../../inst/extdata/sample/example_mask.tif", sample_x_size = 13,
                               sample_y_size = 13, uses_logging = FALSE)
   expect_equal(TRUE, tmp$runSimulation())
-  tmp$applySpeciationRates(speciation_rates = c(0.5))
+  tmp$applySpeciationRates(speciation_rates = 0.5)
   expect_equal(1163, tmp$getSpeciesRichness())
 })
 
