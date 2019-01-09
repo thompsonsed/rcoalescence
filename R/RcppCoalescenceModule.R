@@ -217,11 +217,12 @@ NULL
 TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coalescenceModule",
                      fields=list(output_database = "character"),
                      methods = list(
-                       setKeyParameters = function(task, seed, output_directory="output",
-                                                   max_time=3600, desired_specnum=1,
-                                                   times_list=c(0.0), uses_logging=NA, 
-                                                   deme=1, deme_sample=1.0) {
-                         "Sets the key parameters for the TreeSimulation"
+                       setInitialSimulationParameters = function(task, seed,  min_speciation_rate,
+                                                          output_directory="output",
+                                                          max_time=3600, desired_specnum=1,
+                                                          times_list=c(0.0), uses_logging=NA, 
+                                                          deme=1, deme_sample=1.0) {
+                         "Sets the initial parameters for the TreeSimulation"
                          if(!is.na(uses_logging))
                          {
                            setLoggingMode(uses_logging)
@@ -229,78 +230,154 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                          ._setKeyParameters(task, seed, output_directory, max_time, desired_specnum,
                                             times_list)
                          ._setDeme(deme, deme_sample)
+                         ._setMinSpeciationRate(min_speciation_rate)
                        },
                        
+                      setSpeciationParameters = function(speciation_rates, 
+                                                         metacommunity_option=NA,
+                                                         metacommunity_size=NA, 
+                                                         metacommunity_speciation_rate=NA,
+                                                         metacommunity_external_reference=NA){
+                        "Sets the speciation parameters for applying post-simulation."
+                        if(is.vector(speciation_rates))
+                        {
+                          for(spec_rate in speciation_rates)
+                          {
+                            ._addSpeciationRate(spec_rate)
+                          }
+                          if(length(speciation_rates) > 1)
+                          {
+                            ._setMultipleOutput(TRUE)
+                          }
+                        }
+                        else
+                        {
+                          ._addSpeciationRate(spec_rate)
+                          ._setMultipleOutput(FALSE)
+                        }
+                        if(!is.na(metacommunity_option) | !is.na(metacommunity_size) |
+                           !is.na(metacommunity_speciation_rate) |
+                           !is.na(metacommunity_external_reference))
+                        {
+                          if(is.na(metacommunity_external_reference))
+                          {
+                            if(length(metacommunity_option) != length(metacommunity_size) |
+                               length(metacommunity_speciation_rate != length(metacommunity_size)))
+                              {
+                                stop("Metacommunity parameter vectors must be of equal size.")
+                              }
+                            metacommunity_external_reference = rep(0, length(metacommunity_option))
+                          }
+                          else
+                          {
+                            if(length(metacommunity_external_reference) != 
+                                 length(metacommunity_option))
+                            {
+                                stop("Metacommunity parameter vectors must be of equal size.")
+                            }
+                            if(is.na(metacommunity_size) | is.na(metacommunity_speciation_rate))
+                            {
+                              metacommunity_size = rep(0, length(metacommunity_external_reference))
+                              metacommunity_speciation_rate = rep(0, length(metacommunity_external_reference))
+                              
+                            }
+                            
+                          }
+                          if(length(metacommunity_option) != length(metacommunity_size) |
+                             length(metacommunity_speciation_rate) != length(metacommunity_option) |
+                             length(metacommunity_external_reference) != length(metacommunity_option))
+                          {
+                            stop("Metacommunity parameter vectors must be of equal size.")
+                          }
+                          if(is.vector(metacommunity_option) & length(metacommunity_option) > 0)
+                          {
+                              for(i in range(length(metacommunity_option)))
+                              {
+                                ._addMetaCommunityParameters(metacommunity_size[i], 
+                                                             metacommunity_speciation_rate[i],
+                                                             metacommunity_option[i],
+                                                             metacommunity_external_reference[i])
+                              }
+                              ._setMultipleOutput(TRUE)
+                          }
+                        }
+                      },
+                        
                        
-                       setSpeciationParameters = function(speciation_rate) {
-                         "Sets the speciation parameters for the TreeSimulation"
-                         ._setSpeciationParameters(speciation_rate, FALSE, 0.0, 0.0)
-                       },
                        
-                       applySpeciationRates = function(speciation_rates, output_file="none", times_list=c(0.0),
-                                                       metacommunity_size=0, metacommunity_speciation_rate=0.0){
+                       applySpeciationRates = function(speciation_rates=NA, output_file="none",
+                                                       times_list=c(0.0),
+                                                       metacommunity_option=NA,
+                                                       metacommunity_size=NA, 
+                                                       metacommunity_speciation_rate=NA,
+                                                       metacommunity_external_reference=NA){
                          "Applies the provided speciation parameters to the TreeSimulation"
-                         multiple_output = FALSE
-                         if(is.vector(speciation_rate))
+                         if(!is.na(speciation_rates))
                          {
-                           if(length(speciation_rates) == 1)
-                           {
-                             speciation_rates = speciation_rates[1]
-                           }
-                           else
-                           {
-                             checkOutputDatabase()
-                             multiple_output = TRUE
-                           }
+                            setSpeciationParameters(speciation_rates, metacommunity_option, 
+                                                    metacommunity_size, 
+                                                    metacommunity_speciation_rate, 
+                                                    metacommunity_external_reference)
                          }
                          ._applySpeciationRates(output_file, FALSE, "null",
-                                                "FALSE", speciation_rates, times_list,
-                                                c(0.0), c(0.0),
-                                                metacommunity_size, metacommunity_speciation_rate)
-                         if(multiple_output)
+                                                "FALSE", times_list)
+                         if(._getMultipleOutput())
                          {
                            output()
                          }
                        },
                        
                        
-                       setTreeSimulationParameters = function(task, seed, speciation_rate, output_directory="output",
+                       setSimulationParameters = function(task, seed, min_speciation_rate,
+                                                          output_directory="output",
                                                           max_time=3600, desired_specnum=1,
                                                           times_list=c(0.0), uses_logging=NA,
                                                           deme=1,
-                                                          deme_sample=1.0
-                       ){
+                                                          deme_sample=1.0){
                          "Sets all TreeSimulation parameters"
-                         setKeyParameters(task, seed, output_directory, max_time, 
-                                          desired_specnum, times_list, uses_logging, deme, 
-                                          deme_sample)
-                         setSpeciationParameters(speciation_rate)
+                         setInitialSimulationParameters(task, seed, min_speciation_rate,
+                                                        output_directory, max_time, desired_specnum,
+                                                        times_list, uses_logging, deme, deme_sample)
                          setup()
                        },
                        
                        
                        setOutputDatabase = function(output_db){
                          "Checks the output database exists and has been created properly, if it has been set."
-                         if(is.na(output_db) | output_db != "not_set"){
-                           output_database <<- output_db
-                           checkOutputDatabase()
-                         }
-                         else
+                         if(is.na(output_db) | output_db == "not_set")
                          {
                            stop("Output database has not been set.")
                          }
-                       },
-                       
-                       
-                       checkOutputDatabase = function(){
-                         "Checks that the output database exists"
-                         if(is.na(output_database)){
-                           stop("Output database has not been set.")
-                         }
-                         if(!file.exists(output_database)){
-                           stop("Output database does not exist at " + output_database)
+                         else
+                         {
+                           output_database <<- output_db
+                           checkOutputDatabaseExists()
                          }
                        },
+                      
+                      checkOutputDatabase = function(){
+                        "Checks if the output database is set"
+                        if(length(output_database) == 0)
+                        {
+                          return(FALSE)
+                        }
+                        if(is.na(output_database) | output_database == "none" |
+                           output_database == "null")
+                        {
+                          return(FALSE)
+                        }
+                          return(TRUE)
+                        },
+                      
+                      checkOutputDatabaseExists = function(){
+                        "Checks that the output database exists"
+                        if(!checkOutputDatabase()){
+                          stop("Output database has not been set.")
+                        }
+                        if(!file.exists(output_database)){
+                          stop("Output database does not exist at " + output_database)
+                        }
+                      },
                        
                        output = function(){
                          "Outputs the biodiversity data to an sql database."
@@ -329,18 +406,24 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                        
                        getMetacommunityReferences = function(){
                          "Returns a data frame containing all the metacommunity references and their parameter sets."
-                         checkOutputDatabase()
+                         checkOutputDatabaseExists()
                          conn <- dbConnect(SQLite(), output_database)
-                         species_locations <- dbGetQuery(conn, "SELECT reference, speciation_rate, metacommunity_size FROM METACOMMUNITY_PARAMETERS")
+                         species_locations <- dbGetQuery(conn,
+                                                         "SELECT reference, speciation_rate,
+                                                         metacommunity_size, option, 
+                                                         external_reference FROM 
+                                                         METACOMMUNITY_PARAMETERS")
                          dbDisconnect(conn)
                          return(species_locations)
                        },
                        
                        getSpeciesLocations = function(community_reference = 1){
                          "Gets a data frame of species locations where the community reference matches the input."
-                         checkOutputDatabase()
+                         checkOutputDatabaseExists()
                          conn <- dbConnect(SQLite(), output_database)
-                         species_locations <- dbGetQuery(conn, paste("SELECT species_id, x, y FROM SPECIES_LOCATIONS WHERE community_reference==", 
+                         species_locations <- dbGetQuery(conn, paste("SELECT species_id, x, y 
+                                                                     FROM SPECIES_LOCATIONS WHERE
+                                                                     community_reference==", 
                                                                      community_reference, sep=""))
                          dbDisconnect(conn)
                          return(species_locations)
@@ -348,11 +431,11 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                        
                        getSpeciesAbundances = function(community_reference = 1){
                          "Gets a data frame of species abundances where the community reference matches the input"
-                         if(is.na(output_database))
+                         if(!checkOutputDatabase())
                          {
                            return(._getSpeciesAbundances(community_reference))
                          }
-                         checkOutputDatabase()
+                         checkOutputDatabaseExists()
                          conn <- dbConnect(SQLite(), output_database)
                          species_locations <- dbGetQuery(conn, paste("SELECT species_id, no_individuals FROM SPECIES_ABUNDANCES WHERE community_reference==",
                                                                      community_reference, sep=""))
@@ -363,20 +446,18 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                        getSpeciesRichness = function(community_reference=1){
                          "Gets the community reference from the output database, or from the internal object if no 
                          community reference is supplied (this will return the last calculated species richness)."
-                         if(is.na(output_database))
+                         if(!checkOutputDatabase())
                          {
                            return(._getSpeciesRichness(community_reference))
                          }
-                         checkOutputDatabase()
+                         checkOutputDatabaseExists()
                          conn <- dbConnect(SQLite(), output_database)
                          species_locations <- dbGetQuery(conn, paste("SELECT COUNT(DISTINCT(species_id)) FROM SPECIES_ABUNDANCES WHERE no_individuals > 0 AND ",
                                                                      "community_reference ==", community_reference, sep=""))
                          dbDisconnect(conn)
                          return(species_locations[[1]])
                        }
-                     )
-                     
-)
+                     ))
 
 #' Spatially-explicit neutral models
 #' @name SpatialTreeSimulation
@@ -390,9 +471,10 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
 #' @inheritSection NeutralTreeSimulation Post-TreeSimulation parameters
 #' @inheritParams TreeSimulation
 #' @example inst/extdata/examples_spatial.R
-SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimulation", module="coalescenceModule",
-                            fields=list(output_database = "character"),
-                            contains=c("TreeSimulation"),
+SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimulation",
+                                      module="coalescenceModule",
+                                      fields=list(output_database = "character"),
+                                      contains=c("TreeSimulation"),
              methods = list(
                
                setDispersalParameters = function(sigma, dispersal_method="normal", tau=1.0,
@@ -426,7 +508,7 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                  {
                    sample_x_size <- fine_map_x_size
                    sample_y_size <- fine_map_y_size
-                   if(is.na(grid_x_size) || is.na(grid_y_size))
+                   if(is.na(grid_x_size) | is.na(grid_y_size))
                    {
                      grid_x_size <- fine_map_x_size
                      grid_y_size <- fine_map_y_size
@@ -434,7 +516,7 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                  }
                  else
                  {
-                   if(is.na(grid_x_size) || is.na(grid_y_size))
+                   if(is.na(grid_x_size) | is.na(grid_y_size))
                    {
                      grid_x_size <- sample_x_size
                      grid_y_size <- sample_y_size
@@ -458,7 +540,8 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                
                
                setHistoricalMapParameters = function(historical_fine_map="none",
-                                                   historical_coarse_map="none", gen_since_historical=100000000,
+                                                   historical_coarse_map="none",
+                                                   gen_since_historical=100000000,
                                                    habitat_change_rate=0.0){
                  "Sets the historical map parameters for the TreeSimulation testing"
                  ._setHistoricalMapParameters(historical_fine_map, historical_coarse_map, gen_since_historical,
@@ -472,24 +555,37 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                                   habitat_change_rate)
                },
                
-               applySpeciationRates = function(speciation_rates, output_file="none", use_spatial=FALSE,
-                                               sample_file="null", use_fragments=FALSE, times_list=c(0.0),
-                                               metacommunity_size=0, metacommunity_speciation_rate=0.0){
+               applySpeciationRates = function(speciation_rates=NA, output_file="none",
+                                               use_spatial=FALSE, sample_file="null",
+                                               use_fragments=FALSE, times_list=c(0.0),
+                                               metacommunity_option=NA, metacommunity_size=NA, 
+                                               metacommunity_speciation_rate=NA,
+                                               metacommunity_external_reference=NA){
                  "Applies the provided speciation parameters to the TreeSimulation"
                  if(is.logical(use_fragments)){
                    use_fragments <- substr(as.character(use_fragments), 1, 1)
                    }
+                 if(!is.na(speciation_rates))
+                 {
+                   setSpeciationParameters(speciation_rates, metacommunity_option, 
+                                           metacommunity_size, 
+                                           metacommunity_speciation_rate, 
+                                           metacommunity_external_reference)
+                 }
                  ._applySpeciationRates(output_file, use_spatial, sample_file,
-                                        use_fragments, speciation_rates, times_list,
-                                        c(0.0), c(0.0),
-                                        metacommunity_size, metacommunity_speciation_rate)
+                                        use_fragments, times_list)
+                 if(._getMultipleOutput())
+                 {
+                   output()
+                 }
                },
                
                
-               setTreeSimulationParameters = function(task, seed, speciation_rate, sigma,  output_directory="output",
-                                                  max_time=3600, desired_specnum=1,
-                                                  times_list=c(0.0), uses_logging=NA, 
-                                                  dispersal_method="normal", tau=1.0, m_prob=0.0, cutoff=0,
+               setSimulationParameters = function(task, seed, min_speciation_rate, sigma, 
+                                                  output_directory="output", max_time=3600, 
+                                                  desired_specnum=1, times_list=c(0.0),
+                                                  uses_logging=NA, dispersal_method="normal", 
+                                                  tau=1.0, m_prob=0.0, cutoff=0,
                                                   dispersal_relative_cost=1.0, restrict_self=FALSE,
                                                   landscape_type="closed", dispersal_file="none",
                                                   reproduction_file="none", fine_map_file="null",
@@ -512,9 +608,8 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                                                   habitat_change_rate=0.0
                ){
                  "Sets all TreeSimulation parameters"
-                 setKeyParameters(task, seed, output_directory, max_time, desired_specnum, 
-                                  times_list, uses_logging)
-                 setSpeciationParameters(speciation_rate)
+                 setInitialSimulationParameters(task, seed, min_speciation_rate, output_directory,
+                                                max_time, desired_specnum, times_list, uses_logging)
                  setDispersalParameters(sigma, dispersal_method, tau, m_prob, cutoff,
                                         dispersal_relative_cost, restrict_self, landscape_type,
                                         dispersal_file, reproduction_file)
@@ -532,13 +627,11 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                                   coarse_map_y_offset,
                                   coarse_map_scale, deme,
                                   deme_sample, uses_spatial_sampling)
-                 setHistoricalMapParameters(historical_fine_map, historical_coarse_map, gen_since_historical,
-                                          habitat_change_rate)
+                 setHistoricalMapParameters(historical_fine_map, historical_coarse_map,
+                                            gen_since_historical, habitat_change_rate)
                  setup()
                }
-             )
-             
-)
+             ))
 
 #' Protracted non-spatial neutral models
 #' @name ProtractedTreeSimulation
@@ -552,7 +645,8 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
 #' @inheritSection NeutralTreeSimulation Post-TreeSimulation parameters
 #' @inheritParams TreeSimulation
 #' @example inst/extdata/examples_nonspatial_protracted.R
-ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtractedTreeSimulation", module="coalescenceModule",
+ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtractedTreeSimulation", 
+                                         module="coalescenceModule",
                      fields=list(output_database = "character"),
                      contains=c("TreeSimulation"),
                      methods = list(
@@ -568,34 +662,65 @@ ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtracte
                                                        times_list=c(0.0),
                                                        min_speciation_gens=c(0.0), 
                                                        max_speciation_gens=c(0.0),
-                                                       metacommunity_size=0, 
-                                                       metacommunity_speciation_rate=0.0){
+                                                       metacommunity_option=NA,
+                                                       metacommunity_size=NA, 
+                                                       metacommunity_speciation_rate=NA,
+                                                       metacommunity_external_reference=NA){
                          "Applies the provided speciation parameters to the TreeSimulation"
-                         ._applySpeciationRates(output_file, FALSE, "null",
-                                                "FALSE", speciation_rates, times_list,
-                                                min_speciation_gens, max_speciation_gens,
-                                                metacommunity_size, metacommunity_speciation_rate)
+                         if(!is.na(speciation_rates))
+                         {
+                           setSpeciationParameters(speciation_rates, metacommunity_option, 
+                                                   metacommunity_size, 
+                                                   metacommunity_speciation_rate, 
+                                                   metacommunity_external_reference)
+                         }
+                         if(!is.na(min_speciation_gens) & !is.na(max_speciation_gens))
+                         {
+                           if(is.vector(min_speciation_gens) & is.vector(max_speciation_gens))
+                           {
+                             if(length(min_speciation_gens) != length(max_speciation_gens))
+                             {
+                               stop("Lengths of protracted parameter vectors must be equal.")
+                             }
+                             for(i in range(length(min_speciation_gens)))
+                             {
+                               ._addProtractedParameters(min_speciation_gens[i], 
+                                                         max_speciation_gens[i])
+                             }
+                             ._setMultipleOutput(TRUE)
+                           }
+                           else
+                           {
+                             ._addProtractedParameters(min_speciation_gens, max_speciation_gens)
+                           }
+                         }
+                         ._applySpeciationRates(output_file, use_spatial, sample_file,
+                                                use_fragments, times_list)
+                         if(._getMultipleOutput())
+                         {
+                           output()
+                         }
                        },
 
 
-                       setTreeSimulationParameters = function(task, seed, speciation_rate,
+                       setSimulationParameters = function(task, seed, speciation_rate,
                                                           output_directory="output",
                                                           max_time=3600, desired_specnum=1,
                                                           times_list=c(0.0), uses_logging=NA,
-                                                          min_speciation_gens = c(0.0),
-                                                          max_speciation_gens = c(0.0),
+                                                          min_speciation_gen = 0.0,
+                                                          max_speciation_gen = 0.0,
                                                           deme=1,
                                                           deme_sample=1.0){
                          "Sets all TreeSimulation parameters"
-                         setKeyParameters(task, seed, output_directory, max_time, desired_specnum,
-                                          times_list, uses_logging, deme, deme_sample)
-                         setSpeciationParameters(speciation_rate, min_speciation_gens,
-                                                 max_speciation_gens)
+                         setInitialSimulationParameters(task, seed, speciation_rate, 
+                                                        output_directory, max_time, desired_specnum,
+                                                        times_list, uses_logging, deme, deme_sample)
+                         ._setSimulationProtractedParameters(TRUE, min_speciation_gen, 
+                                                             max_speciation_gen)
                          setup()
                        }
-                     )
+                     ))
 
-)
 #' Protracted spatially-explicit neutral models
 #' @name ProtractedSpatialTreeSimulation
 #' @export ProtractedSpatialTreeSimulation
@@ -614,72 +739,98 @@ ProtractedSpatialTreeSimulation <- setRcppClass("ProtractedSpatialTreeSimulation
                                       module="coalescenceModule",
                                fields=list(output_database = "character"),
                                contains=c("ProtractedTreeSimulation", "SpatialTreeSimulation", "TreeSimulation"),
-                               methods=list(
-                                 setTreeSimulationParameters = function(task, seed, speciation_rate, sigma,  output_directory="output",
-                                                                    max_time=3600, desired_specnum=1,
-                                                                    times_list=c(0.0), uses_logging=NA, 
-                                                                    dispersal_method="normal", tau=1.0, m_prob=0.0, cutoff=0,
-                                                                    dispersal_relative_cost=1.0, restrict_self=FALSE,
-                                                                    landscape_type="closed", dispersal_file="none",
-                                                                    reproduction_file="none", fine_map_file="null",
-                                                                    coarse_map_file="none",
-                                                                    sample_mask_file="null", grid_x_size=NA,
-                                                                    grid_y_size=NA, sample_x_size=0,
-                                                                    sample_y_size=0, sample_x_offset=0,
-                                                                    sample_y_offset=0, fine_map_x_size=0,
-                                                                    fine_map_y_size=0,
-                                                                    fine_map_x_offset=0,
-                                                                    fine_map_y_offset=0,
-                                                                    coarse_map_x_size=0,
-                                                                    coarse_map_y_size=0,
-                                                                    coarse_map_x_offset=0,
-                                                                    coarse_map_y_offset=0,
-                                                                    coarse_map_scale=1, deme=1,
-                                                                    deme_sample=1.0, uses_spatial_sampling=FALSE,
-                                                                    historical_fine_map="none",
-                                                                    historical_coarse_map="none", gen_since_historical=100000000,
-                                                                    habitat_change_rate=0.0,
-                                                                    min_speciation_gens=c(0.0),
-                                                                    max_speciation_gens=c(0.0)
-                                 ){
-                                   "Sets all TreeSimulation parameters"
-                                   setKeyParameters(task, seed, output_directory, max_time, desired_specnum, 
-                                                    times_list, uses_logging)
-                                   setSpeciationParameters(speciation_rate, min_speciation_gens=min_speciation_gens,
-                                                           max_speciation_gens = max_speciation_gens)
-                                   setDispersalParameters(sigma, dispersal_method, tau, m_prob, cutoff,
-                                                          dispersal_relative_cost, restrict_self, landscape_type,
-                                                          dispersal_file, reproduction_file)
-                                   setMapParameters(fine_map_file, coarse_map_file,
-                                                    sample_mask_file, grid_x_size,
-                                                    grid_y_size, sample_x_size,
-                                                    sample_y_size, sample_x_offset,
-                                                    sample_y_offset, fine_map_x_size,
-                                                    fine_map_y_size,
-                                                    fine_map_x_offset,
-                                                    fine_map_y_offset,
-                                                    coarse_map_x_size,
-                                                    coarse_map_y_size,
-                                                    coarse_map_x_offset,
-                                                    coarse_map_y_offset,
-                                                    coarse_map_scale, deme,
-                                                    deme_sample, uses_spatial_sampling)
-                                   setHistoricalMapParameters(historical_fine_map, historical_coarse_map, gen_since_historical,
-                                                              habitat_change_rate)
-                                   setup()
-                                 },
-                                 applySpeciationRates = function(speciation_rates, output_file="none", use_spatial=FALSE,
-                                                                 sample_file="null", use_fragments=FALSE, times_list=c(0.0),
-                                                                 metacommunity_size=0, metacommunity_speciation_rate=0.0, 
-                                                                 min_speciation_gens=c(0.0), 
-                                                                 max_speciation_gens=c(0.0)){
-                                   "Applies the provided speciation parameters to the TreeSimulation"
-                                   if(is.logical(use_fragments)){
-                                     use_fragments <- substr(as.character(use_fragments), 1, 1)
-                                   }
-                                   ._applySpeciationRates(output_file, use_spatial, sample_file,
-                                                          use_fragments, speciation_rates, times_list,
-                                                          min_speciation_gens, max_speciation_gens,
-                                                          metacommunity_size, metacommunity_speciation_rate)
-                                 }
-                               ))
+   methods=list(
+     setSimulationParameters = function(task, seed, min_speciation_rate,
+                                        sigma,  output_directory="output",
+                                        max_time=3600, desired_specnum=1,
+                                        times_list=c(0.0), uses_logging=NA, 
+                                        dispersal_method="normal", tau=1.0, m_prob=0.0, cutoff=0,
+                                        dispersal_relative_cost=1.0, restrict_self=FALSE,
+                                        landscape_type="closed", dispersal_file="none",
+                                        reproduction_file="none", fine_map_file="null",
+                                        coarse_map_file="none",
+                                        sample_mask_file="null", grid_x_size=NA,
+                                        grid_y_size=NA, sample_x_size=0,
+                                        sample_y_size=0, sample_x_offset=0,
+                                        sample_y_offset=0, fine_map_x_size=0,
+                                        fine_map_y_size=0,
+                                        fine_map_x_offset=0,
+                                        fine_map_y_offset=0,
+                                        coarse_map_x_size=0,
+                                        coarse_map_y_size=0,
+                                        coarse_map_x_offset=0,
+                                        coarse_map_y_offset=0,
+                                        coarse_map_scale=1, deme=1,
+                                        deme_sample=1.0, uses_spatial_sampling=FALSE,
+                                        historical_fine_map="none",
+                                        historical_coarse_map="none", gen_since_historical=100000000,
+                                        habitat_change_rate=0.0,
+                                        min_speciation_gen=0.0,
+                                        max_speciation_gen=0.0){
+       "Sets all TreeSimulation parameters"
+       setInitialSimulationParameters(task, seed, min_speciation_rate, output_directory, max_time, 
+                                      desired_specnum, times_list, uses_logging)
+       ._setSimulationProtractedParameters(TRUE, min_speciation_gen,
+                                          max_speciation_gen)
+       setDispersalParameters(sigma, dispersal_method, tau, m_prob, cutoff,
+                              dispersal_relative_cost, restrict_self, landscape_type,
+                              dispersal_file, reproduction_file)
+       setMapParameters(fine_map_file, coarse_map_file,
+                        sample_mask_file, grid_x_size,
+                        grid_y_size, sample_x_size,
+                        sample_y_size, sample_x_offset,
+                        sample_y_offset, fine_map_x_size,
+                        fine_map_y_size,
+                        fine_map_x_offset,
+                        fine_map_y_offset,
+                        coarse_map_x_size,
+                        coarse_map_y_size,
+                        coarse_map_x_offset,
+                        coarse_map_y_offset,
+                        coarse_map_scale, deme,
+                        deme_sample, uses_spatial_sampling)
+       setHistoricalMapParameters(historical_fine_map, historical_coarse_map, gen_since_historical,
+                                  habitat_change_rate)
+       setup()
+     },
+     
+     applySpeciationRates = function(speciation_rates, output_file="none", use_spatial=FALSE,
+                                     sample_file="null", use_fragments=FALSE, times_list=c(0.0),
+                                     min_speciation_gens=c(0.0), 
+                                     max_speciation_gens=c(0.0),
+                                     metacommunity_option=NA,
+                                     metacommunity_size=NA, 
+                                     metacommunity_speciation_rate=NA,
+                                     metacommunity_external_reference=NA){
+       "Applies the provided speciation parameters to the TreeSimulation"
+       if(!is.na(speciation_rates))
+       {
+         setSpeciationParameters(speciation_rates, metacommunity_option, 
+                                 metacommunity_size, 
+                                 metacommunity_speciation_rate, 
+                                 metacommunity_external_reference)
+       }
+       if(!is.na(min_speciation_gens) & !is.na(max_speciation_gens))
+       {
+         if(length(min_speciation_gens) != length(max_speciation_gens))
+         {
+           stop("Lengths of protracted parameter vectors must be equal.")
+         }
+         for(i in range(length(min_speciation_gens)))
+         {
+           ._addProtractedParameters(min_speciation_rates[i], 
+                                     max_speciation_rates[i])
+         }
+       }
+       ._applySpeciationRates(output_file, use_spatial, sample_file,
+                              use_fragments, times_list)
+       if(._getMultipleOutput())
+       {
+         output()
+       }
+     }
+   )
+)
+
+
+                               

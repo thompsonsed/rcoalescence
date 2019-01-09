@@ -9,11 +9,11 @@
 A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for 
 spatially-explicit neutral models based in c++.
 
-rcoalescence allows for large-scale simulations to be performed on fully spatial files, with 
+rcoalescence allows for large-scale TreeSimulations to be performed on fully spatial files, with 
 features to suit a wide variety of use cases.
 
-Four classes exist to represent non-spatial/spatial and non-protracted/protracted simulations. 
-See \link[=NeutralTree]{here} for a full description.
+Four classes exist to represent non-spatial/spatial and non-protracted/protracted TreeSimulations. 
+See \link[=NeutralTreeSimulation]{here} for a full description.
 }
 \section{Installation}{
 
@@ -85,26 +85,26 @@ attempting package
 }
 }
 
-\section{Starting a simulation}{
+\section{Starting a TreeSimulation}{
 
 
-Methods are contained within the relevant classes \link[=NeutralTree]{(see here)} for setting up,
-running and analysing simulations. The general process is
+Methods are contained within the relevant classes \link[=NeutralTreeSimulation]{(see here)} for setting up,
+running and analysing TreeSimulations. The general process is
 \itemize{
-    \item Create a new \link{Tree}, \link{SpatialTree}, \link{ProtractedTree} or
-          \link{ProtractedSpatialTree} object, depending on use case.
-    \item Set the simulation parameters and add additional historical maps.
-    \item Run the simulation (generally the most time-consuming step).
-    \item Apply speciation rates and other requirements post simulation using 
+    \item Create a new \link{TreeSimulation}, \link{SpatialTreeSimulation}, \link{ProtractedTreeSimulation} or
+          \link{ProtractedSpatialTreeSimulation} object, depending on use case.
+    \item Set the TreeSimulation parameters and add additional historical maps.
+    \item Run the TreeSimulation (generally the most time-consuming step).
+    \item Apply speciation rates and other requirements post TreeSimulation using 
     SpeciationParameters.
-    \item Get the species richness from the simulation.
+    \item Get the species richness from the TreeSimulation.
     \item Optionally write results to an SQLite database for further manual analysis.
     \item If written to an output database, acquire the desired biodiversity metrics, such as 
     species locations or species abundances.
 
 }
 
-See examples in the \link[=NeutralTree]{relevant classes}.
+See examples in the \link[=NeutralTreeSimulation]{relevant classes}.
 }
 
 \author{

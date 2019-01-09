@@ -12,7 +12,7 @@ fi
 CC=`"${R_HOME}/bin/R" CMD config CC`
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
-PKG_CXXFLAGS="-I. -std=c++11"
+PKG_CXXFLAGS="-I. -std=c++14"
 CXX=`"${R_HOME}/bin/R" CMD config CXX`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 AC_LANG(C++)
@@ -45,18 +45,6 @@ else
 	boost_found="yes"
 fi
 BOOST_FIND_HEADER([boost/filesystem.hpp])
-
-dnl Check for fast-csv-parser
-AC_CHECK_HEADERS([src/necsim/fast-cpp-csv-parser/csv.h],[use_csv=1],[use_csv=0])
-if [[ "$use_csv" == 1 ]]
-then
-	fast_cpp_csv_parser="enabled"
-	defines="$defines -Duse_csv"
-else
-	AC_MSG_WARN([src/necim/fast-cpp-csv-parser not found. Download from https://github.com/ben-strasser/fast-cpp-csv-parser to enable])
-	fast_cpp_csv_parser="disabled"
-fi
-
 
 dnl Check for gdal library
 GDAL_CONFIG="gdal-config"
@@ -102,13 +90,13 @@ then
 
 	GDAL_CPPFLAGS=`${GDAL_CONFIG} --cflags`
 	GDAL_LIBS=`${GDAL_CONFIG} --libs`
-        GDAL_VERSION=`${GDAL_CONFIG} --version`
-        GDAL_DEP_LIBS=`${GDAL_CONFIG} --dep-libs`
-        GDAL_DATADIR=`${GDAL_CONFIG} --datadir`
-        gdalok=yes
-        AC_MSG_RESULT(yes)
+  GDAL_VERSION=`${GDAL_CONFIG} --version`
+  GDAL_DEP_LIBS=`${GDAL_CONFIG} --dep-libs`
+  GDAL_DATADIR=`${GDAL_CONFIG} --datadir`
+  gdalok=yes
+  AC_MSG_RESULT(yes)
 else
-        AC_MSG_RESULT(no)
+  AC_MSG_RESULT(no)
 	echo "Error: gdal-config not found"
 	echo "The gdal-config script distributed with GDAL could not be found."
 	echo "If you have not installed the GDAL libraries, you can"
@@ -134,11 +122,28 @@ else
   AC_MSG_RESULT(yes)
 fi
 use_gdal=0
+
+
+CPPFLAGS="${PKG_CXXFLAGS} ${CPPFLAGS} ${GDAL_CPPFLAGS}"
+LIBS="${PKG_LIBS} ${LIBS} ${GDAL_LIBS}"
+AC_MSG_NOTICE([CPP flags: ${CPPFLAGS}])
+
+PKG_CPPFLAGS="${PKG_CPPFLAGS} ${GDAL_CPPFLAGS}"
+CPPFLAGS="${CPPFLAGS} ${GDAL_CPPFLAGS}"
+PKG_LIBS="${PKG_LIBS} ${GDAL_LIBS}"
+LIBS="${LIBS} ${GDAL_LIBS}"
+
+GDAL_DATA_TEST_FILE="${GDAL_DATADIR}/pcs.csv"
+AC_MSG_CHECKING(GDAL: ${GDAL_DATADIR}/pcs.csv readable)
+if test -r "${GDAL_DATA_TEST_FILE}" ; then
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+  AC_MSG_ERROR([pcs.csv not found in GDAL data directory.])
+fi
 AC_CHECK_HEADERS([gdal_priv.h], [use_gdal=1], AC_MSG_ERROR([Ensure gdal is properly installed - cannot find gdal_priv.h]))
-AC_CHECK_HEADERS([cpl_conv.h], [use_cpl=1], AC_MSG_ERROR([Ensure gdal is properly installed - cannot find cpl_conv.h])
+AC_CHECK_HEADERS([gdal.h], [use_gdal=1], AC_MSG_ERROR([Ensure gdal is properly installed - cannot find gdal_priv.h]))
 defines="$defines -Dwith_gdal"
-PKG_CXXFLAGS="$PKG_CXXFLAGS $GDAL_CPPFLAGS"
-PKG_LIBS="$PKG_LIBS $GDAL_DEP_LIBS $GDAL_LIBS"
 AC_SUBST(defines)
 dnl Create the output variables
 AC_SUBST(PKG_CXXFLAGS)

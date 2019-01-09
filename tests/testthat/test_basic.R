@@ -2,9 +2,11 @@
 
 context("Basic spatial coalescence simulations")
 test_that("Basic simulation on a null landscape completes", {
-  tmp <- new("SpatialTree")
-  tmp$setKeyParameters(0, 0, "default", 10, 1, c(0.0))
-  tmp$setSpeciationParameters(0.1)
+  tmp <- new("SpatialTreeSimulation")
+  tmp$setInitialSimulationParameters(task = 0,seed =  0, min_speciation_rate = 0.1,
+                                     output_directory = "default",max_time =  10,
+                                     desired_specnum = 1, times_list = c(0.0))
+  tmp$setDispersalParameters(sigma = 2)
   tmp$setHistoricalMapParameters()
   tmp$setMapParameters(fine_map_x_size = 10, fine_map_y_size=10)
   tmp$setup()
@@ -12,34 +14,37 @@ test_that("Basic simulation on a null landscape completes", {
 })
 
 test_that("Basic simulation produces the expected number of individuals in edge cases", {
-  tmp <- SpatialTree$new()
-  tmp$setSimulationParameters(task=12, seed=1, speciation_rate=0.000000000001, deme=1, sigma=2,
-                              fine_map_x_size=10, fine_map_y_size=10, uses_logging = FALSE)
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(task=12, seed=1, min_speciation_rate = 0.000000000001,
+                              deme=1, sigma=2,fine_map_x_size=10, fine_map_y_size=10, 
+                              uses_logging = TRUE)
   expect_equal(TRUE, tmp$runSimulation())
-  tmp$applySpeciationRates(speciation_rates=0.0000000001)
+  tmp$applySpeciationRates(speciation_rates=0.000000000001)
   expect_equal(1, tmp$getSpeciesRichness())
   tmp$applySpeciationRates(speciation_rates=0.99999)
   expect_equal(100, tmp$getSpeciesRichness())
 })
 
 test_that("Running with a basic map file works as expected", {
-  tmp <- SpatialTree$new()
-  tmp$setSimulationParameters(seed=9, task =1, output_directory = "output", speciation_rate = 0.5,
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(seed=9, task =1, output_directory = "output", 
+                              min_speciation_rate = 0.5,
                               sigma=2 * (2 ** 0.5), deme=1, deme_sample = 0.1, 
-                              fine_map_file = "../../inst/extdata/sample/example_fine.tif", fine_map_x_size = 13,
-                              fine_map_y_size = 13, coarse_map_file="../../inst/extdata/sample/example_coarse.tif",
+                              fine_map_file = "../../inst/extdata/sample/example_fine.tif", 
+                              fine_map_x_size = 13, fine_map_y_size = 13, 
+                              coarse_map_file="../../inst/extdata/sample/example_coarse.tif",
                               coarse_map_x_size = 35, coarse_map_y_size = 41, 
                               coarse_map_x_offset = 11, coarse_map_y_offset = 14,
-                              sample_mask_file = "../../inst/extdata/sample/example_mask.tif", sample_x_size = 13,
-                              sample_y_size = 13, uses_logging = FALSE)
+                              sample_mask_file = "../../inst/extdata/sample/example_mask.tif", 
+                              sample_x_size = 13, sample_y_size = 13, uses_logging = FALSE)
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = 0.5)
   expect_equal(1163, tmp$getSpeciesRichness())
 })
 
 test_that("Simulations correctly detect map sizes", {
-  tmp <- SpatialTree$new()
-  tmp$setSimulationParameters(seed=9, task =1, output_directory = "output", speciation_rate = 0.5,
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(seed=9, task =1, output_directory = "output", min_speciation_rate = 0.5,
                               sigma=2 * (2 ** 0.5), deme=1, deme_sample = 0.1, 
                               fine_map_file = "../../inst/extdata/sample/example_fine.tif",
                               coarse_map_file="../../inst/extdata/sample/example_coarse.tif",
@@ -50,14 +55,15 @@ test_that("Simulations correctly detect map sizes", {
   expect_equal(1163, tmp$getSpeciesRichness())
 })
 
-test_that("Output is created successfully", {
+context("Checking biodiversity metrics simulations")
+test_that("Biodiversity metrics correctly stored in output database", {
   output_file = "output/SQL_data/data_1_10.db"
   if(file.exists(output_file))
   {
     file.remove(output_file)
   }
-  tmp <- SpatialTree$new()
-  tmp$setSimulationParameters(seed=10, task =1, output_directory = "output", speciation_rate = 0.5,
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(seed=10, task =1, output_directory = "output", min_speciation_rate = 0.5,
                               sigma=2 * (2 ** 0.5), deme=1, deme_sample = 0.1,
                               fine_map_file = "../../inst/extdata/sample/example_fine.tif",
                               coarse_map_file="../../inst/extdata/sample/example_coarse.tif",
@@ -99,11 +105,12 @@ test_that("Output is created successfully", {
   
   
 })
-# 
+context("More complex spatial coalescence simulations")
 test_that("Simulation with a single historical maps works as intended.", {
-  tmp <- SpatialTree$new()
-  tmp$setSimulationParameters(seed=10, task =1, output_directory = "output", speciation_rate = 0.1,
-                              sigma=2 * (2 ** 0.5), deme=1, deme_sample = 0.1,
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(seed=10, task =1, output_directory = "output", 
+                              min_speciation_rate = 0.1, sigma=2 * (2 ** 0.5), deme=1, 
+                              deme_sample = 0.1,
                               fine_map_file = "../../inst/extdata/sample/example_fine.tif",
                               coarse_map_file="../../inst/extdata/sample/example_coarse.tif",
                               sample_mask_file = "../../inst/extdata/sample/example_mask.tif",
@@ -123,9 +130,10 @@ test_that("Simulation with a single historical maps works as intended.", {
 })
 # 
 test_that("Simulation with multiple historical maps works as intended.", {
-  tmp <- SpatialTree$new()
-  tmp$setSimulationParameters(seed=10, task =1, output_directory = "output", speciation_rate = 0.5,
-                              sigma=2 * (2 ** 0.5), deme=1, deme_sample = 0.1,
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(seed=10, task =1, output_directory = "output", 
+                              min_speciation_rate = 0.5, sigma=2 * (2 ** 0.5), deme=1, 
+                              deme_sample = 0.1,
                               fine_map_file = "../../inst/extdata/sample/example_fine.tif",
                               coarse_map_file="../../inst/extdata/sample/example_coarse.tif",
                               sample_mask_file = "../../inst/extdata/sample/example_mask.tif",
@@ -144,9 +152,10 @@ test_that("Simulation with multiple historical maps works as intended.", {
 })
 # 
 test_that("Simulation with multiple sampling times.", {
-  tmp <- SpatialTree$new()
-  tmp$setSimulationParameters(seed=11, task =1, output_directory = "output", speciation_rate = 0.5,
-                              sigma=2 * (2 ** 0.5), deme=1, deme_sample = 0.1,
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(seed=11, task =1, output_directory = "output", 
+                              min_speciation_rate = 0.5, sigma=2 * (2 ** 0.5), deme=1, 
+                              deme_sample = 0.1,
                               fine_map_file = "../../inst/extdata/sample/example_fine.tif",
                               coarse_map_file="../../inst/extdata/sample/example_coarse.tif",
                               sample_mask_file = "../../inst/extdata/sample/example_mask.tif",
@@ -169,8 +178,8 @@ test_that("Simulation with multiple sampling times.", {
 
 context("Basic non-spatial coalescence simulations")
 test_that("Basic simulation with deme of 100 completes", {
-  tmp <- Tree$new()
-  tmp$setKeyParameters(101, 0, "default", 1, 1, c(0.0), deme=100)
+  tmp <- TreeSimulation$new()
+  tmp$setInitialParameters(101, 0, "default", 1, 1, c(0.0), deme=100)
   tmp$setSpeciationParameters(0.1)
   tmp$setup()
   expect_equal(TRUE, tmp$runSimulation())
@@ -179,8 +188,8 @@ test_that("Basic simulation with deme of 100 completes", {
 })
 
 test_that("Basic simulation produces 100 species with maximum speciation rate", {
-  tmp <- Tree$new()
-  tmp$setSimulationParameters(task=102, seed=1, speciation_rate=0.99999, deme=100,
+  tmp <- TreeSimulation$new()
+  tmp$setSimulationParameters(task=102, seed=1, min_speciation_rate=0.99999, deme=100,
                               uses_logging = FALSE)
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates=0.999999)
@@ -189,7 +198,7 @@ test_that("Basic simulation produces 100 species with maximum speciation rate", 
 
 test_that("Basic simulation produces 1 species with minimum speciation rate", {
   tmp <- Tree$new()
-  tmp$setSimulationParameters(task=103, seed=2, speciation_rate=0.00000000001, deme=100,
+  tmp$setSimulationParameters(task=103, seed=2, min_speciation_rate=0.00000000001, deme=100,
                               uses_logging = FALSE)
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates=0.00000000001)
@@ -200,7 +209,7 @@ test_that("Basic simulation produces 1 species with minimum speciation rate", {
 
 context("Basic non-spatial protracted coalescence simulations")
 test_that("Basic simulation with deme of 100 completes", {
-  tmp <- ProtractedTree$new()
+  tmp <- ProtractedTreeSimulation$new()
   tmp$setKeyParameters(201, 1, "output", 1, 1, c(0.0), deme=100)
   tmp$setSpeciationParameters(0.01, min_speciation_gen = 2.0, max_speciation_gen=4000.0)
   tmp$setup()
@@ -214,8 +223,8 @@ test_that("Basic simulation with deme of 100 completes", {
 })
 
 test_that("Basic simulation produces 1 species with high speciation generation", {
-  tmp <- ProtractedTree$new()
-  tmp$setSimulationParameters(task=202, seed=3, speciation_rate=0.9999, deme=100,
+  tmp <- ProtractedTreeSimulation$new()
+  tmp$setSimulationParameters(task=202, seed=3, min_speciation_rate=0.9999, deme=100,
                               uses_logging = FALSE, min_speciation_gens = c(1000000.0),
                               max_speciation_gens = c(11000000.0))
   expect_equal(TRUE, tmp$runSimulation())
@@ -225,8 +234,8 @@ test_that("Basic simulation produces 1 species with high speciation generation",
 })
 
 test_that("Basic simulation produces 100 species with low speciation generation", {
-  tmp <- ProtractedTree$new()
-  tmp$setSimulationParameters(task=203, seed=3, speciation_rate=0.000001, deme=100,
+  tmp <- ProtractedTreeSimulation$new()
+  tmp$setSimulationParameters(task=203, seed=3, min_speciation_rate=0.000001, deme=100,
                               uses_logging = FALSE, min_speciation_gens = 0.0,
                               max_speciation_gens = 0.01)
   expect_equal(TRUE, tmp$runSimulation())
@@ -236,16 +245,16 @@ test_that("Basic simulation produces 100 species with low speciation generation"
 })
 
 test_that("Basic simulation produces 100 species with maximum speciation rate", {
-  tmp <- ProtractedTree$new()
-  tmp$setSimulationParameters(task=204, seed=1, speciation_rate=0.1, deme=100,
+  tmp <- ProtractedTreeSimulation$new()
+  tmp$setSimulationParameters(task=204, seed=1, min_speciation_rate=0.1, deme=100,
                               uses_logging = FALSE, min_speciation_gens=1.0, max_speciation_gens=30.0)
   expect_equal(TRUE, tmp$runSimulation())
   tmp2 <- ProtractedTree$new()
-  tmp2$setSimulationParameters(task=205, seed=1, speciation_rate=0.1, deme=100,
+  tmp2$setSimulationParameters(task=205, seed=1, min_speciation_rate=0.1, deme=100,
                               uses_logging = FALSE, min_speciation_gens=1.0, max_speciation_gens=10.0)
   expect_equal(TRUE, tmp2$runSimulation())
   tmp3 <- ProtractedTree$new()
-  tmp3$setSimulationParameters(task=206, seed=1, speciation_rate=0.1, deme=100,
+  tmp3$setSimulationParameters(task=206, seed=1, min_speciation_rate=0.1, deme=100,
                                uses_logging = FALSE, min_speciation_gens=5.0, max_speciation_gens=10.0)
   expect_equal(TRUE, tmp3$runSimulation())
   tmp$applySpeciationRates(speciation_rates=0.1, min_speciation_gens=1.0, max_speciation_gens=30.0)
@@ -263,8 +272,8 @@ test_that("Basic simulation produces 100 species with maximum speciation rate", 
 
 
 test_that("Can apply multiple protracted speciation parameters", {
-  tmp <- ProtractedTree$new()
-  tmp$setSimulationParameters(task=204, seed=1, speciation_rate=0.1, deme=100,
+  tmp <- ProtractedTreeSimulation$new()
+  tmp$setSimulationParameters(task=204, seed=1, min_speciation_rate=0.1, deme=100,
                               uses_logging = FALSE, min_speciation_gens=10.0, max_speciation_gens=30.0)
   expect_equal(TRUE, tmp$runSimulation())
   expect_error(tmp$applySpeciationRates(speciation_rates=c(0.1, 0.2, 0.3),
@@ -296,8 +305,8 @@ test_that("Can apply multiple protracted speciation parameters", {
 
 context("Basic spatial protracted coalescence simulations")
 test_that("Basic simulation produces 100 species with low speciation generation", {
-  tmp <- ProtractedSpatialTree$new()
-  tmp$setSimulationParameters(task=203, seed=3, speciation_rate=0.000001, deme=1,
+  tmp <- ProtractedSpatialTreeSimulation$new()
+  tmp$setSimulationParameters(task=203, seed=3, min_speciation_rate=0.000001, deme=1,
                               uses_logging = FALSE, min_speciation_gens = 0.0,
                               max_speciation_gens = 0.01, sigma=1, fine_map_file="null",
                               fine_map_x_size = 10, fine_map_y_size = 10)
@@ -310,8 +319,8 @@ test_that("Basic simulation produces 100 species with low speciation generation"
 
 
 test_that("Basic simulation produces 1 species with high speciation generation", {
-  tmp <- ProtractedSpatialTree$new()
-  tmp$setSimulationParameters(task=202, seed=3, speciation_rate=0.9999, deme=1, sigma=1,
+  tmp <- ProtractedSpatialTreeSimulation$new()
+  tmp$setSimulationParameters(task=202, seed=3, min_speciation_rate=0.9999, deme=1, sigma=1,
                               uses_logging = FALSE, min_speciation_gens = c(1000000.0),
                               max_speciation_gens = c(11000000.0), fine_map_file="null",
                               fine_map_x_size = 10, fine_map_y_size = 10)
@@ -322,8 +331,8 @@ test_that("Basic simulation produces 1 species with high speciation generation",
 })
 
 test_that("Basic simulation produces 100 species with low speciation generation", {
-  tmp <- ProtractedSpatialTree$new()
-  tmp$setSimulationParameters(task=203, seed=3, speciation_rate=0.000001, deme=1, sigma=1,
+  tmp <- ProtractedSpatialTreeSimulation$new()
+  tmp$setSimulationParameters(task=203, seed=3, min_speciation_rate=0.000001, deme=1, sigma=1,
                               uses_logging = FALSE, min_speciation_gens = 0.0,
                               max_speciation_gens = 0.01, fine_map_file="null",
                               fine_map_x_size = 10, fine_map_y_size = 10)
@@ -332,7 +341,45 @@ test_that("Basic simulation produces 100 species with low speciation generation"
                            max_speciation_gens = 0.01)
   expect_equal(100, tmp$getSpeciesRichness())
 })
+context("Basic spatial coalescence simulations with a metacommunity")
+test_that("Metacommunity application works as intended with size of 1." , {
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(task=301, seed=3, min_speciation_rate=0.000001, deme=1, sigma=1,
+                              uses_logging = FALSE, fine_map_file="null",
+                              fine_map_x_size = 10, fine_map_y_size = 10)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.000001, metacommunity_option = "simulated",
+                          metacommunity_size = 1, metacommunity_speciation_rate = 0.99999999,
+                          metacommunity_external_reference = 0)
+  expect_equal(1, tmp$getSpeciesRichness())
+})
 
+test_that("Metacommunity application works as intended with large size." , {
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(task=302, seed=3, min_speciation_rate=0.000001, deme=1, sigma=1,
+                              uses_logging = FALSE, fine_map_file="null",
+                              fine_map_x_size = 10, fine_map_y_size = 10)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.000001, metacommunity_option = "simulated",
+                           metacommunity_size = 1000000,
+                           metacommunity_speciation_rate = 0.0000000001,
+                           metacommunity_external_reference = 0)
+  expect_equal(100, tmp$getSpeciesRichness())
+})
 
-unlink("output", recursive=TRUE)
+test_that("Metacommunity application works as intended with multiple application." , {
+  tmp <- SpatialTreeSimulation$new()
+  tmp$setSimulationParameters(task=303, seed=3, min_speciation_rate=0.000001, deme=1, sigma=1,
+                              uses_logging = FALSE, fine_map_file="null",
+                              fine_map_x_size = 10, fine_map_y_size = 10)
+  expect_equal(TRUE, tmp$runSimulation())
+  tmp$applySpeciationRates(speciation_rates=0.000001, 
+                           metacommunity_option = c("simulated", "analytical"),
+                           metacommunity_size = c(1, 1000000),
+                           metacommunity_speciation_rate = c(0.999999, 0.0000000001),
+                           metacommunity_external_reference = c(0, 0))
+  expect_equal(1, tmp$getSpeciesRichness(community_reference = 1))
+  expect_equal(100, tmp$getSpeciesRichness(community_reference = 2))
+})
+# unlink("output", recursive=TRUE)
 

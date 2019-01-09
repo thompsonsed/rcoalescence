@@ -12,12 +12,17 @@
 #ifndef RCOALESCENCE_RTREE_H
 
 #define RCOALESCENCE_RTREE_H
+
 #include <string>
+
 #ifndef CXX14_SUPPORT
+
 #include "memory.h"
+
 #else
 #include <memory>
 #endif
+
 #include <Rcpp.h>
 //#include <Rcpp/r/headers.h>
 //#include <Rcpp/DataFrame.h>
@@ -26,16 +31,19 @@
 #include "RLogging.h"
 
 using namespace std;
+
 class RTreeSimulation : public virtual Tree
 {
 protected:
 
 	shared_ptr<SpecSimParameters> spec_sim_parameters;
+	bool multiple_output;
 public:
 	string output_database;
-	RTreeSimulation();
-	~RTreeSimulation() override;
 
+	RTreeSimulation();
+
+	~RTreeSimulation() override;
 
 	/**
 	 * @brief Sets the main simulation parameters in the sim_parameters object.
@@ -52,13 +60,43 @@ public:
 
 	/**
 	 * @brief Sets the speciation parameters for the simulation in the sim_parameters object.
-	 * @param spec_in the speciation rate to use
-	 * @param is_protracted_in if true, simulates as a protracted simulation
+	 * @param spec_in the minimum speciation rate to use
+	 */
+	void setMinSpeciationRate(const long double &spec_in);
+
+	/**
+	 * @brief Sets the protracted variables
+	 * @param protracted_in if true, simulates as a protracted simulation
 	 * @param min_speciation_gen_in the minimum speciation generation for protracted simulations
 	 * @param max_speciation_gen_in the maximum speciation generation for protracted simulations
 	 */
-	void setSpeciationParameters(const long double &spec_in, bool is_protracted_in, const double &min_speciation_gen_in,
-								 const double &max_speciation_gen_in);
+	void setSimulationProtractedParameters(const bool &protracted_in, const double &min_speciation_gen_in,
+										   const double &max_speciation_gen_in);
+
+	/**
+	 * @brief Adds a speciation rate for application post-simulation.
+	 * @param speciation_rate_in the speciation rate to add.
+	 */
+	void addSpeciationRate(const double &speciation_rate_in);
+
+	/**
+	 * @brief Adds metacommunity parameters for applying post-simulation.
+	 * @param metacommunity_size the number of individuals in the metacommunity
+	 * @param metacommunity_speciation_rate the speciation rate for the metacommunity
+	 * @param metacommunity_option the metacommunity option
+	 * @param metacommunity_reference the external database community reference
+	 */
+	void addMetacommunityParameters(const unsigned long &metacommunity_size,
+									const double &metacommunity_speciation_rate,
+									const string &metacommunity_option,
+									const unsigned long &metacommunity_reference);
+
+	/**
+	 * @brief Adds the protracted parameters for applying post-simulation.
+	 * @param min_speciation_gen the minimum number of generations before speciation is permitted
+	 * @param max_speciation_gen the maximum number of generations a lineage can persist for
+	 */
+	void addProtractedParameters(const double &min_speciation_gen, const double &max_speciation_gen);
 
 	/**
 	 * @brief Sets the deme size and sampling proportion for the simulation.
@@ -72,8 +110,6 @@ public:
 	 * @return path to the sql database
 	 */
 	string getSQLDatabase();
-
-
 
 	/**
 	 * @brief Applies the provided speciation parameters to the coalescence tree.
@@ -90,17 +126,13 @@ public:
 	 * @param metacommunity_speciation_rate_in the metacommunity speciation rate for protracted simulations
 	 */
 	void applySpeciation(const string &file_in, const bool &use_spatial_in, const string &sample_file,
-						 const string &use_fragments_in, vector<double> speciation_rates, vector<double> times_list,
-						 vector<double> min_speciation_gen_in, vector<double> max_speciation_gen_in,
-						 const unsigned long &metacommunity_size_in,
-						 const double &metacommunity_speciation_rate_in);
+						 const string &use_fragments_in, vector<double> times_list);
 
 	/**
 	 * @brief Calculates the abundance of each species and returns a dataframe containing species ids and abundances.
 	 * @return Dataframe containing species ids and abundances
 	 */
 	Rcpp::DataFrame getSpeciesAbundances(const unsigned long community_reference);
-
 
 	/**
 	 * @brief Gets the number of species in the most recent calculation.
@@ -123,6 +155,20 @@ public:
 	 * @param log_mode if true, logs all messages to console
 	 */
 	void setLoggingMode(bool log_mode);
+
+	/**
+	 * @brief Sets the multiple_output variable - note that this doesn't override the multiple output variable if it
+	 * has already been set.
+	 * @param multiple_output
+	 */
+	void setMultipleOutput(const bool &multiple_output);
+
+	/**
+	 * @brief Gets the value of the multiple_output variable
+	 * @return true or false whether the simulation has applied multiple speciation rates
+	 * (and therefore needs to output)
+	 */
+	bool getMultipleOutput();
 
 	/**
 	 * @brief Applies the provided speciation parameters to the completed simulation.
