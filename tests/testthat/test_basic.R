@@ -15,9 +15,8 @@ test_that("Basic simulation on a null landscape completes", {
 
 test_that("Basic simulation produces the expected number of individuals in edge cases", {
   tmp <- SpatialTreeSimulation$new()
-  tmp$setSimulationParameters(task=12, seed=1, min_speciation_rate = 0.000000000001,
-                              deme=1, sigma=2,fine_map_x_size=10, fine_map_y_size=10, 
-                              uses_logging = TRUE)
+  tmp$setSimulationParameters(task=12, seed=1, min_speciation_rate = 0.000000000001, deme=1,
+                              sigma=2,fine_map_x_size=10, fine_map_y_size=10, uses_logging = TRUE)
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates=0.000000000001)
   expect_equal(1, tmp$getSpeciesRichness())

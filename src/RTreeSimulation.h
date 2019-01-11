@@ -132,13 +132,19 @@ public:
 	 * @brief Calculates the abundance of each species and returns a dataframe containing species ids and abundances.
 	 * @return Dataframe containing species ids and abundances
 	 */
-	Rcpp::DataFrame getSpeciesAbundances(const unsigned long community_reference);
+	Rcpp::DataFrame getSpeciesAbundances(const unsigned long &community_reference);
 
 	/**
 	 * @brief Gets the number of species in the most recent calculation.
 	 * @return the number of species in the most recently-calculated coalescence tree
 	 */
-	unsigned long getSpeciesRichness(const unsigned long community_reference);
+	unsigned long getSpeciesRichness(const unsigned long &community_reference);
+
+	/**
+	 * @brief Gets the lat calculated species richness from the community.
+	 * @return the number of species
+	 */
+	unsigned long getLastSpeciesRichness();
 
 	/**
 	 * @brief Ensures that a connection is made to the output database.

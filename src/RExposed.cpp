@@ -58,8 +58,9 @@ RCPP_MODULE(coalescenceModule)
 			.method("._getSpeciesAbundances", &RTreeSimulation::getSpeciesAbundances,
 					"Gets the species abundances for the last calculated set of speciation parameters.")
 			.method("._getSpeciesRichness", &RTreeSimulation::getSpeciesRichness,
-					"Gets the species richness for the last "
-					"calculated set of speciation parameters.")
+					"Gets the species richness for the supplied community reference. ")
+			.method("._getLastSpeciesRichness", &RTreeSimulation::getLastSpeciesRichness,
+					"Gets the last calculated species richness. ")
 			.method("._output", &RTreeSimulation::output, "Writes the simulation to the output database.")
 			.method("setLoggingMode", &RTreeSimulation::setLoggingMode,
 					"Sets the logging mode for the simulation object.")

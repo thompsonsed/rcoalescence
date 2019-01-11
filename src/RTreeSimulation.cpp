@@ -19,7 +19,9 @@ RTreeSimulation::RTreeSimulation()
 }
 
 RTreeSimulation::~RTreeSimulation()
-= default;
+{
+	community.destroyDbConnection();
+}
 
 void RTreeSimulation::setKeyParameters(const long long &task_in, const long long &seed_in,
 									   const string &output_directory_in,
@@ -104,7 +106,7 @@ void RTreeSimulation::applySpeciation(const string &file_in, const bool &use_spa
 	spec_sim_parameters->wipe();
 }
 
-Rcpp::DataFrame RTreeSimulation::getSpeciesAbundances(const unsigned long community_reference)
+Rcpp::DataFrame RTreeSimulation::getSpeciesAbundances(const unsigned long &community_reference)
 {
 	auto row = community.getSpeciesAbundances(community_reference);
 	Rcpp::IntegerVector species_ids(row->size());
@@ -120,9 +122,14 @@ Rcpp::DataFrame RTreeSimulation::getSpeciesAbundances(const unsigned long commun
 	return out_df;
 }
 
-unsigned long RTreeSimulation::getSpeciesRichness(const unsigned long community_reference)
+unsigned long RTreeSimulation::getSpeciesRichness(const unsigned long &community_reference)
 {
 	return community.getSpeciesRichness(community_reference);
+}
+
+unsigned long RTreeSimulation::getLastSpeciesRichness()
+{
+	return community.getSpeciesNumber();
 }
 
 void RTreeSimulation::checkDatabaseSet()

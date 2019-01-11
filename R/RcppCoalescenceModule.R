@@ -443,12 +443,20 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                          return(species_locations)
                        },
                        
-                       getSpeciesRichness = function(community_reference=1){
+                       getSpeciesRichness = function(community_reference=NA){
                          "Gets the community reference from the output database, or from the internal object if no 
                          community reference is supplied (this will return the last calculated species richness)."
                          if(!checkOutputDatabase())
                          {
+                           if(is.na(community_reference))
+                           {
+                             return(._getLastSpeciesRichness())
+                           }
                            return(._getSpeciesRichness(community_reference))
+                         }
+                         if(is.na(community_reference))
+                         {
+                           community_reference <- 1
                          }
                          checkOutputDatabaseExists()
                          conn <- dbConnect(SQLite(), output_database)

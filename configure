@@ -3411,7 +3411,7 @@ fi
 
 done
 
-defines="$defines -Dwith_gdal"
+defines="$defines -Dwith_gdal -Dsql_ram"
 
 
 
