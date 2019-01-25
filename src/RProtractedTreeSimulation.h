@@ -7,9 +7,10 @@
 
 #include <necsim/ProtractedTree.h>
 #include "RTreeSimulation.h"
+using RProtractedTreeSimulation = RTreeSimulation<ProtractedTree>
+//class RProtractedTreeSimulation : public virtual RTreeSimulation, public virtual ProtractedTree
+//{
+//
+//};
 
-class RProtractedTreeSimulation : public virtual RTreeSimulation, public virtual ProtractedTree
-{
-
-};
 #endif //RCOALESCENCE_RPROTRACTEDTREE_H

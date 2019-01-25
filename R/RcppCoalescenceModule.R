@@ -255,11 +255,11 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                           ._addSpeciationRate(spec_rate)
                           ._setMultipleOutput(FALSE)
                         }
-                        if(!is.na(metacommunity_option) | !is.na(metacommunity_size) |
-                           !is.na(metacommunity_speciation_rate) |
-                           !is.na(metacommunity_external_reference))
+                        if(!anyNA(metacommunity_option) | !anyNA(metacommunity_size) |
+                           !anyNA(metacommunity_speciation_rate) |
+                           !anyNA(metacommunity_external_reference))
                         {
-                          if(is.na(metacommunity_external_reference))
+                          if(anyNA(metacommunity_external_reference))
                           {
                             if(length(metacommunity_option) != length(metacommunity_size) |
                                length(metacommunity_speciation_rate != length(metacommunity_size)))
@@ -275,10 +275,11 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                             {
                                 stop("Metacommunity parameter vectors must be of equal size.")
                             }
-                            if(is.na(metacommunity_size) | is.na(metacommunity_speciation_rate))
+                            if(anyNA(metacommunity_size) | anyNA(metacommunity_speciation_rate))
                             {
                               metacommunity_size = rep(0, length(metacommunity_external_reference))
-                              metacommunity_speciation_rate = rep(0, length(metacommunity_external_reference))
+                              metacommunity_speciation_rate = rep(0, length(
+                                metacommunity_external_reference))
                               
                             }
                             
@@ -293,7 +294,7 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                           {
                               for(i in range(length(metacommunity_option)))
                               {
-                                ._addMetaCommunityParameters(metacommunity_size[i], 
+                                ._addMetacommunityParameters(metacommunity_size[i], 
                                                              metacommunity_speciation_rate[i],
                                                              metacommunity_option[i],
                                                              metacommunity_external_reference[i])
@@ -312,7 +313,7 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                                                        metacommunity_speciation_rate=NA,
                                                        metacommunity_external_reference=NA){
                          "Applies the provided speciation parameters to the TreeSimulation"
-                         if(!is.na(speciation_rates))
+                         if(!anyNA(speciation_rates))
                          {
                             setSpeciationParameters(speciation_rates, metacommunity_option, 
                                                     metacommunity_size, 
@@ -320,7 +321,7 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                                                     metacommunity_external_reference)
                          }
                          ._applySpeciationRates(output_file, FALSE, "null",
-                                                "FALSE", times_list)
+                                                "F", times_list)
                          if(._getMultipleOutput())
                          {
                            output()
@@ -334,7 +335,7 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                                                           times_list=c(0.0), uses_logging=NA,
                                                           deme=1,
                                                           deme_sample=1.0){
-                         "Sets all TreeSimulation parameters"
+                         "Sets simulation parameters"
                          setInitialSimulationParameters(task, seed, min_speciation_rate,
                                                         output_directory, max_time, desired_specnum,
                                                         times_list, uses_logging, deme, deme_sample)
@@ -343,7 +344,8 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                        
                        
                        setOutputDatabase = function(output_db){
-                         "Checks the output database exists and has been created properly, if it has been set."
+                         "Checks the output database exists and has been created properly, 
+                         if it has been set."
                          if(is.na(output_db) | output_db == "not_set")
                          {
                            stop("Output database has not been set.")
@@ -381,12 +383,25 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                        
                        output = function(){
                          "Outputs the biodiversity data to an sql database."
+                         if(!checkOutputDatabase())
+                         {
+                           createDefaultOutputDatabase()
+                         }
                          ._output()
                          setOutputDatabase(._getSQLDatabase())
                        },
+                      
+                      createDefaultOutputDatabase = function(){
+                        "Creates the default output database"
+                        output_database <<- file.path(getOutputDirectory(),
+                                                      paste("data_", getJobType(), "_",
+                                                            getSeed(), ".db", sep=""))
+
+                      },
                        
                        getCommunityReferences = function(){
-                         "Returns a data frame containing all the community references and their parameter sets."
+                         "Returns a data frame containing all the community references and their 
+                         parameter sets."
                          checkOutputDatabase()
                          conn <- dbConnect(SQLite(), output_database)
                          species_locations = tryCatch(
@@ -399,13 +414,13 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                                                "SELECT reference, speciation_rate, time, fragments,
                                                metacommunity_reference FROM COMMUNITY_PARAMETERS"))}
                          )
-                         # species_locations <- dbGetQuery(conn, "SELECT reference, speciation_rate, time, fragments, metacommunity_reference FROM COMMUNITY_PARAMETERS")
                          dbDisconnect(conn)
                          return(species_locations)
                        },
                        
                        getMetacommunityReferences = function(){
-                         "Returns a data frame containing all the metacommunity references and their parameter sets."
+                         "Returns a data frame containing all the metacommunity references and their
+                         parameter sets."
                          checkOutputDatabaseExists()
                          conn <- dbConnect(SQLite(), output_database)
                          species_locations <- dbGetQuery(conn,
@@ -418,7 +433,8 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                        },
                        
                        getSpeciesLocations = function(community_reference = 1){
-                         "Gets a data frame of species locations where the community reference matches the input."
+                         "Gets a data frame of species locations where the community reference 
+                         matches the input."
                          checkOutputDatabaseExists()
                          conn <- dbConnect(SQLite(), output_database)
                          species_locations <- dbGetQuery(conn, paste("SELECT species_id, x, y 
@@ -430,22 +446,25 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                        },
                        
                        getSpeciesAbundances = function(community_reference = 1){
-                         "Gets a data frame of species abundances where the community reference matches the input"
+                         "Gets a data frame of species abundances where the community reference 
+                         matches the input"
                          if(!checkOutputDatabase())
                          {
                            return(._getSpeciesAbundances(community_reference))
                          }
                          checkOutputDatabaseExists()
                          conn <- dbConnect(SQLite(), output_database)
-                         species_locations <- dbGetQuery(conn, paste("SELECT species_id, no_individuals FROM SPECIES_ABUNDANCES WHERE community_reference==",
-                                                                     community_reference, sep=""))
+                         species_locations <- dbGetQuery(conn, paste(
+                           "SELECT species_id, no_individuals FROM SPECIES_ABUNDANCES WHERE 
+                           community_reference==", community_reference, sep=""))
                          dbDisconnect(conn)
                          return(species_locations)
                        },
                        
                        getSpeciesRichness = function(community_reference=NA){
-                         "Gets the community reference from the output database, or from the internal object if no 
-                         community reference is supplied (this will return the last calculated species richness)."
+                         "Gets the community reference from the output database, or from the 
+                         internal object if no community reference is supplied (this will return the
+                         last calculated species richness)."
                          if(!checkOutputDatabase())
                          {
                            if(is.na(community_reference))
@@ -460,8 +479,10 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                          }
                          checkOutputDatabaseExists()
                          conn <- dbConnect(SQLite(), output_database)
-                         species_locations <- dbGetQuery(conn, paste("SELECT COUNT(DISTINCT(species_id)) FROM SPECIES_ABUNDANCES WHERE no_individuals > 0 AND ",
-                                                                     "community_reference ==", community_reference, sep=""))
+                         species_locations <- dbGetQuery(conn, paste(
+                           "SELECT COUNT(DISTINCT(species_id)) FROM SPECIES_ABUNDANCES WHERE 
+                           no_individuals > 0 AND ", "community_reference ==", 
+                           community_reference, sep=""))
                          dbDisconnect(conn)
                          return(species_locations[[1]])
                        }
@@ -548,19 +569,19 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                
                
                setHistoricalMapParameters = function(historical_fine_map="none",
-                                                   historical_coarse_map="none",
-                                                   gen_since_historical=100000000,
-                                                   habitat_change_rate=0.0){
+                                                     historical_coarse_map="none",
+                                                     gen_since_historical=100000000,
+                                                     habitat_change_rate=0.0){
                  "Sets the historical map parameters for the TreeSimulation testing"
-                 ._setHistoricalMapParameters(historical_fine_map, historical_coarse_map, gen_since_historical,
-                                            habitat_change_rate)
+                 ._setHistoricalMapParameters(historical_fine_map, historical_coarse_map,
+                                              gen_since_historical, habitat_change_rate)
                  },
                
-               addHistoricalMap = function(historical_fine_map, historical_coarse_map="none", gen_since_historical=1,
-                                         habitat_change_rate=0.0){
+               addHistoricalMap = function(historical_fine_map, historical_coarse_map="none",
+                                           gen_since_historical=1, habitat_change_rate=0.0){
                  "Adds a historical map to the list of historical maps to use."
-                 ._addHistoricalMap(historical_fine_map, historical_coarse_map, gen_since_historical,
-                                  habitat_change_rate)
+                 ._addHistoricalMap(historical_fine_map, historical_coarse_map, 
+                                    gen_since_historical, habitat_change_rate)
                },
                
                applySpeciationRates = function(speciation_rates=NA, output_file="none",
@@ -570,10 +591,11 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                                                metacommunity_speciation_rate=NA,
                                                metacommunity_external_reference=NA){
                  "Applies the provided speciation parameters to the TreeSimulation"
-                 if(is.logical(use_fragments)){
+                 if(is.logical(use_fragments))
+                 {
                    use_fragments <- substr(as.character(use_fragments), 1, 1)
-                   }
-                 if(!is.na(speciation_rates))
+                 }
+                 if(!anyNA(speciation_rates))
                  {
                    setSpeciationParameters(speciation_rates, metacommunity_option, 
                                            metacommunity_size, 
@@ -612,7 +634,8 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                                                   coarse_map_scale=1, deme=1,
                                                   deme_sample=1.0, uses_spatial_sampling=FALSE,
                                                   historical_fine_map="none",
-                                                  historical_coarse_map="none", gen_since_historical=100000000,
+                                                  historical_coarse_map="none", 
+                                                  gen_since_historical=100000000,
                                                   habitat_change_rate=0.0
                ){
                  "Sets all TreeSimulation parameters"
@@ -658,12 +681,30 @@ ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtracte
                      fields=list(output_database = "character"),
                      contains=c("TreeSimulation"),
                      methods = list(
-                       setSpeciationParameters = function(speciation_rate, 
-                                                          min_speciation_gens = c(0.0),
-                                                          max_speciation_gens=c(0.0)) {
-                         "Sets the speciation parameters for the TreeSimulation"
-                         ._setSpeciationParameters(speciation_rate, TRUE, min_speciation_gens,
-                                                   max_speciation_gens)
+                       setSimulationProtractedParameters = function(min_speciation_gen = 0.0,
+                                                          max_speciation_gen=0.0) {
+                         "Adds the protracted parameters to be used during the simulation."
+                         ._setSimulationProtractedParameters(TRUE, min_speciation_gen, 
+                                                             max_speciation_gen)
+                       },
+                       
+                       setSimulationParameters = function(task, seed, min_speciation_rate,
+                                                          output_directory="output",
+                                                          max_time=3600, desired_specnum=1,
+                                                          times_list=c(0.0), uses_logging=NA,
+                                                          deme=1,
+                                                          deme_sample=1.0, 
+                                                          min_speciation_gen=NA,
+                                                          max_speciation_gen=NA){
+                         "Sets all protracted simulation parameters"
+                         setInitialSimulationParameters(task, seed, min_speciation_rate,
+                                                        output_directory, max_time, desired_specnum,
+                                                        times_list, uses_logging, deme, deme_sample)
+                         if(!is.na(min_speciation_gen) & !is.na(max_speciation_gen))
+                         {
+                           setSimulationProtractedParameters(min_speciation_gen, max_speciation_gen)
+                         }
+                         setup()
                        },
 
                        applySpeciationRates = function(speciation_rates, output_file="none",
@@ -674,15 +715,15 @@ ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtracte
                                                        metacommunity_size=NA, 
                                                        metacommunity_speciation_rate=NA,
                                                        metacommunity_external_reference=NA){
-                         "Applies the provided speciation parameters to the TreeSimulation"
-                         if(!is.na(speciation_rates))
+                         "Applies the provided speciation parameters"
+                         if(!anyNA(speciation_rates))
                          {
                            setSpeciationParameters(speciation_rates, metacommunity_option, 
                                                    metacommunity_size, 
                                                    metacommunity_speciation_rate, 
                                                    metacommunity_external_reference)
                          }
-                         if(!is.na(min_speciation_gens) & !is.na(max_speciation_gens))
+                         if(!anyNA(min_speciation_gens) & !anyNA(max_speciation_gens))
                          {
                            if(is.vector(min_speciation_gens) & is.vector(max_speciation_gens))
                            {
@@ -702,8 +743,7 @@ ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtracte
                              ._addProtractedParameters(min_speciation_gens, max_speciation_gens)
                            }
                          }
-                         ._applySpeciationRates(output_file, use_spatial, sample_file,
-                                                use_fragments, times_list)
+                         ._applySpeciationRates(output_file, FALSE, "null", "F", times_list)
                          if(._getMultipleOutput())
                          {
                            output()
@@ -743,10 +783,12 @@ ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtracte
 #' @inheritParams TreeSimulation
 #' @inheritParams SpatialTreeSimulation
 #' @example inst/extdata/examples_spatial_protracted.R
-ProtractedSpatialTreeSimulation <- setRcppClass("ProtractedSpatialTreeSimulation", "RProtractedSpatialTreeSimulation",
+ProtractedSpatialTreeSimulation <- setRcppClass("ProtractedSpatialTreeSimulation",
+                                                "RProtractedSpatialTreeSimulation",
                                       module="coalescenceModule",
                                fields=list(output_database = "character"),
-                               contains=c("ProtractedTreeSimulation", "SpatialTreeSimulation", "TreeSimulation"),
+                               contains=c("ProtractedTreeSimulation", "SpatialTreeSimulation",
+                                          "TreeSimulation"),
    methods=list(
      setSimulationParameters = function(task, seed, min_speciation_rate,
                                         sigma,  output_directory="output",
@@ -771,7 +813,8 @@ ProtractedSpatialTreeSimulation <- setRcppClass("ProtractedSpatialTreeSimulation
                                         coarse_map_scale=1, deme=1,
                                         deme_sample=1.0, uses_spatial_sampling=FALSE,
                                         historical_fine_map="none",
-                                        historical_coarse_map="none", gen_since_historical=100000000,
+                                        historical_coarse_map="none", 
+                                        gen_since_historical=100000000,
                                         habitat_change_rate=0.0,
                                         min_speciation_gen=0.0,
                                         max_speciation_gen=0.0){
@@ -811,23 +854,31 @@ ProtractedSpatialTreeSimulation <- setRcppClass("ProtractedSpatialTreeSimulation
                                      metacommunity_speciation_rate=NA,
                                      metacommunity_external_reference=NA){
        "Applies the provided speciation parameters to the TreeSimulation"
-       if(!is.na(speciation_rates))
+       if(!anyNA(speciation_rates))
        {
          setSpeciationParameters(speciation_rates, metacommunity_option, 
                                  metacommunity_size, 
                                  metacommunity_speciation_rate, 
                                  metacommunity_external_reference)
        }
-       if(!is.na(min_speciation_gens) & !is.na(max_speciation_gens))
+       if(!anyNA(min_speciation_gens) & !anyNA(max_speciation_gens))
        {
-         if(length(min_speciation_gens) != length(max_speciation_gens))
+         if(is.vector(min_speciation_gens) & is.vector(max_speciation_gens))
          {
-           stop("Lengths of protracted parameter vectors must be equal.")
+           if(length(min_speciation_gens) != length(max_speciation_gens))
+           {
+             stop("Lengths of protracted parameter vectors must be equal.")
+           }
+           for(i in range(length(min_speciation_gens)))
+           {
+             ._addProtractedParameters(min_speciation_gens[i], 
+                                       max_speciation_gens[i])
+           }
+           ._setMultipleOutput(TRUE)
          }
-         for(i in range(length(min_speciation_gens)))
+         else
          {
-           ._addProtractedParameters(min_speciation_rates[i], 
-                                     max_speciation_rates[i])
+           ._addProtractedParameters(min_speciation_gens, max_speciation_gens)
          }
        }
        ._applySpeciationRates(output_file, use_spatial, sample_file,

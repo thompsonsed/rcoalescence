@@ -12,28 +12,30 @@
 #include <Rcpp.h>
 
 #include "RLogging.h"
+
 using namespace std;
+
 void writeInfo(string message)
 {
-	if(logging_mode)
-	{
-		Rcpp::Rcout << message << flush;
-	}
+    if(logging_mode)
+    {
+        Rcpp::Rcout << message << flush;
+    }
 }
 
 void writeWarning(string message)
 {
-	writeInfo(message);
+    writeInfo(message);
 }
 
 void writeError(string message)
 {
-	writeInfo(message);
+    writeInfo(message);
 }
 
 void writeCritical(string message)
 {
-	writeInfo(message);
+    writeInfo(message);
 }
 
 

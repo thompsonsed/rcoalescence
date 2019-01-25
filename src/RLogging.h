@@ -9,8 +9,10 @@
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
 #include <string>
+
 #ifndef RCOALESCENCE_RLOGGING_H
 #define RCOALESCENCE_RLOGGING_H
+
 #include "necsim/Logging.h"
 
 extern bool logging_mode;

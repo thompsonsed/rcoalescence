@@ -1,16 +1,23 @@
 Package: rcoalescence
 Type: Package
-Title: Efficient spatially-explicit neutral ecology simulator written in C++
+Title: Efficient spatially-explicit neutral ecology simulator
 Version: 1.0.0
 Authors@R: person("Sam", "Thompson", email = "thompsonsed@gmail.com", role = c("aut", "cre"))
 Description: Package for simulating according to ecological neutral theory on spatially explicit
-    landscapes using coalescence techniques and c++ for high performance operation.
+    landscapes using coalescence techniques and C++ for high performance operation.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends: Rcpp, RSQLite
 Imports: methods
+NeedsCompilation: yes
 LinkingTo: Rcpp (>= 0.12.14), BH
+SystemRequirements: for building from source: GDAL >= 1.11.4, library
+        from https://trac.osgeo.org/gdal/wiki/DownloadSource and PROJ.4
+        (proj >= 4.8.0) from https://download.osgeo.org/proj/; GDAL OSX
+        frameworks built by William Kyngesburye at
+        http://www.kyngchaos.com/ may be used for source installs on
+        OSX or installation performed using Homebrew.
 RoxygenNote: 6.0.1
 Suggests: testthat
 Collate:
