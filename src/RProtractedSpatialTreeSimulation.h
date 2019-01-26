@@ -16,20 +16,23 @@
 #include <necsim/ProtractedSpatialTree.h>
 #include "RSpatialTreeSimulation.h"
 
-using RProtractedSpatialTreeSimulation = RSpatialTreeSimulation<ProtractedTree>
-//class RProtractedSpatialTreeSimulation : virtual public RSpatialTreeSimulation,
-//                                         virtual public ProtractedSpatialTree
-//{
-//public:
-//    using ProtractedTree::calcSpeciation;
-//    using ProtractedTree::speciateLineage;
-//    using ProtractedTree::getProtracted;
-//    using ProtractedTree::setProtractedVariables;
-//    using ProtractedTree::getProtractedVariables;
-//    using ProtractedTree::getProtractedGenerationMin;
-//    using ProtractedTree::getProtractedGenerationMax;
-//    using ProtractedTree::protractedVarsToString;
-//
-//};
+//using RProtractedSpatialTreeSimulation = RSpatialTreeSimulation<ProtractedTree>
+class RProtractedSpatialTreeSimulation : virtual public RSpatialTreeSimulation,
+                                         virtual public ProtractedSpatialTree
+{
+public:
+    RProtractedSpatialTreeSimulation()
+    {
+        bIsProtracted = true;
+    }
+    using ProtractedTree::calcSpeciation;
+    using ProtractedTree::speciateLineage;
+    using ProtractedTree::getProtracted;
+    using ProtractedTree::setProtractedVariables;
+    using ProtractedTree::getProtractedVariables;
+    using ProtractedTree::getProtractedGenerationMin;
+    using ProtractedTree::getProtractedGenerationMax;
+    using ProtractedTree::protractedVarsToString;
+};
 
 #endif //RCOALESCENCE_RPROTRACTEDSPATIALTREE_H

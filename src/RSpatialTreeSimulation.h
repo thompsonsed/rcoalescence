@@ -15,8 +15,7 @@
 #include "necsim/SpatialTree.h"
 #include "RTreeSimulation.h"
 
-template<class T>
-class RSpatialTreeSimulation : public virtual RTreeSimulation<T>, public virtual SpatialTree
+class RSpatialTreeSimulation : public virtual RTreeSimulation, public virtual SpatialTree
 {
 protected:
     vector<string> paths_fine;

@@ -292,7 +292,7 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                           }
                           if(is.vector(metacommunity_option) & length(metacommunity_option) > 0)
                           {
-                              for(i in range(length(metacommunity_option)))
+                              for(i in seq(1, length(metacommunity_option)))
                               {
                                 ._addMetacommunityParameters(metacommunity_size[i], 
                                                              metacommunity_speciation_rate[i],
@@ -322,10 +322,6 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                          }
                          ._applySpeciationRates(output_file, FALSE, "null",
                                                 "F", times_list)
-                         if(._getMultipleOutput())
-                         {
-                           output()
-                         }
                        },
                        
                        
@@ -392,7 +388,7 @@ TreeSimulation <- setRcppClass("TreeSimulation", "RTreeSimulation", module="coal
                        },
                       
                       createDefaultOutputDatabase = function(){
-                        "Creates the default output database"
+                        "Creates the default output database string"
                         output_database <<- file.path(getOutputDirectory(),
                                                       paste("data_", getJobType(), "_",
                                                             getSeed(), ".db", sep=""))
@@ -604,10 +600,6 @@ SpatialTreeSimulation <- setRcppClass("SpatialTreeSimulation", "RSpatialTreeSimu
                  }
                  ._applySpeciationRates(output_file, use_spatial, sample_file,
                                         use_fragments, times_list)
-                 if(._getMultipleOutput())
-                 {
-                   output()
-                 }
                },
                
                
@@ -681,13 +673,6 @@ ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtracte
                      fields=list(output_database = "character"),
                      contains=c("TreeSimulation"),
                      methods = list(
-                       setSimulationProtractedParameters = function(min_speciation_gen = 0.0,
-                                                          max_speciation_gen=0.0) {
-                         "Adds the protracted parameters to be used during the simulation."
-                         ._setSimulationProtractedParameters(TRUE, min_speciation_gen, 
-                                                             max_speciation_gen)
-                       },
-                       
                        setSimulationParameters = function(task, seed, min_speciation_rate,
                                                           output_directory="output",
                                                           max_time=3600, desired_specnum=1,
@@ -702,7 +687,8 @@ ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtracte
                                                         times_list, uses_logging, deme, deme_sample)
                          if(!is.na(min_speciation_gen) & !is.na(max_speciation_gen))
                          {
-                           setSimulationProtractedParameters(min_speciation_gen, max_speciation_gen)
+                           ._setSimulationProtractedParameters(TRUE, min_speciation_gen, 
+                                                               max_speciation_gen)
                          }
                          setup()
                        },
@@ -731,7 +717,7 @@ ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtracte
                              {
                                stop("Lengths of protracted parameter vectors must be equal.")
                              }
-                             for(i in range(length(min_speciation_gens)))
+                             for(i in seq(1, length(min_speciation_gens)))
                              {
                                ._addProtractedParameters(min_speciation_gens[i], 
                                                          max_speciation_gens[i])
@@ -744,10 +730,6 @@ ProtractedTreeSimulation <- setRcppClass("ProtractedTreeSimulation", "RProtracte
                            }
                          }
                          ._applySpeciationRates(output_file, FALSE, "null", "F", times_list)
-                         if(._getMultipleOutput())
-                         {
-                           output()
-                         }
                        },
 
 
@@ -854,6 +836,10 @@ ProtractedSpatialTreeSimulation <- setRcppClass("ProtractedSpatialTreeSimulation
                                      metacommunity_speciation_rate=NA,
                                      metacommunity_external_reference=NA){
        "Applies the provided speciation parameters to the TreeSimulation"
+       if(is.logical(use_fragments))
+       {
+         use_fragments <- substr(as.character(use_fragments), 1, 1)
+       }
        if(!anyNA(speciation_rates))
        {
          setSpeciationParameters(speciation_rates, metacommunity_option, 
@@ -869,7 +855,7 @@ ProtractedSpatialTreeSimulation <- setRcppClass("ProtractedSpatialTreeSimulation
            {
              stop("Lengths of protracted parameter vectors must be equal.")
            }
-           for(i in range(length(min_speciation_gens)))
+           for(i in seq(1, length(min_speciation_gens)))
            {
              ._addProtractedParameters(min_speciation_gens[i], 
                                        max_speciation_gens[i])
@@ -883,10 +869,6 @@ ProtractedSpatialTreeSimulation <- setRcppClass("ProtractedSpatialTreeSimulation
        }
        ._applySpeciationRates(output_file, use_spatial, sample_file,
                               use_fragments, times_list)
-       if(._getMultipleOutput())
-       {
-         output()
-       }
      }
    )
 )

@@ -32,20 +32,23 @@
 
 using namespace std;
 
-template<class T>
-class RTreeSimulation : public virtual T
+/**
+ * @brief Class containing non-spatial non-protracted Tree simulations.
+ */
+class RTreeSimulation : public virtual Tree
 {
 protected:
-
     shared_ptr<SpecSimParameters> spec_sim_parameters;
     bool multiple_output;
     bool has_outputted;
+    bool has_written_main_sim;
+
 public:
     string output_database;
 
     RTreeSimulation();
 
-    ~RTreeSimulation();
+    ~RTreeSimulation() override;
 
     /**
      * @brief Sets the main simulation parameters in the sim_parameters object.
@@ -168,9 +171,9 @@ public:
     unsigned long getLastSpeciesRichness();
 
     /**
-     * @brief Ensures that a connection is made to the output database.
+     * @brief Checks that the main simulation has written to the in-memory database.
      */
-    void checkDatabaseSet();
+    void checkWrittenMainSim();
 
     /**
      * @brief Writes the output to the previously specified database.

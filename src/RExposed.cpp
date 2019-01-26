@@ -73,7 +73,7 @@ RCPP_MODULE(coalescenceModule)
             .method("._getMultipleOutput", &RTreeSimulation::getMultipleOutput,
                     "Returns the value of the multiple_output variable.")
             .field("output_database", &RTreeSimulation::output_database);
-    class_<RSpatialTreeSimulation<Tree>>("RSpatialTreeSimulation", "Simulates spatially-explicit neutral models.")
+    class_<RSpatialTreeSimulation>("RSpatialTreeSimulation", "Simulates spatially-explicit neutral models.")
             .constructor("initialises the spatial tree")
             .derives<RTreeSimulation>("RTreeSimulation")
             .method("._setDispersalParameters", &RSpatialTreeSimulation::setDispersalParameters,

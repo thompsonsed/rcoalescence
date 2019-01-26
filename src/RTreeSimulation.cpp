@@ -11,7 +11,8 @@
 #include "RTreeSimulation.h"
 
 RTreeSimulation::RTreeSimulation()
-        : T(), spec_sim_parameters(make_shared<SpecSimParameters>()), multiple_output(false), has_outputted(false)
+        : Tree(), spec_sim_parameters(make_shared<SpecSimParameters>()), multiple_output(false), has_outputted(false),
+          has_written_main_sim(false)
 {
     output_database = "not_set";
     setLoggingMode(false);
@@ -63,12 +64,20 @@ void RTreeSimulation::addMetacommunityParameters(const unsigned long &metacommun
                                                  const string &metacommunity_option,
                                                  const unsigned long &metacommunity_reference)
 {
+    stringstream ss;
+    ss << "Adding metacommunity parameters with size = " << metacommunity_size << ", speciation rate = ";
+    ss << metacommunity_speciation_rate << ", option = " << metacommunity_option << " and external reference = ";
+    ss << metacommunity_reference << endl;
+    writeInfo(ss.str());
     spec_sim_parameters->addMetacommunityParameters(metacommunity_size, metacommunity_speciation_rate,
                                                     metacommunity_option, metacommunity_reference);
 }
 
 void RTreeSimulation::addProtractedParameters(const double &min_speciation_gen, const double &max_speciation_gen)
 {
+    stringstream ss;
+    ss << "Adding protracted parameters with min = " << min_speciation_gen << ", max = " << max_speciation_gen << endl;
+    writeInfo(ss.str());
     spec_sim_parameters->addProtractedParameters(min_speciation_gen, max_speciation_gen);
 }
 
@@ -98,7 +107,6 @@ long long RTreeSimulation::getJobType()
     return job_type;
 }
 
-
 void RTreeSimulation::apply(shared_ptr<SpecSimParameters> specSimParameters)
 {
     if(!sim_complete)
@@ -115,8 +123,7 @@ void RTreeSimulation::apply(shared_ptr<SpecSimParameters> specSimParameters)
 void RTreeSimulation::applySpeciation(const string &file_in, const bool &use_spatial_in, const string &sample_file,
                                       const string &use_fragments_in, vector<double> times_list)
 {
-    has_outputted = false;
-    checkDatabaseSet();
+    checkWrittenMainSim();
     spec_sim_parameters->setup(file_in, use_spatial_in, sample_file, times_list, use_fragments_in);
     apply(spec_sim_parameters);
     spec_sim_parameters->wipe();
@@ -148,12 +155,15 @@ unsigned long RTreeSimulation::getLastSpeciesRichness()
     return community.getSpeciesNumber();
 }
 
-void RTreeSimulation::checkDatabaseSet()
+
+void RTreeSimulation::checkWrittenMainSim()
 {
-    if(!community.isSetDatabase())
+    if(!has_written_main_sim)
     {
-        openSQLDatabase();
+        sortData();
+        sqlCreate();
         setupCommunity();
+        has_written_main_sim = true;
     }
 }
 
@@ -164,7 +174,7 @@ void RTreeSimulation::output()
         throw FatalException("Output database has already been generated.");
     }
     setupOutputDirectory();
-    checkDatabaseSet();
+    checkWrittenMainSim();
     spec_sim_parameters->filename = sql_output_database;
     // TODO move this to debug or remove
     if(database == nullptr || community.isDatabaseNullPtr())

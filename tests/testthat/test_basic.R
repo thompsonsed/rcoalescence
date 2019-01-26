@@ -111,7 +111,7 @@ test_that("Biodiversity metrics correctly stored in output database", {
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = c(0.5, 0.7),
                            use_spatial = TRUE)
-  expect_error(tmp$output())
+  tmp$output()
   # Make sure an output exists
   expect_equal(TRUE, file.exists(output_file))
   # Check community references
@@ -362,24 +362,24 @@ test_that("Basic simulation with deme of 100 completes", {
     task = 201,
     seed = 1,
     output_directory = "output",
-    max_time = 1,
+    max_time = 200,
     desired_specnum = 1,
     times_list = c(0.0),
     deme = 100,
     min_speciation_rate = 0.01,
+    min_speciation_gen = 2.0,
+    max_speciation_gen = 4000.0,
     uses_logging=TRUE)
-  tmp$setSimulationProtractedParameters(min_speciation_gen = 2.0,
-                                        max_speciation_gen = 4000.0)
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(
     speciation_rates = c(0.02, 0.03),
-    min_speciation_gens = c(1.0),
-    max_speciation_gens = c(3000.0)
+    min_speciation_gens = c(2.0),
+    max_speciation_gens = c(4000.0)
   )
-  expect_error(tmp$output())
+  tmp$output()
   expect_equal(6, tmp$getSpeciesRichness())
-  expect_equal(4, tmp$getSpeciesRichness(1))
-  expect_equal(6, tmp$getSpeciesRichness(2))
+  expect_equal(6, tmp$getSpeciesRichness(1))
+  expect_equal(12, tmp$getSpeciesRichness(2))
 })
 
 test_that("Basic simulation produces 1 species with high speciation generation",
@@ -505,14 +505,17 @@ test_that("Can apply multiple protracted speciation parameters", {
   tmp$applySpeciationRates(
     speciation_rates = c(0.1, 0.2, 0.3),
     min_speciation_gens = c(1.0, 5.0, 10.0),
-    max_speciation_gens = c(10.0, 10.0, 20.0)
+    max_speciation_gens = c(20.0, 20.0, 20.0)
   )
   tmp$output()
   crefs <- tmp$getCommunityReferences()
-  sr <- c(0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3)
+  sr <- c(0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3,
+          0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3)
   ref <- seq(1, 9, 1)
-  min_speciation_gen <- c(1, 1, 1, 5, 5, 5, 10, 10, 10)
-  max_speciation_gen <- c(10, 10, 10, 10, 10, 10, 20, 20, 20)
+  min_speciation_gen <- c(1, 1, 1, 5, 5, 5, 10, 10, 10,
+                          1, 1, 1, 5, 5, 5, 10, 10, 10)
+  max_speciation_gen <- c(10, 10, 10, 10, 10, 10, 10, 10, 10,
+                          20, 20, 20, 20, 20, 20, 20, 20, 20)
   expect_equal(sr, crefs$speciation_rate)
   expect_equal(min_speciation_gen, crefs$min_speciation_gen)
   expect_equal(max_speciation_gen, crefs$max_speciation_gen)
@@ -522,9 +525,6 @@ test_that("Can apply multiple protracted speciation parameters", {
   expect_equal(21, tmp$getSpeciesRichness(4))
   expect_equal(24, tmp$getSpeciesRichness(5))
   expect_equal(24, tmp$getSpeciesRichness(6))
-  expect_equal(13, tmp$getSpeciesRichness(7))
-  expect_equal(15, tmp$getSpeciesRichness(8))
-  expect_equal(15, tmp$getSpeciesRichness(9))
   
 })
 
@@ -663,7 +663,7 @@ test_that("Metacommunity application works as intended with multiple application
               min_speciation_rate = 0.000001,
               deme = 1,
               sigma = 1,
-              uses_logging = FALSE,
+              uses_logging = TRUE,
               fine_map_file = "null",
               fine_map_x_size = 10,
               fine_map_y_size = 10
@@ -674,8 +674,9 @@ test_that("Metacommunity application works as intended with multiple application
               metacommunity_option = c("simulated", "simulated", "simulated", "analytical"),
               metacommunity_size = c(1, 1, 1000000, 1000000),
               metacommunity_speciation_rate = c(0.999999, 0.0000000001, 0.999999, 0.0000000001),
-              metacommunity_external_reference = c(0, 0)
+              metacommunity_external_reference = c(0, 0, 0, 0)
             )
+            tmp$output()
             expected_metacommunity = data.frame(c(1, 0.999999, 1, "simulated", 0,
                                                   2, 0.0000000001, 1, "simulated", 0,
                                                   3, 0.999999, 1000000, "simulated", 0,
