@@ -645,7 +645,7 @@ test_that("Metacommunity application works as intended with large size." , {
   )
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(
-    speciation_rates = 0.000001,
+    speciation_rates = 0.99,
     metacommunity_option = "simulated",
     metacommunity_size = 1000000,
     metacommunity_speciation_rate = 0.00001,

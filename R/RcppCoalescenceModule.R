@@ -9,7 +9,7 @@
 #' @name rcoalescence
 #' @author Sam Thompson
 #' @description A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for 
-#' spatially-explicit neutral models based in c++.
+#' spatially-explicit neutral models based in C++.
 #' 
 #' rcoalescence allows for large-scale TreeSimulations to be performed on fully spatial files, with 
 #' features to suit a wide variety of use cases.
@@ -26,11 +26,11 @@
 #'     \item R package development prerequisites, which may require additional installation steps, 
 #'     depending on your platform
 #'     \href{https://support.rstudio.com/hc/en-us/articles/200486498}{(see here)}.
-#'     \item A c++ compiler that is detectable by R.
+#'     \item A C++ compiler that is detectable by R.
 #'     \item The devtools package.
-#'     \item Boost library for c++, available \href{https://www.boost.org/}{here}.
-#'     \item Gdal library for c++, available \href{http://www.gdal.org/}{here}.
-#'     \item Sqlite3 library for c++, available \href{https://www.sqlite.org/index.html}{here}.
+#'     \item Boost library for C++, available \href{https://www.boost.org/}{here}.
+#'     \item Gdal library for C++, available \href{http://www.gdal.org/}{here}.
+#'     \item Sqlite3 library for C++, available \href{https://www.sqlite.org/index.html}{here}.
 #'     
 #'     \item Several R packages are dependencies, including Rcpp and BH. These should be installed
 #'     automatically.
@@ -39,7 +39,7 @@
 #' 
 #' \subsection{Install method}{
 #' 
-#' First, make sure devtools and the c++ library dependencies are installed. Then run,
+#' First, make sure devtools and the C++ library dependencies are installed. Then run,
 #' \code{library(devtools)}
 #' \code{install_bitbucket("thompsonsed/rcoalescence")}
 #' 
@@ -47,7 +47,7 @@
 #' 
 #' @section Installation issues:
 #' 
-#' \subsection{Cannot find c++ compiler}{
+#' \subsection{Cannot find C++ compiler}{
 #' 
 #' For Linux systems, the R development package is required. Use 
 #' \code{sudo apt-get install r-base-dev} for Ubuntu-based systems. For other distributions, check
@@ -111,9 +111,9 @@ NULL
 #'
 #' @name NeutralTreeSimulation
 #' @description Four classes are provided here, \link{TreeSimulation}, \link{SpatialTreeSimulation}, 
-#' \link{ProtractedTreeSimulation} and \link{ProtractedSpatialTreeSimulation}, for non-spatial/spatial and 
-#' non-protracted/protracted TreeSimulations. The process for setting up, running and analysing 
-#' TreeSimulations are the same, as described below.
+#' \link{ProtractedTreeSimulation} and \link{ProtractedSpatialTreeSimulation}, for 
+#' non-spatial/spatial and non-protracted/protracted TreeSimulations. The process for setting up, 
+#' running and analysing TreeSimulations are the same, as described below.
 #' 
 #' @section Non-spatial Models:
 #' Run non-spatial neutral models. Here no map files are required, simply set up the
@@ -143,7 +143,7 @@ NULL
 #' * *uses_logging*: if true, all outputs are written to console
 #' * *deme*: the number of individuals per cell
 #' * *deme_sample*: the global sampling proportion
-#' * *speciation_rate*: the minimum speciation rate for the TreeSimulation
+#' * *min_speciation_rate*: the minimum speciation rate for the TreeSimulation
 #' @section Spatial parameters:
 #' These include dispersal parameters and maps files
 #' * *sigma*: mean dispersal: distance for a normally-distributed dispersal kernel
@@ -185,17 +185,24 @@ NULL
 #' * *min_speciation_gens*: list of minimum number of generations required before speciation
 #' * *max_speciation_gens*: list of maximum number of generations required before speciation
 #' @section Post-TreeSimulation parameters:
-#' These are for rebuilding the coalescence TreeSimulation under different conditions.
+#' These are for rebuilding the coalescence tree under different conditions.
 #' * *output_file*: the directory to output to, defaults to "none"
 #' * *use_spatial*: if true, records full spatial locations of all individuals. Default=FALSE
 #' * *sample_file*: supply a mask for defining spatial sampling. Default="null"
 #' * *use_fragments*: supply a file containing fragment coordinates, or TRUE to let program calculate fragments
 #' * *speciation_rates*: list of speciation rates to apply
-#' * *times_list*: list of times to calculate coalescence TreeSimulation for
+#' * *times_list*: list of times to calculate coalescence tree at
 #' * *min_speciation_gens*: list of the minimum number of generations required before speciation
 #' * *max_speciation_gens*: list of the maximum number of generations required before speciation
+#' @section Metacommunity parameters
+#' These parameters are used for rebuilding the coalescence tree using a metacommunity, calculated
+#' using either a non-spatial simulation, an analytical approximation, or an external database
+#' which contains a community to draw individuals from.
+#' * *metacommunity_option*: one of "simulated", "analytical" or a path to an external database
 #' * *metacommunity_size*: the number of individuals in the metacommunity
 #' * *metacommunity_speciation_rate*: the effective speciation rate of the metacommunity
+#' * *external_reference*: an external reference for the Metacommunity.
+#'
 #' @md
 #' @example inst/extdata/examples_nonspatial.R
 #' @example inst/extdata/examples_spatial.R
