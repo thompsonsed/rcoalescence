@@ -11,8 +11,8 @@
 #include "RTreeSimulation.h"
 
 RTreeSimulation::RTreeSimulation()
-        : Tree(), spec_sim_parameters(make_shared<SpecSimParameters>()), multiple_output(false), has_outputted(false),
-          has_written_main_sim(false)
+        : Tree(), spec_sim_parameters(make_shared<SpecSimParameters>()), metacommunity(), multiple_output(false),
+          has_outputted(false), has_written_main_sim(false), uses_metacommunity(false)
 {
     output_database = "not_set";
     setLoggingMode(false);
@@ -21,6 +21,7 @@ RTreeSimulation::RTreeSimulation()
 RTreeSimulation::~RTreeSimulation()
 {
     community.closeSqlConnection();
+    metacommunity.closeSqlConnection();
 }
 
 void RTreeSimulation::setKeyParameters(const long long &job_type, const long long &seed_in,
@@ -115,8 +116,21 @@ void RTreeSimulation::apply(shared_ptr<SpecSimParameters> specSimParameters)
     }
     else
     {
-        community.setSimParameters(sim_parameters);
-        community.doApplicationInternal(std::move(specSimParameters), data);
+        if(specSimParameters->metacommunity_parameters.hasMetacommunityOption() || uses_metacommunity)
+        {
+            if(!uses_metacommunity)
+            {
+                metacommunity.setSpecSimParameters(spec_sim_parameters);
+                metacommunity.setupInternal(sim_parameters, database);
+            }
+            metacommunity.applyNoOutput(std::move(specSimParameters), data);
+            uses_metacommunity = true;
+        }
+        else
+        {
+            community.setSimParameters(sim_parameters);
+            community.doApplicationInternal(std::move(specSimParameters), data);
+        }
     }
 }
 
@@ -152,6 +166,10 @@ unsigned long RTreeSimulation::getSpeciesRichness(const unsigned long &community
 
 unsigned long RTreeSimulation::getLastSpeciesRichness()
 {
+    if(uses_metacommunity)
+    {
+        return metacommunity.getSpeciesNumber();
+    }
     return community.getSpeciesNumber();
 }
 
@@ -162,6 +180,7 @@ void RTreeSimulation::checkWrittenMainSim()
     {
         sortData();
         sqlCreate();
+        community.setSpecSimParameters(spec_sim_parameters);
         setupCommunity();
         has_written_main_sim = true;
     }
@@ -181,9 +200,19 @@ void RTreeSimulation::output()
     {
         throw FatalException("Database pointer is null before output. Please report this bug.");
     }
-    community.output();
-    community.closeSqlConnection();
+    if(uses_metacommunity)
+    {
+        metacommunity.output();
+        metacommunity.closeSqlConnection();
+    }
+    else
+    {
+        community.output();
+        community.closeSqlConnection();
+    }
+    output_database = sql_output_database;
     has_outputted = true;
+
 }
 
 void RTreeSimulation::setLoggingMode(bool log_mode)

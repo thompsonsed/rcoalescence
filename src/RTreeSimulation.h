@@ -26,8 +26,9 @@
 #include <Rcpp.h>
 //#include <Rcpp/r/headers.h>
 //#include <Rcpp/DataFrame.h>
-#include <necsim/SpecSimParameters.h>
-#include <necsim/Tree.h>
+#include "necsim/SpecSimParameters.h"
+#include "necsim/Tree.h"
+#include "necsim/Metacommunity.h"
 #include "RLogging.h"
 
 using namespace std;
@@ -39,9 +40,11 @@ class RTreeSimulation : public virtual Tree
 {
 protected:
     shared_ptr<SpecSimParameters> spec_sim_parameters;
+    Metacommunity metacommunity; // Provide both a Community and Metacommunity object for both use case
     bool multiple_output;
     bool has_outputted;
     bool has_written_main_sim;
+    bool uses_metacommunity;
 
 public:
     string output_database;

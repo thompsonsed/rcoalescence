@@ -5,7 +5,7 @@
 #ifndef RCOALESCENCE_RPROTRACTEDTREE_H
 #define RCOALESCENCE_RPROTRACTEDTREE_H
 
-#include <necsim/ProtractedTree.h>
+#include "necsim/ProtractedTree.h"
 #include "RTreeSimulation.h"
 class RProtractedTreeSimulation : public virtual RTreeSimulation, public virtual ProtractedTree
 {

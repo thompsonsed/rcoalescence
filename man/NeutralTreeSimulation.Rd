@@ -5,9 +5,9 @@
 \title{Simulate neutral models on a variety of landscape conformations}
 \description{
 Four classes are provided here, \link{TreeSimulation}, \link{SpatialTreeSimulation},
-\link{ProtractedTreeSimulation} and \link{ProtractedSpatialTreeSimulation}, for non-spatial/spatial and
-non-protracted/protracted TreeSimulations. The process for setting up, running and analysing
-TreeSimulations are the same, as described below.
+\link{ProtractedTreeSimulation} and \link{ProtractedSpatialTreeSimulation}, for
+non-spatial/spatial and non-protracted/protracted TreeSimulations. The process for setting up,
+running and analysing TreeSimulations are the same, as described below.
 }
 \section{Non-spatial Models}{
 
@@ -47,7 +47,7 @@ which are defined in setTreeSimulationParameters()
 \item \emph{uses_logging}: if true, all outputs are written to console
 \item \emph{deme}: the number of individuals per cell
 \item \emph{deme_sample}: the global sampling proportion
-\item \emph{speciation_rate}: the minimum speciation rate for the TreeSimulation
+\item \emph{min_speciation_rate}: the minimum speciation rate for the TreeSimulation
 }
 }
 
@@ -98,23 +98,29 @@ the nth item in max_speciation_gens
 \itemize{
 \item \emph{min_speciation_gens}: list of minimum number of generations required before speciation
 \item \emph{max_speciation_gens}: list of maximum number of generations required before speciation
+@section Metacommunity parameters
+These parameters are used for rebuilding the coalescence tree using a metacommunity, calculated
+using either a non-spatial simulation, an analytical approximation, or an external database
+which contains a community to draw individuals from.
+\item \emph{metacommunity_option}: one of "simulated", "analytical" or a path to an external database
+\item \emph{metacommunity_size}: the number of individuals in the metacommunity
+\item \emph{metacommunity_speciation_rate}: the effective speciation rate of the metacommunity
+\item \emph{external_reference}: an external reference for the Metacommunity.
 }
 }
 
 \section{Post-TreeSimulation parameters}{
 
-These are for rebuilding the coalescence TreeSimulation under different conditions.
+These are for rebuilding the coalescence tree under different conditions.
 \itemize{
 \item \emph{output_file}: the directory to output to, defaults to "none"
 \item \emph{use_spatial}: if true, records full spatial locations of all individuals. Default=FALSE
 \item \emph{sample_file}: supply a mask for defining spatial sampling. Default="null"
 \item \emph{use_fragments}: supply a file containing fragment coordinates, or TRUE to let program calculate fragments
 \item \emph{speciation_rates}: list of speciation rates to apply
-\item \emph{times_list}: list of times to calculate coalescence TreeSimulation for
+\item \emph{times_list}: list of times to calculate coalescence tree at
 \item \emph{min_speciation_gens}: list of the minimum number of generations required before speciation
 \item \emph{max_speciation_gens}: list of the maximum number of generations required before speciation
-\item \emph{metacommunity_size}: the number of individuals in the metacommunity
-\item \emph{metacommunity_speciation_rate}: the effective speciation rate of the metacommunity
 }
 }
 
@@ -230,4 +236,16 @@ simulation$getSpeciesRichness(1)
 # Get the species abundances (last 5)
 tail(simulation$getSpeciesAbundances(1), 5)
 
+# Example application of a metacommunity to a simulation
+library(rcoalescence)
+
+
+# First we run a simulation to generate a sample database
+
+simulation <- TreeSimulation$new()
+# Simulate 100 individuals
+simulation$setSimulationParameters(seed=10, task =1, output_directory = "output", 
+                                   min_speciation_rate = 0.5, deme=100)
+simulation$runSimulation()
+simulation$output()
 }

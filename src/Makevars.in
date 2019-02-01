@@ -1,11 +1,8 @@
-PKG_LIBS=@PKG_LIBS@
+PKG_LIBS = @PKG_LIBS@
 PKG_CXXFLAGS=@PKG_CXXFLAGS@
-defines=@defines@
+# defines=@defines@
 CXX_STD = CXX14
-PKG_CXXFLAGS += $(defines)
-PKG_LIBS += -lboost_filesystem $(LAPACK_LIBS) $(BLAS_LIBS)
-SOURCES_CPP=$(wildcard necsim/*.cpp)
-SOURCES_CPP:=$(filter-out necsim/main.cpp, $(SOURCES_CPP))
-SOURCES_CPP:=$(filter-out necsim/Logging.cpp, $(SOURCES_CPP))
-SOURCES_CPP+=$(wildcard *.cpp)
+PKG_CXXFLAGS += @defines@
+PKG_LIBS += -lboost_filesystem -lgdal $(LAPACK_LIBS) $(BLAS_LIBS)
+SOURCES_CPP=$(wildcard necsim/*.cpp) $(wildcard *.cpp)
 OBJECTS = $(SOURCES_CPP:.cpp=.o)

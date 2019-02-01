@@ -12,8 +12,8 @@
 #ifndef RCOALESCENCE_RPROTRACTEDSPATIALTREE_H
 #define RCOALESCENCE_RPROTRACTEDSPATIALTREE_H
 
-#include <necsim/ProtractedTree.h>
-#include <necsim/ProtractedSpatialTree.h>
+#include "necsim/ProtractedTree.h"
+#include "necsim/ProtractedSpatialTree.h"
 #include "RSpatialTreeSimulation.h"
 
 //using RProtractedSpatialTreeSimulation = RSpatialTreeSimulation<ProtractedTree>

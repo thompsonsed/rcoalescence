@@ -10,7 +10,6 @@
  */
 #include <Rcpp/r/headers.h>
 #include <Rcpp.h>
-
 #include "RLogging.h"
 
 using namespace std;

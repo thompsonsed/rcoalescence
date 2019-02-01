@@ -5,7 +5,7 @@
 \alias{SpatialTreeSimulation}
 \title{Spatially-explicit neutral models}
 \description{
-Run spatial neutral models. You must provide map files which provide the spatial 
+Run spatial neutral models. You must provide map files which provide the spatial
 density for the TreeSimulation. Additional maps are optional.
 }
 \section{Methods}{
@@ -15,9 +15,7 @@ density for the TreeSimulation. Additional maps are optional.
   gen_since_historical = 1, habitat_change_rate = 0)}}{Adds a historical map to the list of historical maps to use.}
 
 \item{\code{applySpeciationRates(speciation_rates = NA, output_file = "none",
-  times_list = c(0), metacommunity_option = c(), metacommunity_size = c(),
-  metacommunity_speciation_rate = c(),
-  metacommunity_external_reference = c())}}{Applies the provided speciation parameters to the TreeSimulation}
+  times_list = c(0))}}{Applies the provided speciation parameters to the TreeSimulation}
 
 \item{\code{setDispersalParameters(sigma, dispersal_method = "normal", tau = 1,
   m_prob = 0, cutoff = 0, dispersal_relative_cost = 1,
@@ -37,9 +35,9 @@ density for the TreeSimulation. Additional maps are optional.
   coarse_map_scale = 1, deme = 1, deme_sample = 1,
   uses_spatial_sampling = FALSE)}}{Sets the map parameters for the TreeSimulation}
 
-\item{\code{setTreeSimulationParameters(task, seed, speciation_rate,
+\item{\code{setSimulationParameters(task, seed, min_speciation_rate,
   output_directory = "output", max_time = 3600, desired_specnum = 1,
-  times_list = c(0), uses_logging = NA, deme = 1, deme_sample = 1)}}{Sets all TreeSimulation parameters}
+  times_list = c(0), uses_logging = NA, deme = 1, deme_sample = 1)}}{Sets simulation parameters}
 }}
 
 \section{Alternative classes}{
@@ -67,7 +65,7 @@ which are defined in setTreeSimulationParameters()
 \item \emph{uses_logging}: if true, all outputs are written to console
 \item \emph{deme}: the number of individuals per cell
 \item \emph{deme_sample}: the global sampling proportion
-\item \emph{speciation_rate}: the minimum speciation rate for the TreeSimulation
+\item \emph{min_speciation_rate}: the minimum speciation rate for the TreeSimulation
 }
 }
 
@@ -113,18 +111,16 @@ These include dispersal parameters and maps files
 
 \section{Post-TreeSimulation parameters}{
 
-These are for rebuilding the coalescence TreeSimulation under different conditions.
+These are for rebuilding the coalescence tree under different conditions.
 \itemize{
 \item \emph{output_file}: the directory to output to, defaults to "none"
 \item \emph{use_spatial}: if true, records full spatial locations of all individuals. Default=FALSE
 \item \emph{sample_file}: supply a mask for defining spatial sampling. Default="null"
 \item \emph{use_fragments}: supply a file containing fragment coordinates, or TRUE to let program calculate fragments
 \item \emph{speciation_rates}: list of speciation rates to apply
-\item \emph{times_list}: list of times to calculate coalescence TreeSimulation for
+\item \emph{times_list}: list of times to calculate coalescence tree at
 \item \emph{min_speciation_gens}: list of the minimum number of generations required before speciation
 \item \emph{max_speciation_gens}: list of the maximum number of generations required before speciation
-\item \emph{metacommunity_size}: the number of individuals in the metacommunity
-\item \emph{metacommunity_speciation_rate}: the effective speciation rate of the metacommunity
 }
 }
 

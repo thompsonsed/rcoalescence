@@ -85,6 +85,108 @@ test_that("Simulations correctly detect map sizes", {
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = c(0.5))
   expect_equal(1164, tmp$getSpeciesRichness())
+  expect_error(tmp$getSimulationParameters())
+  tmp$output()
+  sim_params <- tmp$getSimulationParameters()
+  expected_params <-
+    structure(
+      list(
+        seed = 9L,
+        job_type = 1L,
+        output_dir = "output",
+        speciation_rate = 0.5,
+        sigma = 2.828427,
+        tau = 1,
+        deme = 1L,
+        sample_size = 0.1,
+        max_time = 3600L,
+        dispersal_relative_cost = 1,
+        min_num_species = 1L,
+        habitat_change_rate = 0,
+        gen_since_historical = 1e+08,
+        time_config_file = "set",
+        coarse_map_file = "../../inst/extdata/sample/example_coarse.tif",
+        coarse_map_x = 35L,
+        coarse_map_y = 41L,
+        coarse_map_x_offset = 11L,
+        coarse_map_y_offset = 14L,
+        coarse_map_scale = 1,
+        fine_map_file = "../../inst/extdata/sample/example_fine.tif",
+        fine_map_x = 13L,
+        fine_map_y = 13L,
+        fine_map_x_offset = 0L,
+        fine_map_y_offset = 0L,
+        sample_file = "../../inst/extdata/sample/example_mask.tif",
+        grid_x = 13L,
+        grid_y = 13L,
+        sample_x = 13L,
+        sample_y = 13L,
+        sample_x_offset = 0L,
+        sample_y_offset = 0L,
+        historical_coarse_map = "none",
+        historical_fine_map = "none",
+        sim_complete = 1L,
+        dispersal_method = "normal",
+        m_probability = 0,
+        cutoff = 0,
+        restrict_self = 0L,
+        landscape_type = "closed",
+        protracted = 0L,
+        min_speciation_gen = 0,
+        max_speciation_gen = 0,
+        dispersal_map = "none"
+      ),
+      .Names = c(
+        "seed",
+        "job_type",
+        "output_dir",
+        "speciation_rate",
+        "sigma",
+        "tau",
+        "deme",
+        "sample_size",
+        "max_time",
+        "dispersal_relative_cost",
+        "min_num_species",
+        "habitat_change_rate",
+        "gen_since_historical",
+        "time_config_file",
+        "coarse_map_file",
+        "coarse_map_x",
+        "coarse_map_y",
+        "coarse_map_x_offset",
+        "coarse_map_y_offset",
+        "coarse_map_scale",
+        "fine_map_file",
+        "fine_map_x",
+        "fine_map_y",
+        "fine_map_x_offset",
+        "fine_map_y_offset",
+        "sample_file",
+        "grid_x",
+        "grid_y",
+        "sample_x",
+        "sample_y",
+        "sample_x_offset",
+        "sample_y_offset",
+        "historical_coarse_map",
+        "historical_fine_map",
+        "sim_complete",
+        "dispersal_method",
+        "m_probability",
+        "cutoff",
+        "restrict_self",
+        "landscape_type",
+        "protracted",
+        "min_speciation_gen",
+        "max_speciation_gen",
+        "dispersal_map"
+      ),
+      class = "data.frame",
+      row.names = c(NA, -1L)
+    )
+  expect_equal(TRUE, all.equal(sim_params, expected_params))
+  
 })
 
 context("Checking biodiversity metrics simulations")
@@ -145,7 +247,9 @@ test_that("Biodiversity metrics correctly stored in output database", {
   names(expected_abundances) <- c("species_id", "no_individuals")
   actual_abundances <-
     data.frame(tail(tmp$getSpeciesAbundances(2), 5), row.names = NULL)
-  expect_equal(TRUE, isTRUE(all.equal(expected_abundances, actual_abundances)))
+  expect_equal(TRUE, isTRUE(all.equal(
+    expected_abundances, actual_abundances
+  )))
   # Check species locations
   expected_locations <-
     data.frame(matrix(
@@ -310,18 +414,36 @@ test_that("Simulation with multiple sampling times.", {
 context("Basic non-spatial coalescence simulations")
 test_that("Basic simulation with deme of 100 completes", {
   tmp <- TreeSimulation$new()
-  tmp$setSimulationParameters(101,
-                              0,
-                              "default",
-                              1,
-                              1,
-                              c(0.0),
-                              deme = 100,
-                              min_speciation_rate = 0.1)
+  tmp$setSimulationParameters(
+    task = 101,
+    seed =  1,
+    output_directory =  "default",
+    max_time = 10,
+    deme = 100,
+    uses_logging = FALSE,
+    min_speciation_rate = 0.1
+  )
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = 0.1)
   expect_equal(24, tmp$getSpeciesRichness())
 })
+
+test_that("Basic simulation with deme of 100 completes and can output without application",
+          {
+            tmp <- TreeSimulation$new()
+            tmp$setSimulationParameters(
+              task = 101,
+              seed =  1,
+              output_directory =  "default",
+              max_time = 10,
+              deme = 100,
+              uses_logging = FALSE,
+              min_speciation_rate = 0.1
+            )
+            expect_equal(TRUE, tmp$runSimulation())
+            tmp$output()
+            expect_equal(TRUE, file.exists(tmp$output_database))
+          })
 
 test_that("Basic simulation produces 100 species with maximum speciation rate",
           {
@@ -369,7 +491,8 @@ test_that("Basic simulation with deme of 100 completes", {
     min_speciation_rate = 0.01,
     min_speciation_gen = 2.0,
     max_speciation_gen = 4000.0,
-    uses_logging=TRUE)
+    uses_logging = FALSE
+  )
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(
     speciation_rates = c(0.02, 0.03),
@@ -509,8 +632,24 @@ test_that("Can apply multiple protracted speciation parameters", {
   )
   tmp$output()
   crefs <- tmp$getCommunityReferences()
-  sr <- c(0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3,
-          0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3)
+  sr <- c(0.1,
+          0.2,
+          0.3,
+          0.1,
+          0.2,
+          0.3,
+          0.1,
+          0.2,
+          0.3,
+          0.1,
+          0.2,
+          0.3,
+          0.1,
+          0.2,
+          0.3,
+          0.1,
+          0.2,
+          0.3)
   ref <- seq(1, 9, 1)
   min_speciation_gen <- c(1, 1, 1, 5, 5, 5, 10, 10, 10,
                           1, 1, 1, 5, 5, 5, 10, 10, 10)
@@ -651,7 +790,7 @@ test_that("Metacommunity application works as intended with large size." , {
     metacommunity_speciation_rate = 0.00001,
     metacommunity_external_reference = 0
   )
-  expect_equal(1, tmp$getSpeciesRichness())
+  expect_equal(23, tmp$getSpeciesRichness())
 })
 
 test_that("Metacommunity application works as intended with multiple application." ,
@@ -660,34 +799,74 @@ test_that("Metacommunity application works as intended with multiple application
             tmp$setSimulationParameters(
               task = 303,
               seed = 3,
-              min_speciation_rate = 0.000001,
+              min_speciation_rate = 0.999999,
               deme = 1,
               sigma = 1,
-              uses_logging = TRUE,
+              uses_logging = FALSE,
               fine_map_file = "null",
               fine_map_x_size = 10,
               fine_map_y_size = 10
             )
             expect_equal(TRUE, tmp$runSimulation())
             tmp$applySpeciationRates(
-              speciation_rates = 0.000001,
+              speciation_rates = 0.999999,
               metacommunity_option = c("simulated", "simulated", "simulated", "analytical"),
               metacommunity_size = c(1, 1, 1000000, 1000000),
               metacommunity_speciation_rate = c(0.999999, 0.0000000001, 0.999999, 0.0000000001),
               metacommunity_external_reference = c(0, 0, 0, 0)
             )
             tmp$output()
-            expected_metacommunity = data.frame(c(1, 0.999999, 1, "simulated", 0,
-                                                  2, 0.0000000001, 1, "simulated", 0,
-                                                  3, 0.999999, 1000000, "simulated", 0,
-                                                  4, 0.0000000001, 1000000, "analytical", 0),
-                                                nrow = 4,
-                                                ncol = 5,
-                                                byrow = TRUE)
-            expect_equal(TRUE, all.equal(expected_metacommunity, tmp$getMetacommunityReferences()))
+            expected_metacommunity = data.frame(matrix(
+              c(
+                1,
+                0.999999,
+                1,
+                "simulated",
+                0,
+                2,
+                0.0000000001,
+                1,
+                "simulated",
+                0,
+                3,
+                0.999999,
+                1000000,
+                "simulated",
+                0,
+                4,
+                0.0000000001,
+                1000000,
+                "analytical",
+                0
+              ),
+              nrow = 4,
+              ncol = 5,
+              byrow = TRUE
+            ), stringsAsFactors = FALSE)
+            names(expected_metacommunity) <-
+              c(
+                "reference",
+                "speciation_rate",
+                "metacommunity_size",
+                "option",
+                "external_reference"
+              )
+            expected_metacommunity$reference <-
+              as.numeric(expected_metacommunity$reference)
+            expected_metacommunity$speciation_rate <- as.numeric(expected_metacommunity$speciation_rate)
+            expected_metacommunity$metacommunity_size <-
+              as.numeric(expected_metacommunity$metacommunity_size)
+            expected_metacommunity$option <-
+              as.character(expected_metacommunity$option)
+            expected_metacommunity$external_reference <-
+              as.numeric(expected_metacommunity$external_reference)
+            expect_equal(TRUE,
+                         all.equal(expected_metacommunity, tmp$getMetacommunityReferences()))
             expect_equal(1, tmp$getSpeciesRichness(community_reference = 1))
             expect_equal(1, tmp$getSpeciesRichness(community_reference = 2))
-            expect_equal(100, tmp$getSpeciesRichness(community_reference = 1))
-            expect_equal(1, tmp$getSpeciesRichness(community_reference = 2))
+            expect_equal(100, tmp$getSpeciesRichness(community_reference = 3))
+            expect_equal(7, tmp$getSpeciesRichness(community_reference = 4))
           })
-# unlink("output", recursive=TRUE)
+
+unlink("output", recursive = TRUE)
+unlink("default", recursive = TRUE)

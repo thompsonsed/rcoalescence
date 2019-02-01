@@ -12,7 +12,7 @@ Depends: Rcpp, RSQLite
 Imports: methods
 NeedsCompilation: yes
 LinkingTo: Rcpp (>= 0.12.14), BH
-SystemRequirements: for building from source: GDAL >= 1.11.4, library
+SystemRequirements: GNU make. For building from source: GDAL >= 1.11.4, library
         from https://trac.osgeo.org/gdal/wiki/DownloadSource and PROJ.4
         (proj >= 4.8.0) from https://download.osgeo.org/proj/; GDAL OSX
         frameworks built by William Kyngesburye at
