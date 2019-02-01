@@ -306,7 +306,7 @@ TreeSimulation <-
           if (anyNA(metacommunity_external_reference))
           {
             if (length(metacommunity_option) != length(metacommunity_size) |
-                length(metacommunity_speciation_rate != length(metacommunity_size)))
+                length(metacommunity_speciation_rate) != length(metacommunity_size))
             {
               stop("Metacommunity parameter vectors must be of equal size.")
             }

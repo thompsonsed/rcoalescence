@@ -1,9 +1,10 @@
 # Example simulation for non-spatial models
 library(rcoalescence)
-simulation <- Tree$new()
+# Create a new simulation object
+simulation <- TreeSimulation$new()
 # Simulate 100 individuals
 simulation$setSimulationParameters(seed=10, task =1, output_directory = "output", 
-                                   speciation_rate = 0.5, deme=100, uses_logging = TRUE)
+                                   speciation_rate = 0.5, deme=100, uses_logging = FALSE)
 simulation$runSimulation()
 
 # Apply additional speciation rates
