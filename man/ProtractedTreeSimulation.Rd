@@ -12,7 +12,8 @@ required, but the protracted speciation parameters should be specified.
 
 \describe{
 \item{\code{applySpeciationRates(speciation_rates = NA, output_file = "none",
-  times_list = c(0))}}{Applies the provided speciation parameters to the TreeSimulation}
+  times_list = c(0), metacommunity_option = NA, metacommunity_size = NA,
+  metacommunity_speciation_rate = NA, metacommunity_external_reference = NA)}}{Applies the provided speciation parameters to the TreeSimulation}
 
 \item{\code{setSimulationParameters(task, seed, min_speciation_rate,
   output_directory = "output", max_time = 3600, desired_specnum = 1,
@@ -84,15 +85,15 @@ These are for rebuilding the coalescence tree under different conditions.
 \examples{
 # Example simulation for non-spatial models with protracted speciation
 library(rcoalescence)
-simulation <- ProtractedTree$new()
-# Simulate 100 individuals
+simulation <- ProtractedTreeSimulation$new()
+# Simulate 100 individuals with protracted speciation occuring between generation 100 and 1000
+# with a probability of 0.5 per generation
 simulation$setSimulationParameters(seed=11, task =1, output_directory = "output", 
-                                   speciation_rate = 0.5, deme=100, uses_logging = TRUE,
+                                   min_speciation_rate = 0.5, deme=100, uses_logging = FALSE,
                                    min_speciation_gen=100, max_speciation_gen = 1000)
 simulation$runSimulation()
-
 # Apply additional speciation rates
-simulation$applySpeciationRates(speciation_rates = c(0.001, 0.7, 0.8),
+simulation$applySpeciationRates(speciation_rates = c(0.5, 0.7, 0.8),
                                 min_speciation_gens = c(10, 20, 20), 
                                 max_speciation_gens = c(500, 500, 1000))
 # Output to a database
@@ -101,5 +102,6 @@ simulation$output()
 simulation$getSpeciesRichness(1)
 # Get the species abundances (last 5)
 tail(simulation$getSpeciesAbundances(1), 5)
-
+# Remove the output directory
+unlink("output", recursive = TRUE)
 }

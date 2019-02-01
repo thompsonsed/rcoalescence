@@ -359,14 +359,21 @@ TreeSimulation <-
       
       
       
-      applySpeciationRates = function(speciation_rates =
-                                        NA,
+      applySpeciationRates = function(speciation_rates = NA,
                                       output_file = "none",
-                                      times_list = c(0.0)) {
+                                      times_list = c(0.0),
+                                      metacommunity_option = NA,
+                                      metacommunity_size = NA,
+                                      metacommunity_speciation_rate = NA,
+                                      metacommunity_external_reference = NA) {
         "Applies the provided speciation parameters to the TreeSimulation"
         if (!anyNA(speciation_rates))
         {
-          setSpeciationParameters(speciation_rates)
+          setSpeciationParameters(speciation_rates,
+                                  metacommunity_option,
+                                  metacommunity_size,
+                                  metacommunity_speciation_rate,
+                                  metacommunity_external_reference)
         }
         ._applySpeciationRates(output_file, FALSE, "null",
                                "F", times_list)
@@ -1175,8 +1182,7 @@ ProtractedSpatialTreeSimulation <-
                                       metacommunity_option = NA,
                                       metacommunity_size = NA,
                                       metacommunity_speciation_rate = NA,
-                                      metacommunity_external_reference =
-                                        NA) {
+                                      metacommunity_external_reference = NA) {
         "Applies the provided speciation parameters to the TreeSimulation"
         if (is.logical(use_fragments))
         {

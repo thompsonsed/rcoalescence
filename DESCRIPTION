@@ -12,12 +12,11 @@ Depends: Rcpp, RSQLite
 Imports: methods
 NeedsCompilation: yes
 LinkingTo: Rcpp (>= 0.12.14), BH
-SystemRequirements: GNU make. For building from source: GDAL >= 1.11.4, library
-        from https://trac.osgeo.org/gdal/wiki/DownloadSource and PROJ.4
-        (proj >= 4.8.0) from https://download.osgeo.org/proj/; GDAL OSX
-        frameworks built by William Kyngesburye at
-        http://www.kyngchaos.com/ may be used for source installs on
-        OSX or installation performed using Homebrew.
+SystemRequirements: Requires GDAL >= 1.11.4, available
+        from https://trac.osgeo.org/gdal/wiki/DownloadSource; GDAL OSX
+        frameworks built by William Kyngesburye at http://www.kyngchaos.com/ may be used for source 
+        installs on OSX or installation performed using Homebrew. 
+        Requires GNU make for compilation and boost headers (available through BH package).
 RoxygenNote: 6.0.1
 Suggests: testthat
 Collate:

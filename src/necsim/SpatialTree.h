@@ -132,14 +132,6 @@ public:
     void runFileChecks() override;
 
     /**
-     * @brief Parses the command line arguments and saves the flags in Tree for fullmode,
-     * resuming and other important variables.
-     * @deprecated command line arguments are no longer supported. Function will be removed at next major update.
-     * @param comargs
-     */
-    void parseArgs(vector<string> &comargs);
-
-    /**
      * @brief Checks that the folders exist and the files required for the simulation also exist.
      */
     void checkFolders();

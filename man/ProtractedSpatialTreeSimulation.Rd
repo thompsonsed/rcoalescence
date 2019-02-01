@@ -128,28 +128,29 @@ These are for rebuilding the coalescence tree under different conditions.
 \examples{
 # Example simulation using the supplied dimensions and offsets, with logging
 library(rcoalescence)
-simulation <- ProtractedSpatialTree$new()
+# Define the folder for the maps
+map_dir <- system.file("sample", package = "rcoalescence")
+simulation <- ProtractedSpatialTreeSimulation$new()
 simulation$setSimulationParameters(seed=9, task =1, output_directory = "output", 
-                                   speciation_rate = 0.5, sigma=2 * (2 ** 0.5), deme=1, 
+                                   min_speciation_rate = 0.5, sigma=2 * (2 ** 0.5), deme=1, 
                                    deme_sample = 0.1, 
-                                   fine_map_file = "inst/extdata/sample/example_fine.tif",
+                                   fine_map_file = file.path(map_dir, "example_fine.tif"),
                                    fine_map_x_size = 13, fine_map_y_size = 13, 
-                                   coarse_map_file="inst/extdata/sample/example_coarse.tif",
+                                   coarse_map_file=file.path(map_dir, "example_coarse.tif"),
                                    coarse_map_x_size = 35, coarse_map_y_size = 41, 
                                    coarse_map_x_offset = 11, coarse_map_y_offset = 14,
-                                   sample_mask_file = "inst/extdata/sample/example_mask.tif", 
-                                   sample_x_size = 13, sample_y_size = 13, uses_logging = TRUE,
+                                   sample_mask_file = file.path(map_dir, "example_mask.tif"), 
+                                   sample_x_size = 13, sample_y_size = 13, uses_logging = FALSE,
                                    min_speciation_gen=100, max_speciation_gen = 1000)
 simulation$runSimulation()
-
 # Or rely on automatic detection of map dimensions and offsets, without logging
-simulation <- ProtractedSpatialTree$new()
+simulation <- ProtractedSpatialTreeSimulation$new()
 simulation$setSimulationParameters(seed=9, task =1, output_directory = "output",
-                                   speciation_rate = 0.001, 
+                                   min_speciation_rate = 0.001, 
                                    sigma=2 * (2 ** 0.5), deme=1, deme_sample = 0.1, 
-                                   fine_map_file = "inst/extdata/sample/example_fine.tif", 
-                                   coarse_map_file="inst/extdata/sample/example_coarse.tif",
-                                   sample_mask_file = "inst/extdata/sample/example_mask.tif",
+                                   fine_map_file = file.path(map_dir, "example_fine.tif"), 
+                                   coarse_map_file=file.path(map_dir, "example_coarse.tif"),
+                                   sample_mask_file = file.path(map_dir, "example_mask.tif"),
                                    uses_logging = FALSE,
                                    min_speciation_gen=100, max_speciation_gen = 1000)
 simulation$runSimulation()
@@ -163,5 +164,7 @@ simulation$output()
 simulation$getSpeciesRichness(1)
 # Get the species abundances (last 5)
 tail(simulation$getSpeciesAbundances(1), 5)
+# Remove the output directory
+unlink("output", recursive = TRUE)
 
 }

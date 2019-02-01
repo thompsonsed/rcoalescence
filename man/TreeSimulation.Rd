@@ -12,7 +12,8 @@ TreeSimulation and run. Dispersal parameters (sigma, tau, etc) are not relevant 
 
 \describe{
 \item{\code{applySpeciationRates(speciation_rates = NA, output_file = "none",
-  times_list = c(0))}}{Applies the provided speciation parameters to the TreeSimulation}
+  times_list = c(0), metacommunity_option = NA, metacommunity_size = NA,
+  metacommunity_speciation_rate = NA, metacommunity_external_reference = NA)}}{Applies the provided speciation parameters to the TreeSimulation}
 
 \item{\code{checkOutputDatabase()}}{Checks if the output database is set}
 
@@ -97,19 +98,20 @@ These are for rebuilding the coalescence tree under different conditions.
 \examples{
 # Example simulation for non-spatial models
 library(rcoalescence)
-simulation <- Tree$new()
+# Create a new simulation object
+simulation <- TreeSimulation$new()
 # Simulate 100 individuals
 simulation$setSimulationParameters(seed=10, task =1, output_directory = "output", 
-                                   speciation_rate = 0.5, deme=100, uses_logging = TRUE)
+                                   min_speciation_rate = 0.5, deme=100, uses_logging = FALSE)
 simulation$runSimulation()
-
 # Apply additional speciation rates
-simulation$applySpeciationRates(speciation_rates = c(0.001, 0.7, 0.8))
+simulation$applySpeciationRates(speciation_rates = c(0.6, 0.7, 0.8))
 # Output to a database
 simulation$output()
 # Get the species richness
 simulation$getSpeciesRichness(1)
 # Get the species abundances (last 5)
 tail(simulation$getSpeciesAbundances(1), 5)
-
+# Remove the output directory
+unlink("output", recursive = TRUE)
 }
