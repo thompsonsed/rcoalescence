@@ -96,15 +96,4 @@ RCPP_MODULE(coalescenceModule)
                                              "Simulates spatially-explicit neutral models with protracted speciation.")
             .constructor("initialises the spatial tree")
             .derives<RSpatialTreeSimulation>("RSpatialTreeSimulation");
-//    class_<RMetacommunity>("RMetacommunity", "Applies a metacommunity to a completed simulation.")
-//            .constructor("initialises the metacommunity.")
-//            .method("._setup", &RMetacommunity::setup, "Sets up the metacommunity object from a database.")
-//            .method("._addSpeciationRate", &RMetacommunity::addSpeciationRate,
-//                    "Add a speciation rate to generate the community at.")
-//            .method("._addTime", &RMetacommunity::addTime, "Adds a time to generate the community at.")
-//            .method(".addMetacommunityParameters", &RMetacommunity::addMetacommunityParameters,
-//                    "Adds a set of metacommunity parameters to generate a community for.")
-//            .method("._addProtractedParameters", &RMetacommunity::addProtractedParameters,
-//                    "Adds a set of protracted parameters to generate a protracted community for.")
-//            .method("apply", &RMetacommunity::apply, "Applies the community for the set-up parameters.");
 }
