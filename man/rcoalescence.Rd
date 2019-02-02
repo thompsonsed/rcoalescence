@@ -6,44 +6,106 @@
 \alias{rcoalescence-package}
 \title{rcoalescence: Efficient spatial and non-spatial neutral ecology simulator written in C++}
 \description{
-A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for 
-spatially-explicit neutral models based in c++.
+A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for
+spatially-explicit neutral models based in C++.
 
-rcoalescence allows for large-scale simulations to be performed on fully spatial files, with 
+rcoalescence allows for large-scale simulations to be performed on fully spatial files, with
 features to suit a wide variety of use cases.
 
-Four classes exist to represent non-spatial/spatial and non-protracted/protracted simulations. 
-See \link[=NeutralTree]{here} for a full description.
+Four classes exist to represent non-spatial/spatial and non-protracted/protracted simulations.
+See \link[=NeutralTreeSimulation]{here} for a full description.
 }
 \section{Installation}{
 
 There are several dependencies required before installation of this package will be successful.
+
+\subsection{Dependencies}{
+
 \itemize{
-    \item Install boost library for c++, available \href{https://www.boost.org/}{here}.
-    \item Install gdal library for c++, available \href{http://www.gdal.org/}{here}.
-    \item Install the sqlite3 library for c++, available \href{https://www.sqlite.org/index.html}{here}.
-    \item Several R packages are dependencies, including Rcpp and BH. These should be installed automatically.
+    \item R package development prerequisites, which may require additional installation steps,
+    depending on your platform
+    \href{https://support.rstudio.com/hc/en-us/articles/200486498}{(see here)}.
+    \item A C++ compiler that is detectable by R.
+    \item The devtools package.
+    \item Boost library for C++, available \href{https://www.boost.org/}{here}.
+    \item Gdal library for C++, available \href{http://www.gdal.org/}{here}.
+    \item Sqlite3 library for C++, available \href{https://www.sqlite.org/index.html}{here}.
+
+    \item Several R packages are dependencies, including Rcpp and BH. These should be installed
+    automatically.
 }
 }
 
-\section{Starting a simulation}{
+\subsection{Install method}{
+
+First, make sure devtools and the C++ library dependencies are installed. Then run,
+\code{library(devtools)}
+\code{install_bitbucket("thompsonsed/rcoalescence")}
+
+}
+}
+
+\section{Installation issues}{
 
 
-Methods are contained within the relevant classes \link[=NeutralTree]{(see here)} for setting up,
-running and analysing simulations. The general process is
+\subsection{Cannot find C++ compiler}{
+
+For Linux systems, the R development package is required. Use
+\code{sudo apt-get install r-base-dev} for Ubuntu-based systems. For other distributions, check
+the documentation for installing core software development utilities required for R package
+development.
+
+On MacOS, this requires that XCode is installed properly, and the compiler is detectable by R.
+See \href{https://support.rstudio.com/hc/en-us/articles/200486498}{here} for additional info.
+
+Windows is currently not supported.
+}
+
+\subsection{Missing gdal requirements}{
+
+If you get an error about gdal not being detected, check that
+gdal is properly installed. If the error indicates missing gdal_priv.h/cpl_conv.h, consider
+compiling gdal directly from source, as many package management systems do not properly install
+these files. If you know the directory containing gdal, supply it manually to using PKG_LIBS=/dir/
+during installation.
+}
+
+\subsection{Missing boost requirements}{
+
+Ensure that boost has been properly compiled. Try installing the package BH from CRAN - if this
+works then you should be fine. Alternatively, if you know the directory containing boost, supply
+it manually to using PKG_LIBS=/dir/ during installation.
+}
+
+\subsection{Still facing issues}{
+
+Try downloading the package from bitbucket manually and use \code{install_local()}.
+If you have autotools installed, run \code{autoreconf} and \code{autoconf} from the before
+attempting package
+}
+}
+
+\section{Starting a TreeSimulation}{
+
+
+Methods are contained within the relevant classes \link[=NeutralTreeSimulation]{(see here)} for
+setting up, running and analysing TreeSimulations. The general process is
 \itemize{
-    \item Create a new \link{Tree}, \link{SpatialTree}, \link{ProtractedTree} or
-          \link{ProtractedSpatialTree} object, depending on use case.
-    \item Set the simulation parameters and add additional historical maps.
-    \item Run the simulation (generally the most time-consuming step).
-    \item Apply speciation rates and other requirements post simulation using 
+    \item Create a new \link{TreeSimulation}, \link{SpatialTreeSimulation},
+          \link{ProtractedTreeSimulation} or \link{ProtractedSpatialTreeSimulation} object,
+          depending on use case.
+    \item Set the TreeSimulation parameters and add additional historical maps.
+    \item Run the TreeSimulation (generally the most time-consuming step).
+    \item Apply speciation rates and other requirements post TreeSimulation using
     SpeciationParameters.
-    \item Get the species richness from the simulation.
+    \item Get the species richness from the TreeSimulation.
     \item Optionally write results to an SQLite database for further manual analysis.
-    \item If written to an output database, acquire the desired biodiversity metrics, such as 
+    \item If written to an output database, acquire the desired biodiversity metrics, such as
     species locations or species abundances.
 
 }
+
+See examples in the \link[=NeutralTreeSimulation]{relevant classes}.
 }
 
 \author{

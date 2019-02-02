@@ -1,3 +1,6 @@
+src/necsim/Logger.cpp
+src/necsim/main.cpp
+src/necsim/cmake*
 *.DS_Store
 .Rproj.user
 .Rhistory

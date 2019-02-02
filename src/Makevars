@@ -1,11 +1,10 @@
-PKG_LIBS= -arch x86_64 -L/usr/local/lib -lproj -ljson-c -L/usr/local/opt/json-c/lib -L/usr/local/lib -lfreexl -L/usr/local/Cellar/geos/3.6.2/lib -lgeos_c -L/usr/local/opt/sqlite/lib -lsqlite3 -lexpat -L/usr/local -L/usr/local/lib -lgif -L/usr/local -L/usr/local/lib -ljpeg -L/usr/local/lib -lgeotiff -L/usr/local/lib -ltiff -L/usr/local/opt/libpng -L/usr/local/opt/libpng/lib -lpng -lz -L/usr -L/usr/lib -lpthread -ldl -L/usr/local/Cellar/gdal2/2.2.4/lib -L/usr/local/lib -lspatialite -lpcre -lcurl -liconv -L/usr/local/Cellar/libxml2/2.9.7/lib -lxml2 -lz -lpthread -liconv -lm -L/usr/local/Cellar/gdal2/2.2.4/lib -lgdal
-PKG_CXXFLAGS=-I. -std=c++11 -I/usr/local/Cellar/gdal2/2.2.4/include
-defines= -Dwith_gdal
-CXX_STD = CXX11
-PKG_CXXFLAGS += $(defines)
-PKG_LIBS += -lboost_filesystem $(LAPACK_LIBS) $(BLAS_LIBS)
-SOURCES_CPP=$(wildcard necsim/*.cpp)
+PKG_LIBS =  -L/usr/local/Cellar/gdal2/2.4.0/lib -lgdal
+PKG_CXXFLAGS=-I. -std=c++14
+# defines= -Dwith_gdal -Dsql_ram
+CXX_STD = CXX14
+PKG_CXXFLAGS +=  -Dwith_gdal -Dsql_ram
+PKG_LIBS += -lboost_filesystem -lgdal $(LAPACK_LIBS) $(BLAS_LIBS)
+SOURCES_CPP=$(wildcard necsim/*.cpp) $(wildcard *.cpp)
 SOURCES_CPP:=$(filter-out necsim/main.cpp, $(SOURCES_CPP))
 SOURCES_CPP:=$(filter-out necsim/Logging.cpp, $(SOURCES_CPP))
-SOURCES_CPP+=$(wildcard *.cpp)
 OBJECTS = $(SOURCES_CPP:.cpp=.o)

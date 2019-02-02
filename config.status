@@ -583,13 +583,9 @@ echo 'BEGIN {' >"$ac_tmp/subs1.awk" &&
 cat >>"$ac_tmp/subs1.awk" <<\_ACAWK &&
 S["LTLIBOBJS"]=""
 S["LIBOBJS"]=""
-S["PKG_LIBS"]=" -arch x86_64 -L/usr/local/lib -lproj -ljson-c -L/usr/local/opt/json-c/lib -L/usr/local/lib -lfreexl -L/usr/local/Cellar/geos/3.6.2/lib -lgeos_c -L/"\
-"usr/local/opt/sqlite/lib -lsqlite3 -lexpat -L/usr/local -L/usr/local/lib -lgif -L/usr/local -L/usr/local/lib -ljpeg -L/usr/local/lib -lgeotiff -L/us"\
-"r/local/lib -ltiff -L/usr/local/opt/libpng -L/usr/local/opt/libpng/lib -lpng -lz -L/usr -L/usr/lib -lpthread -ldl -L/usr/local/Cellar/gdal2/2.2.4/li"\
-"b -L/usr/local/lib -lspatialite -lpcre -lcurl -liconv -L/usr/local/Cellar/libxml2/2.9.7/lib -lxml2 -lz -lpthread -liconv -lm -L/usr/local/Cellar/gda"\
-"l2/2.2.4/lib -lgdal"
-S["PKG_CXXFLAGS"]="-I. -std=c++11 -I/usr/local/Cellar/gdal2/2.2.4/include"
-S["defines"]=" -Dwith_gdal"
+S["PKG_LIBS"]=" -L/usr/local/Cellar/gdal2/2.4.0/lib -lgdal"
+S["PKG_CXXFLAGS"]="-I. -std=c++14"
+S["defines"]=" -Dwith_gdal -Dsql_ram"
 S["GDAL_CONFIG"]="/usr/local/bin/gdal-config"
 S["SED"]="/usr/bin/sed"
 S["BOOST_CPPFLAGS"]=""
@@ -601,20 +597,20 @@ S["CXXCPP"]="clang++ -E"
 S["OBJEXT"]="o"
 S["EXEEXT"]=""
 S["ac_ct_CXX"]=""
-S["CPPFLAGS"]="-I/usr/local/include"
+S["CPPFLAGS"]="-I. -std=c++14 -I/usr/local/include -I/usr/local/Cellar/gdal2/2.4.0/include -I/usr/local/Cellar/gdal2/2.4.0/include"
 S["LDFLAGS"]=""
 S["CXXFLAGS"]="-Wall -g -O2"
 S["CXX"]="clang++"
 S["target_alias"]=""
 S["host_alias"]=""
 S["build_alias"]=""
-S["LIBS"]=" -lsqlite3 -lboost_filesystem -lboost_system -lpthread"
+S["LIBS"]="  -lsqlite3 -lboost_filesystem -lboost_system -lpthread -L/usr/local/Cellar/gdal2/2.4.0/lib -lgdal -L/usr/local/Cellar/gdal2/2.4.0/lib -lgdal"
 S["ECHO_T"]=""
 S["ECHO_N"]=""
 S["ECHO_C"]="\\c"
 S["DEFS"]="-DPACKAGE_NAME=\\\"all\\\" -DPACKAGE_TARNAME=\\\"all\\\" -DPACKAGE_VERSION=\\\"1.0\\\" -DPACKAGE_STRING=\\\"all\\ 1.0\\\" -DPACKAGE_BUGREPORT=\\\"\\\" -DPACKAGE_URL=\\\"\\\""\
 " -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_"\
-"H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_SQLITE3_H=1 -DHAVE_BOOST=1 -DHAVE_BOOST_FILESYSTEM_HPP=1 -DHAVE_GDAL_PRIV_H=1 -DHAVE_CPL_CONV_H=1"
+"H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_SQLITE3_H=1 -DHAVE_BOOST=1 -DHAVE_BOOST_FILESYSTEM_HPP=1 -DHAVE_GDAL_PRIV_H=1 -DHAVE_GDAL_H=1"
 S["mandir"]="${datarootdir}/man"
 S["localedir"]="${datarootdir}/locale"
 S["libdir"]="${exec_prefix}/lib"
