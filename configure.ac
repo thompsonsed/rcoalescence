@@ -1,5 +1,6 @@
 AC_INIT(all, 1.0)
 AC_CONFIG_MACRO_DIR([inst/extdata/m4])
+AC_CONFIG_MACRO_DIR([extdata/m4])
 CPPFLAGS="$CPPFLAGS"
 dnl Switch to a C++ compiler, and check if it works.
 

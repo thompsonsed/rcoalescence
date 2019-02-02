@@ -223,7 +223,7 @@ NULL
 #' @example inst/extdata/examples_nonspatial.R
 TreeSimulation <-
   setRcppClass(
-    "TreeSimulation",
+    "RTreeSimulation",
     "RTreeSimulation",
     module = "coalescenceModule",
     fields = list(output_database = "character"),
@@ -627,10 +627,9 @@ TreeSimulation <-
 #' @inheritSection NeutralTreeSimulation Post-TreeSimulation parameters
 #' @inheritParams TreeSimulation
 #' @example inst/extdata/examples_spatial.R
-SpatialTreeSimulation <-
   setRcppClass(
     "SpatialTreeSimulation",
-    "RSpatialTreeSimulation",
+    "SpatialTreeSimulation",
     module = "coalescenceModule",
     fields = list(output_database = "character"),
     contains = c("TreeSimulation"),
@@ -912,10 +911,9 @@ SpatialTreeSimulation <-
 #' @inheritSection NeutralTreeSimulation Post-TreeSimulation parameters
 #' @inheritParams TreeSimulation
 #' @example inst/extdata/examples_nonspatial_protracted.R
-ProtractedTreeSimulation <-
   setRcppClass(
     "ProtractedTreeSimulation",
-    "RProtractedTreeSimulation",
+    "ProtractedTreeSimulation",
     module = "coalescenceModule",
     fields = list(output_database = "character"),
     contains = c("TreeSimulation"),
@@ -1057,10 +1055,9 @@ ProtractedTreeSimulation <-
 #' @inheritParams TreeSimulation
 #' @inheritParams SpatialTreeSimulation
 #' @example inst/extdata/examples_spatial_protracted.R
-ProtractedSpatialTreeSimulation <-
   setRcppClass(
     "ProtractedSpatialTreeSimulation",
-    "RProtractedSpatialTreeSimulation",
+    "ProtractedSpatialTreeSimulation",
     module = "coalescenceModule",
     fields = list(output_database = "character"),
     contains = c(
