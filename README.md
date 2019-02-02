@@ -14,7 +14,7 @@
 ### Setup and installation ###
 
 * First make sure the requirements are installed (see below).
-* Then the package can be installed directly from bitbucket using ``devtools::install_bitbucket(thompsonsed/rcoalescence)``
+* Then the package can be installed directly from bitbucket using ``devtools::install_bitbucket("thompsonsed/rcoalescence")``
 * Currently also requires installation of ``necsim``, which is not yet publicly available - please 
 contact authors for more information.
 

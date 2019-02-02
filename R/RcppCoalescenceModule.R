@@ -218,8 +218,8 @@ NULL
 #' TreeSimulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
 #' @section Alternative classes:
 #' For alternative classes providing similar functionality, see \link[=NeutralTreeSimulation]{here}.
-#' @inheritSection NeutralTreeSimulation TreeSimulation parameters
-#' @inheritSection NeutralTreeSimulation Post-TreeSimulation parameters
+#' @inheritSection NeutralTreeSimulation Simulation parameters
+#' @inheritSection NeutralTreeSimulation Post-simulation parameters
 #' @example inst/extdata/examples_nonspatial.R
 TreeSimulation <-
   setRcppClass(
@@ -646,7 +646,7 @@ SpatialTreeSimulation <-
                                         landscape_type = "closed",
                                         dispersal_file = "null",
                                         reproduction_file = "null") {
-        "Sets the dispersal parameters for the TreeSimulation"
+        "Sets the dispersal parameters for the simulation"
         ._setDispersalParameters(
           sigma,
           dispersal_method,
@@ -683,7 +683,7 @@ SpatialTreeSimulation <-
                                   deme = 1,
                                   deme_sample = 1.0,
                                   uses_spatial_sampling = FALSE) {
-        "Sets the map parameters for the TreeSimulation"
+        "Sets the map parameters for the simulation"
         if (sample_mask_file == "null")
         {
           sample_x_size <- fine_map_x_size
@@ -736,7 +736,7 @@ SpatialTreeSimulation <-
                                               100000000,
                                             habitat_change_rate =
                                               0.0) {
-        "Sets the historical map parameters for the TreeSimulation testing"
+        "Sets the historical map parameters for the simulation."
         ._setHistoricalMapParameters(
           historical_fine_map,
           historical_coarse_map,
@@ -770,7 +770,7 @@ SpatialTreeSimulation <-
                                         NA,
                                       metacommunity_external_reference =
                                         NA) {
-        "Applies the provided speciation parameters to the TreeSimulation"
+        "Applies the provided speciation parameters to the simulation"
         if (is.logical(use_fragments))
         {
           use_fragments <- substr(as.character(use_fragments), 1, 1)

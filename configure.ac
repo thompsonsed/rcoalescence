@@ -3,18 +3,23 @@ AC_CONFIG_MACRO_DIR([inst/extdata/m4])
 CPPFLAGS="$CPPFLAGS"
 dnl Switch to a C++ compiler, and check if it works.
 
-dnl check for R home
+# find R home and set correct compiler + flags
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
-  echo "could not determine R_HOME"
-  exit 1
+  AC_MSG_ERROR([cannot determine R_HOME. Make sure you use R CMD INSTALL!])
 fi
-CC=`"${R_HOME}/bin/R" CMD config CC`
-CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
-CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+AC_MSG_NOTICE([R_HOME: ${R_HOME}])
+RBIN="${R_HOME}/bin/R"
+# pick all flags for testing from R
+: ${CC=`"${RBIN}" CMD config CC`}
+: ${CXX=`"${RBIN}" CMD config CXX`}
+: ${CPP=`"${RBIN}" CMD config CPP`}
+: ${CFLAGS=`"${RBIN}" CMD config CFLAGS`}
+: ${CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`}
+: ${LDFLAGS=`"${RBIN}" CMD config LDFLAGS`}
+
 PKG_CXXFLAGS="-I. -std=c++14"
-CXX=`"${R_HOME}/bin/R" CMD config CXX`
-CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+
 AC_LANG(C++)
 AC_PROG_CXX
 PKG_LIBS=${PKGLIBS}

@@ -16,7 +16,6 @@
 #include "RSpatialTreeSimulation.h"
 #include "RProtractedTreeSimulation.h"
 #include "RProtractedSpatialTreeSimulation.h"
-#include "RMetacommunity.h"
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(BH)]]
 //' @useDynLib rcoalescence, .registration=TRUE
@@ -30,8 +29,6 @@ RCPP_EXPOSED_CLASS(RSpatialTreeSimulation);
 RCPP_EXPOSED_CLASS(RProtractedTreeSimulation);
 
 RCPP_EXPOSED_CLASS(RProtractedSpatialTreeSimulation);
-
-RCPP_EXPOSED_CLASS(RMetacommunity);
 
 RCPP_MODULE(coalescenceModule)
 {
