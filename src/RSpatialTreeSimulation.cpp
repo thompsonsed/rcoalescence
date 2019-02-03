@@ -10,6 +10,8 @@
  */
 #include "RSpatialTreeSimulation.h"
 
+using namespace rcoalescence;
+using namespace std;
 RSpatialTreeSimulation::RSpatialTreeSimulation() : RTreeSimulation(), SpatialTree()
 {
     output_database = "not_set";

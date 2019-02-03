@@ -22,18 +22,20 @@
 
 bool logging_mode;
 
-RCPP_EXPOSED_CLASS(RTreeSimulation);
+using namespace rcoalescence;
 
-RCPP_EXPOSED_CLASS(RSpatialTreeSimulation);
+RCPP_EXPOSED_CLASS(TreeSimulation);
 
-RCPP_EXPOSED_CLASS(RProtractedTreeSimulation);
+RCPP_EXPOSED_CLASS(SpatialTreeSimulation);
 
-RCPP_EXPOSED_CLASS(RProtractedSpatialTreeSimulation);
+RCPP_EXPOSED_CLASS(ProtractedTreeSimulation);
+
+RCPP_EXPOSED_CLASS(ProtractedSpatialTreeSimulation);
 
 RCPP_MODULE(coalescenceModule)
 {
     using namespace Rcpp;
-    class_<RTreeSimulation>("RTreeSimulation", "Simulates non-spatial neutral models.")
+    class_<RTreeSimulation>("TreeSimulation", "Simulates non-spatial neutral models.")
             .constructor("initialises the tree")
             .method("._setKeyParameters", &RTreeSimulation::setKeyParameters,
                     "Sets the main simulation parameters for house-keeping purposes.")
@@ -73,9 +75,9 @@ RCPP_MODULE(coalescenceModule)
             .method("._getMultipleOutput", &RTreeSimulation::getMultipleOutput,
                     "Returns the value of the multiple_output variable.")
             .field("output_database", &RTreeSimulation::output_database);
-    class_<RSpatialTreeSimulation>("RSpatialTreeSimulation", "Simulates spatially-explicit neutral models.")
+    class_<RSpatialTreeSimulation>("SpatialTreeSimulation", "Simulates spatially-explicit neutral models.")
             .constructor("initialises the spatial tree")
-            .derives<RTreeSimulation>("RTreeSimulation")
+            .derives<RTreeSimulation>("TreeSimulation")
             .method("._setDispersalParameters", &RSpatialTreeSimulation::setDispersalParameters,
                     "Sets the dispersal parameters for the simulation.")
             .method("._setHistoricalMapParameters", &RSpatialTreeSimulation::setHistoricalMapParameters,
@@ -85,12 +87,12 @@ RCPP_MODULE(coalescenceModule)
             .method("._addHistoricalMap", &RSpatialTreeSimulation::addHistoricalMap,
                     "Adds a historical map with the desired parameter "
                     "set");
-    class_<RProtractedTreeSimulation>("RProtractedTreeSimulation",
+    class_<RProtractedTreeSimulation>("ProtractedTreeSimulation",
                                       "Simulates non-spatial neutral models with protracted speciation.")
             .constructor("initialises the tree")
-            .derives<RTreeSimulation>("RTreeSimulation");
-    class_<RProtractedSpatialTreeSimulation>("RProtractedSpatialTreeSimulation",
+            .derives<RTreeSimulation>("TreeSimulation");
+    class_<RProtractedSpatialTreeSimulation>("ProtractedSpatialTreeSimulation",
                                              "Simulates spatially-explicit neutral models with protracted speciation.")
             .constructor("initialises the spatial tree")
-            .derives<RSpatialTreeSimulation>("RSpatialTreeSimulation");
+            .derives<RSpatialTreeSimulation>("SpatialTreeSimulation");
 }

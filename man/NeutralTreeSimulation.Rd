@@ -6,19 +6,19 @@
 \description{
 Four classes are provided here, \link{TreeSimulation}, \link{SpatialTreeSimulation},
 \link{ProtractedTreeSimulation} and \link{ProtractedSpatialTreeSimulation}, for
-non-spatial/spatial and non-protracted/protracted TreeSimulations. The process for setting up,
-running and analysing TreeSimulations are the same, as described below.
+non-spatial/spatial and non-protracted/protracted simulations. The process for setting up,
+running and analysing simulations are the same, as described below.
 }
 \section{Non-spatial Models}{
 
 Run non-spatial neutral models. Here no map files are required, simply set up the
-TreeSimulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
+simulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
 }
 
 \section{Spatial Models}{
 
 Run spatial neutral models. You must provide map files which provide the spatial density for the
-TreeSimulation. Additional maps are optional.
+simulation. Additional maps are optional.
 }
 
 \section{Protracted Non-spatial Models}{
@@ -33,21 +33,21 @@ Runs spatially-explicit neutral models with protracted speciation. Requires both
 speciation parameters and map files defining spatial density.
 }
 
-\section{TreeSimulation parameters}{
+\section{Simulation parameters}{
 
-These parameters are required at TreeSimulation time. The vast majority have defaults,
-which are defined in setTreeSimulationParameters()
+These parameters are required at simulation time. The vast majority have defaults,
+which are defined in setSimulationParameters()
 \itemize{
 \item \emph{task}: the task reference number
 \item \emph{seed}: the seed for setting random number generation
-\item \emph{output_directory}: the path to the folder for storing TreeSimulation files
+\item \emph{output_directory}: the path to the folder for storing simulation files
 \item \emph{max_time}: the maximum number of seconds to simulate for before pausing
 \item \emph{desired_specnum}: the desired number of species to aim for
 \item \emph{times_list}: list of temporal sampling points
 \item \emph{uses_logging}: if true, all outputs are written to console
 \item \emph{deme}: the number of individuals per cell
 \item \emph{deme_sample}: the global sampling proportion
-\item \emph{min_speciation_rate}: the minimum speciation rate for the TreeSimulation
+\item \emph{min_speciation_rate}: the minimum speciation rate for the simulation
 }
 }
 
@@ -109,7 +109,7 @@ which contains a community to draw individuals from.
 }
 }
 
-\section{Post-TreeSimulation parameters}{
+\section{Post-simulation parameters}{
 
 These are for rebuilding the coalescence tree under different conditions.
 \itemize{

@@ -9,7 +9,8 @@
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
 #include "RTreeSimulation.h"
-
+using namespace rcoalescence;
+using namespace std;
 RTreeSimulation::RTreeSimulation()
         : Tree(), spec_sim_parameters(make_shared<SpecSimParameters>()), metacommunity(), multiple_output(false),
           has_outputted(false), has_written_main_sim(false), uses_metacommunity(false)

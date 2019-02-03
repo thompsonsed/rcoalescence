@@ -7,17 +7,23 @@
 
 #include "necsim/ProtractedTree.h"
 #include "RTreeSimulation.h"
-class RProtractedTreeSimulation : public virtual RTreeSimulation, public virtual ProtractedTree
+namespace rcoalescence
 {
-public:
-    using ProtractedTree::calcSpeciation;
-    using ProtractedTree::speciateLineage;
-    using ProtractedTree::getProtracted;
-    using ProtractedTree::setProtractedVariables;
-    using ProtractedTree::getProtractedVariables;
-    using ProtractedTree::getProtractedGenerationMin;
-    using ProtractedTree::getProtractedGenerationMax;
-    using ProtractedTree::protractedVarsToString;
-};
+    /**
+     * @brief Wrapper for protracted non-spatial simulations.
+     */
+    class RProtractedTreeSimulation : public virtual RTreeSimulation, public virtual ProtractedTree
+    {
+    public:
+        using ProtractedTree::calcSpeciation;
+        using ProtractedTree::speciateLineage;
+        using ProtractedTree::getProtracted;
+        using ProtractedTree::setProtractedVariables;
+        using ProtractedTree::getProtractedVariables;
+        using ProtractedTree::getProtractedGenerationMin;
+        using ProtractedTree::getProtractedGenerationMax;
+        using ProtractedTree::protractedVarsToString;
+    };
+}
 
 #endif //RCOALESCENCE_RPROTRACTEDTREE_H

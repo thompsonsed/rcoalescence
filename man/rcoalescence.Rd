@@ -85,20 +85,19 @@ attempting package
 }
 }
 
-\section{Starting a TreeSimulation}{
+\section{Starting a simulation}{
 
 
 Methods are contained within the relevant classes \link[=NeutralTreeSimulation]{(see here)} for
-setting up, running and analysing TreeSimulations. The general process is
+setting up, running and analysing simulations. The general process is
 \itemize{
     \item Create a new \link{TreeSimulation}, \link{SpatialTreeSimulation},
           \link{ProtractedTreeSimulation} or \link{ProtractedSpatialTreeSimulation} object,
           depending on use case.
-    \item Set the TreeSimulation parameters and add additional historical maps.
-    \item Run the TreeSimulation (generally the most time-consuming step).
-    \item Apply speciation rates and other requirements post TreeSimulation using
-    SpeciationParameters.
-    \item Get the species richness from the TreeSimulation.
+    \item Set the simulation parameters and add additional historical maps.
+    \item Run the simulation (generally the most time-consuming step).
+    \item Apply speciation rates and other requirements post simulation.
+    \item Get the species richness from the simulation.
     \item Optionally write results to an SQLite database for further manual analysis.
     \item If written to an output database, acquire the desired biodiversity metrics, such as
     species locations or species abundances.
