@@ -41,7 +41,11 @@ for a spatial simulation is:
 ```R
 library(rcoalescence)
 
+# Define the folder containing the maps (the examples come with the package)
+map_dir <- system.file("sample", package = "rcoalescence")
+
 # The recommended method is to rely on rcoalescence to detect dimensions and offsets of your maps.
+# For specifying all dimensions and offsets manually, please see the examples.
 # Create a new object to contain the SpatialTreeSimulation
 simulation <- SpatialTreeSimulation$new()
 # Set the main simulation parameters
