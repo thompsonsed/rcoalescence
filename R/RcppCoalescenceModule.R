@@ -115,19 +115,19 @@ NULL
 #' non-spatial/spatial and non-protracted/protracted simulations. The process for setting up,
 #' running and analysing simulations are the same, as described below.
 #'
-#' @section Non-spatial Models:
+#' @section Non-spatial models:
 #' Run non-spatial neutral models. Here no map files are required, simply set up the
 #' simulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
 #'
-#' @section Spatial Models:
+#' @section Spatial models:
 #' Run spatial neutral models. You must provide map files which provide the spatial density for the
 #' simulation. Additional maps are optional.
 #'
-#' @section Protracted Non-spatial Models:
+#' @section Protracted non-spatial models:
 #' Run non-spatial neutral models with protracted speciation. Here no map files are required, but
 #' the protracted speciation parameters should be specified.
 #'
-#' @section Protracted Spatial Models:
+#' @section Protracted spatial models:
 #' Runs spatially-explicit neutral models with protracted speciation. Requires both the protracted
 #' speciation parameters and map files defining spatial density.
 #'
@@ -144,6 +144,7 @@ NULL
 #' * *deme*: the number of individuals per cell
 #' * *deme_sample*: the global sampling proportion
 #' * *min_speciation_rate*: the minimum speciation rate for the simulation
+#' 
 #' @section Spatial parameters:
 #' These include dispersal parameters and maps files
 #' * *sigma*: mean dispersal: distance for a normally-distributed dispersal kernel
@@ -179,12 +180,14 @@ NULL
 #' * *historical_coarse_map*: the historical coarse map file
 #' * *gen_since_historical*: the number of generations since the historical state
 #' * *habitat_change_rate*: the rate of change to the historical map
+#' 
 #' @section Protracted speciation parameters:
 #' These parameters should match pairwise, i.e. the nth item in min_speciation_gens should go with
 #' the nth item in max_speciation_gens
 #' * *min_speciation_gens*: list of minimum number of generations required before speciation
 #' * *max_speciation_gens*: list of maximum number of generations required before speciation
-#'  @section Metacommunity parameters
+#' 
+#' @section Metacommunity parameters:
 #' These parameters are used for rebuilding the coalescence tree using a metacommunity, calculated
 #' using either a non-spatial simulation, an analytical approximation, or an external database
 #' which contains a community to draw individuals from.
@@ -192,6 +195,7 @@ NULL
 #' * *metacommunity_size*: the number of individuals in the metacommunity
 #' * *metacommunity_speciation_rate*: the effective speciation rate of the metacommunity
 #' * *external_reference*: an external reference for the Metacommunity.
+#' 
 #' @section Post-simulation parameters:
 #' These are for rebuilding the coalescence tree under different conditions.
 #' * *output_file*: the directory to output to, defaults to "none"
@@ -202,6 +206,7 @@ NULL
 #' * *times_list*: list of times to calculate coalescence tree at
 #' * *min_speciation_gens*: list of the minimum number of generations required before speciation
 #' * *max_speciation_gens*: list of the maximum number of generations required before speciation
+#' 
 #' @md
 #' @example inst/extdata/examples_nonspatial.R
 #' @example inst/extdata/examples_spatial.R
@@ -215,6 +220,7 @@ NULL
 #' @export TreeSimulation
 #' @description Run non-spatial neutral models. Here no map files are required, simply set up the
 #' simulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
+#' 
 #' @section Alternative classes:
 #' For alternative classes providing similar functionality, see \link[=NeutralTreeSimulation]{here}.
 #' @inheritSection NeutralTreeSimulation Simulation parameters
@@ -619,7 +625,7 @@ NULL
 #' @description Run spatial neutral models. You must provide map files which provide the spatial
 #' density for the simulation. Additional maps are optional.
 #' @inheritSection TreeSimulation Alternative classes
-#' @inheritSection NeutralTreeSimulation Spatial Models
+#' @inheritSection NeutralTreeSimulation Spatial models
 #' @inheritSection NeutralTreeSimulation Simulation parameters
 #' @inheritSection NeutralTreeSimulation Spatial parameters
 #' @inheritSection NeutralTreeSimulation Post-simulation parameters
@@ -903,7 +909,7 @@ setRcppClass(
 #' @description Run non-spatial neutral models with protracted speciation. Here no map files are
 #' required, but the protracted speciation parameters should be specified.
 #' @inheritSection TreeSimulation Alternative classes
-#' @inheritSection NeutralTreeSimulation Protracted Non-spatial Models
+#' @inheritSection NeutralTreeSimulation Protracted non-spatial models
 #' @inheritSection NeutralTreeSimulation Simulation parameters
 #' @inheritSection NeutralTreeSimulation Protracted speciation parameters
 #' @inheritSection NeutralTreeSimulation Post-simulation parameters
@@ -1045,7 +1051,7 @@ setRcppClass(
 #' @description  Runs spatially-explicit neutral models with protracted speciation. Requires both
 #' the protracted speciation parameters and map files defining spatial density.
 #' @inheritSection TreeSimulation Alternative classes
-#' @inheritSection NeutralTreeSimulation Protracted Spatial Models
+#' @inheritSection NeutralTreeSimulation Protracted spatial models
 #' @inheritSection NeutralTreeSimulation Simulation parameters
 #' @inheritSection NeutralTreeSimulation Spatial parameters
 #' @inheritSection NeutralTreeSimulation Protracted speciation parameters

@@ -12,7 +12,7 @@ the protracted speciation parameters and map files defining spatial density.
 For alternative classes providing similar functionality, see \link[=NeutralTreeSimulation]{here}.
 }
 
-\section{Protracted Spatial Models}{
+\section{Protracted spatial models}{
 
 Runs spatially-explicit neutral models with protracted speciation. Requires both the protracted
 speciation parameters and map files defining spatial density.
@@ -83,14 +83,6 @@ the nth item in max_speciation_gens
 \itemize{
 \item \emph{min_speciation_gens}: list of minimum number of generations required before speciation
 \item \emph{max_speciation_gens}: list of maximum number of generations required before speciation
-@section Metacommunity parameters
-These parameters are used for rebuilding the coalescence tree using a metacommunity, calculated
-using either a non-spatial simulation, an analytical approximation, or an external database
-which contains a community to draw individuals from.
-\item \emph{metacommunity_option}: one of "simulated", "analytical" or a path to an external database
-\item \emph{metacommunity_size}: the number of individuals in the metacommunity
-\item \emph{metacommunity_speciation_rate}: the effective speciation rate of the metacommunity
-\item \emph{external_reference}: an external reference for the Metacommunity.
 }
 }
 

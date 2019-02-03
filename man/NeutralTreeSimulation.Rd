@@ -9,25 +9,25 @@ Four classes are provided here, \link{TreeSimulation}, \link{SpatialTreeSimulati
 non-spatial/spatial and non-protracted/protracted simulations. The process for setting up,
 running and analysing simulations are the same, as described below.
 }
-\section{Non-spatial Models}{
+\section{Non-spatial models}{
 
 Run non-spatial neutral models. Here no map files are required, simply set up the
 simulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for this class.
 }
 
-\section{Spatial Models}{
+\section{Spatial models}{
 
 Run spatial neutral models. You must provide map files which provide the spatial density for the
 simulation. Additional maps are optional.
 }
 
-\section{Protracted Non-spatial Models}{
+\section{Protracted non-spatial models}{
 
 Run non-spatial neutral models with protracted speciation. Here no map files are required, but
 the protracted speciation parameters should be specified.
 }
 
-\section{Protracted Spatial Models}{
+\section{Protracted spatial models}{
 
 Runs spatially-explicit neutral models with protracted speciation. Requires both the protracted
 speciation parameters and map files defining spatial density.
@@ -98,10 +98,15 @@ the nth item in max_speciation_gens
 \itemize{
 \item \emph{min_speciation_gens}: list of minimum number of generations required before speciation
 \item \emph{max_speciation_gens}: list of maximum number of generations required before speciation
-@section Metacommunity parameters
+}
+}
+
+\section{Metacommunity parameters}{
+
 These parameters are used for rebuilding the coalescence tree using a metacommunity, calculated
 using either a non-spatial simulation, an analytical approximation, or an external database
 which contains a community to draw individuals from.
+\itemize{
 \item \emph{metacommunity_option}: one of "simulated", "analytical" or a path to an external database
 \item \emph{metacommunity_size}: the number of individuals in the metacommunity
 \item \emph{metacommunity_speciation_rate}: the effective speciation rate of the metacommunity

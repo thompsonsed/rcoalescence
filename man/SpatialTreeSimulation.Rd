@@ -12,7 +12,7 @@ density for the simulation. Additional maps are optional.
 For alternative classes providing similar functionality, see \link[=NeutralTreeSimulation]{here}.
 }
 
-\section{Spatial Models}{
+\section{Spatial models}{
 
 Run spatial neutral models. You must provide map files which provide the spatial density for the
 simulation. Additional maps are optional.
