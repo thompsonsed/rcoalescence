@@ -19,7 +19,6 @@ src/cmake-build*
 src/CMakeLists\.txt
 
 *.so
-src/necsim
 autom4te\.cache/
 
 \.Rhistory
