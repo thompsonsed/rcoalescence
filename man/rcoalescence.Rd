@@ -39,8 +39,7 @@ There are several dependencies required before installation of this package will
 \subsection{Install method}{
 
 First, make sure devtools and the C++ library dependencies are installed. Then run,
-\code{library(devtools)}
-\code{install_bitbucket("thompsonsed/rcoalescence")}
+\code{library(devtools)} and \code{install_bitbucket("thompsonsed/rcoalescence")}
 
 }
 }

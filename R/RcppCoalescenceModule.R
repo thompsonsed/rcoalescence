@@ -40,8 +40,7 @@
 #' \subsection{Install method}{
 #'
 #' First, make sure devtools and the C++ library dependencies are installed. Then run,
-#' \code{library(devtools)}
-#' \code{install_bitbucket("thompsonsed/rcoalescence")}
+#' \code{library(devtools)} and \code{install_bitbucket("thompsonsed/rcoalescence")}
 #'
 #' }
 #'
@@ -226,6 +225,8 @@ NULL
 #' @inheritSection NeutralTreeSimulation Simulation parameters
 #' @inheritSection NeutralTreeSimulation Post-simulation parameters
 #' @example inst/extdata/examples_nonspatial.R
+#' @example inst/extdata/examples_metacommunity.R
+
   setRcppClass(
     "TreeSimulation",
     "TreeSimulation",
