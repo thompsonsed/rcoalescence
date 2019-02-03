@@ -24,10 +24,7 @@ contact authors for more information.
 Before attempting installation, the following prequisites should be installed.
 
 * The devtools package (for installing from bitbucket) and Rcpp (for compiling the package).
-* GDAL, which can be installed through different methods, depending on your system. For macOS, use 
-  ``brew install gdal``, for Ubuntu, ``apt-get install gdal-dev`` (or equivalent for other Linux
-  distributions), and for Windows there are prebuilt binaries available
-  [here](http://www.gisinternals.com/release.php).
+* GDAL, which can be installed through different methods, depending on your system. For macOS, use ``brew install gdal``, for Ubuntu, ``apt-get install gdal-dev`` (or equivalent for other Linux distributions), and for Windows there are prebuilt binaries available [here](http://www.gisinternals.com/release.php).
 * A C++ compiler for your system. On macOS, make sure xcode is installed (``xcode-select --install``).
   Linux systems should come with gcc by default.
 * The Boost library (also available with the [BH R package](https://cran.r-project.org/package=BH)).
