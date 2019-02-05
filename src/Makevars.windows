@@ -1,0 +1,6 @@
+
+RCOALESCENCE_SRC = `"$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" --vanilla -e "cat(system.file('include', 'src', package = 'StanHeaders'))"`
+CXX_STD = CXX14
+PKG_CPPFLAGS = -I"../inst/include" -I"$(RCOALESCENCE_SRC)"
+SHLIB_LDFLAGS = $(SHLIB_CXXLDFLAGS) 
+SHLIB_LD = $(SHLIB_CXXLD)
