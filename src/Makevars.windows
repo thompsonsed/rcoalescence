@@ -4,3 +4,10 @@ CXX_STD = CXX14
 PKG_CPPFLAGS = -I"../inst/include" -I"$(RCOALESCENCE_SRC)"
 SHLIB_LDFLAGS = $(SHLIB_CXXLDFLAGS) 
 SHLIB_LD = $(SHLIB_CXXLD)
+PKG_LIBS += -lboost_filesystem $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+# Hack to get through R CHECK
+PKG_LIBS:=$(filter-out $(FLIBS), $(PKG_LIBS))
+SOURCES_CPP=$(wildcard necsim/*.cpp) $(wildcard *.cpp)
+SOURCES_CPP:=$(filter-out necsim/main.cpp, $(SOURCES_CPP))
+SOURCES_CPP:=$(filter-out necsim/Logging.cpp, $(SOURCES_CPP))
+OBJECTS = $(SOURCES_CPP:.cpp=.o)
