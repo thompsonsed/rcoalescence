@@ -1,6 +1,6 @@
-PKG_LIBS =  -L/usr/local/Cellar/gdal2/2.4.0/lib -lgdal
+PKG_LIBS =  -L/usr/lib64 -lgdal
 PKG_CXXFLAGS=-I. -std=c++14
-# defines= -Dwith_gdal -Dsql_ram
+defines= -Dwith_gdal -Dsql_ram
 CXX_STD = CXX14
 PKG_CXXFLAGS +=  -Dwith_gdal -Dsql_ram
 PKG_LIBS += -lboost_filesystem $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
