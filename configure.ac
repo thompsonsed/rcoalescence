@@ -1,9 +1,9 @@
 AC_INIT(all, 1.0)
 AC_CONFIG_MACRO_DIR([inst/extdata/m4])
-AC_CONFIG_MACRO_DIR([extdata/m4])
+dnl AC_CONFIG_MACRO_DIR([extdata/m4])
 CPPFLAGS="$CPPFLAGS"
 dnl Switch to a C++ compiler, and check if it works.
-
+m4_include(inst/extdata/m4/boost.m4)
 # find R home and set correct compiler + flags
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
@@ -153,6 +153,7 @@ defines="$defines -Dwith_gdal -Dsql_ram"
 AC_SUBST(defines)
 dnl Create the output variables
 AC_SUBST(PKG_CXXFLAGS)
+AC_SUBST(PKG_CPPFLAGS)
 AC_SUBST(PKG_LIBS)
 dnl Process Makevars.in to create Makevars
 AC_CONFIG_FILES([src/Makevars])

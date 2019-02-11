@@ -1,11 +1,17 @@
 PKG_LIBS =  -L/usr/lib64 -lgdal
 PKG_CXXFLAGS=-I. -std=c++14
+PKG_CPPFLAGS= -I/usr/include/gdal
+CXXFLAGS=-g -O2
+CPPFLAGS=-I. -std=c++14  -I/usr/include/gdal -I/usr/include/gdal
 defines= -Dwith_gdal -Dsql_ram
 CXX_STD = CXX14
-PKG_CXXFLAGS +=  -Dwith_gdal -Dsql_ram
-PKG_LIBS += -lboost_filesystem $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_CXXFLAGS += $(defines) $(CPPFLAGS) $(CXXFLAGS)
+
+PKG_LIBS += -lboost_filesystem  -Dwith_gdal
 # Hack to get through R CHECK
+PKG_LIBS += $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 PKG_LIBS:=$(filter-out $(FLIBS), $(PKG_LIBS))
+
 SOURCES_CPP=$(wildcard necsim/*.cpp) $(wildcard *.cpp)
 SOURCES_CPP:=$(filter-out necsim/main.cpp, $(SOURCES_CPP))
 SOURCES_CPP:=$(filter-out necsim/Logging.cpp, $(SOURCES_CPP))

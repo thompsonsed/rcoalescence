@@ -584,6 +584,7 @@ cat >>"$ac_tmp/subs1.awk" <<\_ACAWK &&
 S["LTLIBOBJS"]=""
 S["LIBOBJS"]=""
 S["PKG_LIBS"]=" -L/usr/lib64 -lgdal"
+S["PKG_CPPFLAGS"]=" -I/usr/include/gdal"
 S["PKG_CXXFLAGS"]="-I. -std=c++14"
 S["defines"]=" -Dwith_gdal -Dsql_ram"
 S["GDAL_CONFIG"]="/usr/bin/gdal-config"
