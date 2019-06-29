@@ -1,8 +1,8 @@
-PKG_LIBS =  -L/usr/local/Cellar/gdal2/2.4.0/lib -lgdal
+PKG_LIBS =  -L/usr/lib64 -lgdal
 PKG_CXXFLAGS=-I. -std=c++14
-PKG_CPPFLAGS= -I/usr/local/Cellar/gdal2/2.4.0/include
+PKG_CPPFLAGS= -I/usr/include/gdal
 CXXFLAGS=-g -O2
-CPPFLAGS=-I. -std=c++14  -I/usr/local/Cellar/gdal2/2.4.0/include -I/usr/local/Cellar/gdal2/2.4.0/include
+CPPFLAGS=-I. -std=c++14  -I/usr/include/gdal -I/usr/include/gdal
 defines= -Dwith_gdal -Dsql_ram
 CXX_STD = CXX14
 PKG_CXXFLAGS += $(defines) $(CPPFLAGS) $(CXXFLAGS)
