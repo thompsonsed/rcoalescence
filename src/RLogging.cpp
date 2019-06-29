@@ -14,6 +14,11 @@
 
 using namespace std;
 
+bool loggerIsSetup()
+{
+    return true;
+}
+
 void writeInfo(string message)
 {
     if(logging_mode)

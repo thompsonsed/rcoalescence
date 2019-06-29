@@ -149,7 +149,7 @@ else
 fi
 AC_CHECK_HEADERS([gdal_priv.h], [use_gdal=1], AC_MSG_ERROR([Ensure gdal is properly installed - cannot find gdal_priv.h]))
 AC_CHECK_HEADERS([gdal.h], [use_gdal=1], AC_MSG_ERROR([Ensure gdal is properly installed - cannot find gdal_priv.h]))
-defines="$defines -Dwith_gdal -Dsql_ram"
+defines="$defines -Dwith_gdal -Dsql_ram -Dwith_rcoalescence"
 AC_SUBST(defines)
 dnl Create the output variables
 AC_SUBST(PKG_CXXFLAGS)

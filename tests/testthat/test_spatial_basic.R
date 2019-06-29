@@ -62,7 +62,7 @@ test_that("Running with a basic map file works as expected", {
   )
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = 0.5)
-  expect_equal(1164, tmp$getSpeciesRichness())
+  expect_equal(1160, tmp$getSpeciesRichness())
 })
 
 test_that("Simulations correctly detect map sizes", {
@@ -82,7 +82,7 @@ test_that("Simulations correctly detect map sizes", {
   )
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = c(0.5))
-  expect_equal(1164, tmp$getSpeciesRichness())
+  expect_equal(1160, tmp$getSpeciesRichness())
   expect_error(tmp$getSimulationParameters())
   tmp$output()
   sim_params <- tmp$getSimulationParameters()

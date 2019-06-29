@@ -50,7 +50,7 @@ test_that("Biodiversity metrics correctly stored in output database", {
   expect_equal(TRUE, all.equal(expected_abundances, actual_abundances))
   expected_abundances <-
     data.frame(matrix(
-      c(1162, 2, 1163, 2, 1164, 2, 1165, 1, 1166, 1),
+      c(1163, 2, 1164, 1, 1165, 1, 1166, 1, 1167, 1),
       ncol = 2,
       byrow = TRUE
     ))
@@ -63,7 +63,7 @@ test_that("Biodiversity metrics correctly stored in output database", {
   # Check species locations
   expected_locations <-
     data.frame(matrix(
-      c(1, 0, 10, 2, 0, 10, 3, 0, 10, 4, 0, 10, 5, 0, 10),
+      c(1, 0, 10, 2, 0, 10, 3, 0, 10, 4, 0, 10, 1147, 0, 10),
       ncol = 3,
       byrow = TRUE
     ))
@@ -72,7 +72,7 @@ test_that("Biodiversity metrics correctly stored in output database", {
   expect_equal(TRUE, all.equal(expected_locations, actual_locations))
   expected_locations <-
     data.frame(matrix(
-      c(1150, 12, 12, 1151, 12, 12, 1152, 12, 12, 1153, 12, 12, 1154, 12, 12),
+      c(1147, 12, 12, 1148, 12, 12, 1149, 12, 12, 1150, 12, 12, 1151, 12, 12),
       ncol = 3,
       byrow = TRUE
     ))
@@ -81,8 +81,8 @@ test_that("Biodiversity metrics correctly stored in output database", {
     data.frame(tail(tmp$getSpeciesLocations(2), 5), row.names = NULL)
   expect_equal(TRUE, isTRUE(all.equal(expected_locations, actual_locations)))
   # Check species richness
-  expect_equal(1160, tmp$getSpeciesRichness(1))
-  expect_equal(1166, tmp$getSpeciesRichness(2))
+  expect_equal(1157, tmp$getSpeciesRichness(1))
+  expect_equal(1167, tmp$getSpeciesRichness(2))
   
   
   
@@ -119,7 +119,7 @@ test_that("Simulation with a single historical maps works as intended.", {
   # habitat_change_rate=1.0)
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = c(0.1))
-  expect_equal(1118, tmp$getSpeciesRichness())
+  expect_equal(1108, tmp$getSpeciesRichness())
 })
 #
 test_that("Simulation with multiple historical maps works as intended.", {
@@ -157,7 +157,7 @@ test_that("Simulation with multiple historical maps works as intended.", {
   )
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = c(0.5))
-  expect_equal(1159, tmp$getSpeciesRichness())
+  expect_equal(1153, tmp$getSpeciesRichness())
 })
 #
 test_that("Simulation with multiple sampling times.", {
@@ -215,10 +215,10 @@ test_that("Simulation with multiple sampling times.", {
       "metacommunity_reference")
   expect_equal(TRUE,
                all.equal(community_references, tmp$getCommunityReferences()))
-  expect_equal(1159, tmp$getSpeciesRichness(1))
-  expect_equal(1160, tmp$getSpeciesRichness(2))
-  expect_equal(1154, tmp$getSpeciesRichness(3))
-  expect_equal(1163, tmp$getSpeciesRichness(4))
+  expect_equal(1153, tmp$getSpeciesRichness(1))
+  expect_equal(1164, tmp$getSpeciesRichness(2))
+  expect_equal(1167, tmp$getSpeciesRichness(3))
+  expect_equal(1167, tmp$getSpeciesRichness(4))
 })
 
 unlink(file.path("output"), recursive = TRUE)

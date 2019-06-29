@@ -14,7 +14,7 @@ test_that("Basic simulation with deme of 100 completes", {
   )
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = 0.1)
-  expect_equal(24, tmp$getSpeciesRichness())
+  expect_equal(26, tmp$getSpeciesRichness())
 })
 
 test_that("Basic simulation with deme of 100 completes and can output without application",

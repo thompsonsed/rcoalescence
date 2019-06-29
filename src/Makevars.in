@@ -11,8 +11,5 @@ PKG_LIBS += -lboost_filesystem  -Dwith_gdal
 # Hack to get through R CHECK
 PKG_LIBS += $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 PKG_LIBS:=$(filter-out $(FLIBS), $(PKG_LIBS))
-
 SOURCES_CPP=$(wildcard necsim/*.cpp) $(wildcard *.cpp)
-SOURCES_CPP:=$(filter-out necsim/main.cpp, $(SOURCES_CPP))
-SOURCES_CPP:=$(filter-out necsim/Logging.cpp, $(SOURCES_CPP))
 OBJECTS = $(SOURCES_CPP:.cpp=.o)

@@ -18,7 +18,7 @@ test_that("Metacommunity application works as intended with non-spatial local co
   expect_equal(100, tmp$getSpeciesRichness())
   tmp$output()
   expect_equal(1, tmp$getSpeciesRichness(1))
-  expect_equal(5, tmp$getSpeciesRichness(2))
+  expect_equal(2, tmp$getSpeciesRichness(2))
   expect_equal(1, tmp$getSpeciesRichness(3))
   expect_equal(100, tmp$getSpeciesRichness(4))
 })
@@ -69,7 +69,7 @@ test_that("Metacommunity application works as intended with large size." , {
     metacommunity_speciation_rate = 0.00001,
     metacommunity_external_reference = 0
   )
-  expect_equal(23, tmp$getSpeciesRichness())
+  expect_equal(32, tmp$getSpeciesRichness())
 })
 
 
@@ -86,7 +86,7 @@ test_that("Metacommunity application works as intended with multiple application
               uses_logging = FALSE,
               fine_map_file = "null",
               fine_map_x_size = 10,
-              fine_map_y_size = 10
+              fine_map_y_size = 10,
             )
             expect_equal(TRUE, tmp$runSimulation())
             tmp$applySpeciationRates(
@@ -147,7 +147,7 @@ test_that("Metacommunity application works as intended with multiple application
             expect_equal(1, tmp$getSpeciesRichness(community_reference = 1))
             expect_equal(1, tmp$getSpeciesRichness(community_reference = 2))
             expect_equal(100, tmp$getSpeciesRichness(community_reference = 3))
-            expect_equal(7, tmp$getSpeciesRichness(community_reference = 4))
+            expect_equal(1, tmp$getSpeciesRichness(community_reference = 4))
           })
 
 unlink(file.path("output"), recursive = TRUE)
