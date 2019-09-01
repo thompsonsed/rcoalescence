@@ -2,6 +2,9 @@
 
 [![CircleCI](https://circleci.com/bb/thompsonsed/rcoalescence.svg?style=svg)](https://circleci.com/bb/thompsonsed/rcoalescence)
 
+[![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
+
+
 *rcoalescence* is a sister project to 
 [pycoalescence](http://pycoalescence.readthedocs.io/ "pycoalescence documentation") for running spatially-explicit neutral models for ecological systems. The package is available for macOS and Linux operating systems.
 
@@ -18,8 +21,7 @@
 
 * First make sure the requirements are installed (see below).
 * Then the package can be installed directly from bitbucket using ``devtools::install_bitbucket("thompsonsed/rcoalescence")``
-* Currently also requires installation of ``necsim``, which is not yet publicly available - please 
-contact authors for more information.
+
 
 ### Prerequisites ###
 
