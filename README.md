@@ -1,5 +1,7 @@
 # README #
 
+[![CircleCI](https://circleci.com/bb/thompsonsed/rcoalescence.svg?style=svg)](https://circleci.com/bb/thompsonsed/rcoalescence)
+
 *rcoalescence* is a sister project to 
 [pycoalescence](http://pycoalescence.readthedocs.io/ "pycoalescence documentation") for running spatially-explicit neutral models for ecological systems. The package is available for macOS and Linux operating systems.
 
