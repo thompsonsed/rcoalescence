@@ -1,8 +1,6 @@
 # README #
 
-[![CircleCI](https://circleci.com/bb/thompsonsed/rcoalescence.svg?style=svg)](https://circleci.com/bb/thompsonsed/rcoalescence)
-
-[![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
+[![CircleCI](https://img.shields.io/circleci/project/bitbucket/thompsonsed/rcoalescence.svg?label=CircleCI&logo=circleci)](https://circleci.com/bb/thompsonsed/rcoalescence) | [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
 
 *rcoalescence* is a sister project to 
