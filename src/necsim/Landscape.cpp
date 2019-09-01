@@ -58,7 +58,7 @@ uint32_t importToMapAndRound(string map_file, Map<uint32_t> &map_in, unsigned lo
     {
         for(unsigned long j = 0; j < temp_matrix.getCols(); j++)
         {
-            map_in.get(i, j) = (uint32_t) (max(round((double)temp_matrix.get(i, j) * scalar), 0.0));
+            map_in.get(i, j) = (uint32_t) (max(round((double) temp_matrix.get(i, j) * scalar), 0.0));
             if(map_in.get(i, j) > max_value)
             {
                 max_value = map_in.get(i, j);
@@ -79,6 +79,11 @@ unsigned long archimedesSpiralY(const double &centre_x, const double &centre_y, 
                                 const double &theta)
 {
     return static_cast<unsigned long>(floor(radius * sin(theta) + centre_y));
+}
+
+double calculateDistance(const double &start_x, const double &start_y, const double &end_x, const double &end_y)
+{
+    return pow(pow((start_x - end_x), 2) + pow((start_y - end_y), 2), 0.5);
 }
 
 void Landscape::setDims(shared_ptr<SimParameters> mapvarsin)
@@ -614,7 +619,9 @@ unsigned long Landscape::getValCoarse(const double &xval, const double &yval, co
             retval = (unsigned long) floor(coarse_map.get(yval, xval) +
                                            (habitat_change_rate *
                                             ((historical_coarse_map.get(yval, xval) - coarse_map.get(yval, xval) /
-                                             (gen_since_historical - current_map_time)) * currentTime)));
+                                                                                      (gen_since_historical
+                                                                                       - current_map_time))
+                                             * currentTime)));
         }
     }
     else
@@ -792,7 +799,7 @@ bool Landscape::isOnCoarse(const double &x, const double &y, const long &xwrap, 
     double xval, yval;
     xval = x + xwrap * x_dim;
     yval = y + ywrap * y_dim;
-    return xval < coarse_x_min || xval >= coarse_x_max || yval < coarse_y_min || yval >= coarse_y_max;
+    return !(xval < coarse_x_min || xval >= coarse_x_max || yval < coarse_y_min || yval >= coarse_y_max);
 }
 
 bool Landscape::isOnMap(const double &x, const double &y, const long &xwrap, const long &ywrap)
@@ -849,143 +856,7 @@ unsigned long Landscape::runDispersal(const double &dist,
     {
         //
         throw FatalException("Using dispersal relative cost is deprecated.");
-        // TODO remove this
-//        long boost;
-//        boost = 1;
-//        double cur_dist, tot_dist, l;
-//        cur_dist = 0;
-//        tot_dist = 0;
-//        // Four different calculations for the different quadrants.
-//        if(angle > 7 * M_PI_4 || angle <= M_PI_4)
-//        {
-//            // Continue while the dist travelled is less than the dist energy
-//            while(cur_dist < dist)
-//            {
-//                // Check if the starting position of the loop is in the fine map or not.
-//                if(isOnFine(newx, newy, 0, 0))
-//                {
-//                    // Keep the standard movement rate
-//                    boost = 1;
-//                }
-//                else
-//                {
-//                    // Accellerate the travel speed if the point is outside the fine grid.
-//                    // Note this means that lineages travelling from outside the fine grid to within the
-//                    // fine grid may
-//                    // see 1 grid's worth of approximation, rather than exact values.
-//                    // This is an acceptable approximation!
-//                    boost = deme;
-//                }
-//
-//                // Add the value to the new x and y values.
-//                newx = newx + boost;
-//                newy = newy + boost * tan(angle);
-//                // Check if the new point is within forest.
-//                if(checkMap(newx, newy, 0, 0, generation))
-//                {
-//                    l = 1;
-//                }
-//                else
-//                {
-//                    l = dispersal_relative_cost;
-//                }
-//                // Move forward different dists based on the difficulty of moving through forest.
-//                cur_dist = cur_dist + l * boost * (1 / cos(angle));
-//                tot_dist = tot_dist + boost * (1 / cos(angle));
-//            }
-//        }
-//        else if(angle > 3 * M_PI_4 && angle <= 5 * M_PI_4)
-//        {
-//            while(cur_dist < dist)
-//            {
-//                if(isOnFine(newx, newy, 0, 0))
-//                {
-//                    boost = 1;
-//                }
-//                else
-//                {
-//                    boost = deme;
-//                }
-//                // Add the change to the new x and y values.
-//                newx = newx - boost;
-//                newy = newy + boost * tan(M_PI - angle);
-//                if(checkMap(newx, newy, 0, 0, generation))
-//                {
-//                    l = 1;
-//                }
-//                else
-//                {
-//                    l = dispersal_relative_cost;
-//                }
-//                cur_dist = cur_dist + boost * l * (1 / cos(M_PI - angle));
-//                tot_dist = tot_dist + boost * (1 / cos(M_PI - angle));
-//            }
-//        }
-//        else if(angle > M_PI_4 && angle <= 3 * M_PI_4)
-//        {
-//            while(cur_dist < dist)
-//            {
-//                if(isOnFine(newx, newy, 0, 0))
-//                {
-//                    boost = 1;
-//                }
-//                else
-//                {
-//                    boost = deme;
-//                }
-//                // Add the change to the new x and y values.
-//                newx = newx + boost * tan(angle - M_PI_2);
-//                newy = newy + boost;
-//                if(checkMap(newx, newy, 0, 0, generation))
-//                {
-//                    l = 1;
-//                }
-//                else
-//                {
-//                    l = dispersal_relative_cost;
-//                }
-//                cur_dist = cur_dist + l * boost / cos(angle - M_PI_2);
-//                tot_dist = tot_dist + boost / cos(angle - M_PI_2);
-//            }
-//        }
-//        else if(angle > 5 * M_PI_4 && angle <= 7 * M_PI_4)
-//        {
-//            //				os << "...ang4..." <<  flush;
-//            while(cur_dist < dist)
-//            {
-//                if(isOnFine(newx, newy, 0, 0))
-//                {
-//                    boost = 1;
-//                }
-//                else
-//                {
-//                    boost = deme;
-//                }
-//                newx = newx + boost * tan(3 * M_PI_2 - angle);
-//                newy = newy - boost;
-//                if(checkMap(newx, newy, 0, 0, generation))
-//                {
-//                    l = 1;
-//                }
-//                else
-//                {
-//                    l = dispersal_relative_cost;
-//                }
-//                cur_dist = cur_dist + l * boost / cos(3 * M_PI_2 - angle);
-//                tot_dist = tot_dist + boost / cos(3 * M_PI_2 - angle);
-//            }
-//        }
-//        // Move the point back to get the exact placement
-//        if(checkMap(newx, newy, 0, 0, generation))
-//        {
-//            tot_dist = tot_dist - min(cur_dist - dist, (double(boost) - 0.001));
-//        }
-//        else
-//        {
-//            disp_comp = true;
-//        }
-//        newx = startx + 0.5 + tot_dist * cos(angle);
-//        newy = starty + 0.5 + tot_dist * sin(angle);
+
     }
     unsigned long ret = getVal(newx, newy, 0, 0, generation);
     if(ret > 0)
@@ -1017,7 +888,112 @@ double Landscape::distanceToNearestHabitat(const long &start_x, const long &star
     double end_x = start_x + 0.5;
     double end_y = start_y + 0.5;
     findNearestHabitatCell(start_x, start_y, start_x_wrap, start_y_wrap, end_x, end_y, generation);
-    return pow(pow((start_x - end_x), 2) + pow((start_y - end_y), 2), 0.5);
+    return calculateDistance((double)start_x, (double)start_y, end_x, end_y);
+}
+
+void Landscape::findNearestHabitatCell(const long &start_x, const long &start_y, const long &start_x_wrap,
+                                       const long &start_y_wrap, double &end_x, double &end_y, const double &generation)
+{
+    double theta = 0;
+    double radius = 1.0;
+    if(!getVal(end_x, end_y, start_x_wrap, start_y_wrap, generation))
+    {
+        while(true)
+        {
+            theta += 0.5 * M_PI / (2.0 * max(radius, 1.0));
+            radius = theta / (2 * M_PI);
+            end_x = archimedesSpiralX(start_x, start_y, radius, theta);
+            end_y = archimedesSpiralY(start_x, start_y, radius, theta);
+
+            // Double check that the distance is not greater than the map size
+            // This acts as a fail-safe in case someone presents a historical map with no habitat cells on
+            if(!isOnMap(end_x, end_y, start_x_wrap, start_y_wrap))
+            {
+                if(radius > fine_map.getCols() && radius > fine_map.getRows() &&
+                   radius > coarse_map.getCols() * scale && radius > coarse_map.getRows() * scale)
+                {
+                    // First try every cell in the landscape.
+                    if(findAnyHabitatCell(start_x, start_y, start_x_wrap, start_y_wrap, end_x, end_y, generation))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        stringstream ss;
+                        ss << "Could not find a habitat cell for parent from (" << start_x << ", " << start_y;
+                        ss << ") (" << start_x_wrap << ", " << start_y_wrap << ") - reached a radius of " << radius;
+                        ss << ". Check that your map files always have a place for lineages to disperse from." << endl;
+                        throw FatalException(ss.str());
+                    }
+                }
+            }
+            else
+            {
+                if(checkMap(end_x, end_y, start_x_wrap, start_y_wrap, generation))
+                {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+bool Landscape::findAnyHabitatCell(const long &start_x, const long &start_y, const long &start_x_wrap,
+                                   const long &start_y_wrap, double &end_x, double &end_y, const double &generation)
+{
+    long min_x = fine_x_min;
+    long min_y = fine_y_min;
+    long max_x = fine_x_max;
+    long max_y = fine_y_max;
+    if(has_coarse)
+    {
+        min_x = coarse_x_min;
+        min_y = coarse_y_min;
+        max_x = coarse_x_max;
+        max_y = coarse_y_max;
+    }
+    stringstream ss;
+    ss << "Looking for habitat cells within (" << min_x << ", " << max_x;
+    ss << "), (" << min_y << ", "<< max_y << ")." << endl;
+    writeInfo(ss.str());
+    vector<pair<long, long>> locations;
+    long start_x_reform = start_x + (x_dim * start_x_wrap);
+    long start_y_reform = start_y + (y_dim * start_y_wrap);
+    for(long y = min_y; y < max_y; y++)
+    {
+        for(long x = min_x; x < max_x; x++)
+        {
+            if(checkMap(x, y, 0, 0, generation))
+            {
+                pair<long, long> p(x, y);
+                locations.emplace_back(p);
+            }
+        }
+    }
+    if(locations.empty())
+    {
+        stringstream ss;
+        ss << "Could not find any habitat cell on map with extremes (" << min_x << ", " << max_x;
+        ss << "), (" << min_y << ", "<< max_y << ")." << endl;
+        writeCritical(ss.str());
+        return false;
+    }
+    // Find the nearest cell
+    double minimum_distance = calculateDistance((double)start_x_reform, (double) start_y_reform, (double)locations[0].first,
+            (double)locations[0].second);
+    end_x = (double)locations[0].first;
+    end_y = (double)locations[0].second;
+    for(const auto & item : locations)
+    {
+        double distance = calculateDistance((double)start_x_reform, (double) start_y_reform, (double)item.first,
+                                            (double)item.second);
+        if(distance < minimum_distance)
+        {
+            end_x = (double)item.first;
+            end_y = (double)item.second;
+        }
+    }
+    return true;
 }
 
 void Landscape::clearMap()

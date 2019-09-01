@@ -5,3 +5,4 @@
 ^.*/cmake-build.*$
 ^.*\.o$
 ^.aclocal.m4
+.circleci/*

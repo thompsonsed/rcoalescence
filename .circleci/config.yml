@@ -1,0 +1,65 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2.0
+jobs:
+  build_local:
+    docker:
+      - image: thompsonsed/rcoalescence-circleci-0.0.1
+
+    working_directory: ~
+
+    steps:
+      - checkout
+
+      - run:
+          name: build package from local
+          command: |
+            R CMD INSTALL --no-multiarch --with-keep.source rcoalescence
+
+
+      - run:
+          name: run tests
+          command: |
+            cd rcoalescence/tests
+            Rscript testthat.R
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+  build_bitbucket:
+    docker:
+      - image: thompsonsed/rcoalescence-circleci-0.0.1
+
+    working_directory: ~
+
+    steps:
+
+      - run:
+          name: build package from bitbucket
+          command: |
+            R -e "devtools::install_bitbucket('thompsonsed/rcoalescence')"
+
+      - checkout
+
+      - run:
+          name: run tests
+          command: |
+            cd rcoalescence/tests
+            Rscript testthat.R
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+  
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_local
+      - build_bitbucket
+

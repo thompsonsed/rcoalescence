@@ -337,9 +337,6 @@ public:
      */
     double fattailCDF(const double &distance)
     {
-        // TODO remove this
-        //        return (1.0 / (2.0 * M_PI * sigma * sigma)) *
-        //               pow(1 + (distance * distance / (tau * sigma * sigma)), -(tau + 2.0) / 2.0);
         return (1 - pow((1 + ((distance * distance) / (tau * sigma * sigma))), (-tau / 2)));
     }
 

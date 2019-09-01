@@ -63,6 +63,16 @@ unsigned long archimedesSpiralY(const double &centre_x, const double &centre_y, 
                                 const double &theta);
 
 /**
+ * @brief Calculates the distance between two points.
+ * @param start_x the start x coordinate
+ * @param start_y the start y coordinate
+ * @param end_x the end x coordinate
+ * @param end_y the end y coodinate
+ * @return the distance between the points
+ */
+double calculateDistance(const double &start_x, const double &start_y, const double &end_x, const double &end_y);
+
+/**
  * @class Landscape
  * @brief Contains all maps and provides the functions for accessing a grid cell in the correct temporal and spacial
  * location.
@@ -574,39 +584,21 @@ public:
      * @param generation the generation timer
      */
     void findNearestHabitatCell(const long &start_x, const long &start_y, const long &start_x_wrap,
-                                const long &start_y_wrap, double &end_x, double &end_y, const double &generation)
-    {
-        double theta = 0;
-        double radius = 1.0;
-        if(!getVal(end_x, end_y, start_x_wrap, start_y_wrap, generation))
-        {
-            while(true)
-            {
-                theta += 0.5 * M_PI / (2.0 * max(radius, 1.0));
-                radius = theta / (2 * M_PI);
-                end_x = archimedesSpiralX(start_x, start_y, radius, theta);
-                end_y = archimedesSpiralY(start_x, start_y, radius, theta);
+                                const long &start_y_wrap, double &end_x, double &end_y, const double &generation);
 
-                // Double check that the distance is not greater than the map size
-                // This acts as a fail-safe in case someone presents a historical map with no habitat cells on
-                if(!isOnMap(end_x, end_y, start_x_wrap, start_y_wrap))
-                {
-                    if(radius > fine_map.getCols() && radius > fine_map.getRows() &&
-                       radius > coarse_map.getCols() * scale && radius > coarse_map.getRows() * scale)
-                        throw FatalException(
-                                "Could not find a habitat cell for parent. Check that your map files always have a "
-                                "place for lineages to disperse from.");
-                }
-                else
-                {
-                    if(checkMap(end_x, end_y, start_x_wrap, start_y_wrap, generation))
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-    }
+    /**
+     * @brief Finds the nearest habitat cell using a much slower method (scanning the entire map for cells.
+     * @param start_x the start x coordinate
+     * @param start_y the start y coordinate
+     * @param start_x_wrap the starting x wrapping
+     * @param start_y_wrap the starting y wrapping
+     * @param end_x the end x coordinate value to modify
+     * @param end_y the end y coordinate value to modify
+     * @param generation the generation timer
+     * @return true if a habitat cell is found
+     */
+    bool findAnyHabitatCell(const long &start_x, const long &start_y, const long &start_x_wrap,
+                            const long &start_y_wrap, double &end_x, double &end_y, const double &generation);
 
     /**
      * @brief Operator for outputting the Map object variables to an output stream.
