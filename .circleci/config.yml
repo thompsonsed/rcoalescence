@@ -17,8 +17,7 @@ jobs:
           name: build package from local
           command: |
             cd ../
-            pwd 
-            ls
+            mv project rcoalescence
             R CMD INSTALL --no-multiarch --with-keep.source rcoalescence
 
 
