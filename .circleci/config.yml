@@ -1,4 +1,4 @@
-# Python CircleCI 2.0 configuration file
+# R CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
@@ -6,7 +6,7 @@ version: 2.0
 jobs:
   build_local:
     docker:
-      - image: thompsonsed/rcoalescence-circleci-0.0.1
+      - image: thompsonsed/rcoalescence-circleci-rbase_latest-0.0.1
 
     working_directory: ~
 
@@ -31,7 +31,7 @@ jobs:
 
   build_bitbucket:
     docker:
-      - image: thompsonsed/rcoalescence-circleci-0.0.1
+      - image: thompsonsed/rcoalescence-circleci-rbase_latest-0.0.1
 
     working_directory: ~
 
