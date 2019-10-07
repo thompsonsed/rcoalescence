@@ -13,33 +13,33 @@
 #include "RLogging.h"
 
 using namespace std;
-
-bool loggerIsSetup()
-{
-    return true;
-}
-
-void writeInfo(string message)
-{
-    if(logging_mode)
+namespace necsim{
+    bool loggerIsSetup()
     {
-        Rcpp::Rcout << message << flush;
+        return true;
+    }
+    
+    void writeInfo(string message)
+    {
+        if(logging_mode)
+        {
+            Rcpp::Rcout << message << flush;
+        }
+    }
+    
+    void writeWarning(string message)
+    {
+        writeInfo(message);
+    }
+    
+    void writeError(string message)
+    {
+        writeInfo(message);
+    }
+    
+    void writeCritical(string message)
+    {
+        writeInfo(message);
     }
 }
-
-void writeWarning(string message)
-{
-    writeInfo(message);
-}
-
-void writeError(string message)
-{
-    writeInfo(message);
-}
-
-void writeCritical(string message)
-{
-    writeInfo(message);
-}
-
 

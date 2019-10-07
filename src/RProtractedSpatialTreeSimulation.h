@@ -15,6 +15,7 @@
 #include "necsim/ProtractedTree.h"
 #include "necsim/ProtractedSpatialTree.h"
 #include "RSpatialTreeSimulation.h"
+
 namespace rcoalescence
 {
     /**

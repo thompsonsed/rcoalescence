@@ -12,6 +12,8 @@
 
 using namespace rcoalescence;
 using namespace std;
+using namespace necsim;
+
 RSpatialTreeSimulation::RSpatialTreeSimulation() : RTreeSimulation(), SpatialTree()
 {
     output_database = "not_set";

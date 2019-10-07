@@ -276,8 +276,8 @@ test_that("More complex spatial example using protracted speciation",
               output_directory = "output",
               min_speciation_rate = 0.01,
               sigma = 4,
-              deme = 10,
-              deme_sample = 0.001,
+              deme = 1,
+              deme_sample = 0.01,
               fine_map_file = "sample/example_fine.tif",
               coarse_map_file = "sample/example_coarse.tif",
               sample_mask_file = "sample/example_mask.tif",
@@ -310,7 +310,7 @@ test_that("More complex spatial example using protracted speciation",
               speciation_rates = c(0.01, 0.02),
               times_list = c(0.0, 1.0, 10.0, 20.0),
               min_speciation_gens = c(0, 0, 10, 10),
-              max_speciation_gens = c(1000, 10000, 10000, 100000)
+              max_speciation_gens = c(1, 10, 1000, 100000)
             )
             tmp$output()
             community_references <-
@@ -535,36 +535,36 @@ test_that("More complex spatial example using protracted speciation",
                          all.equal(community_references, tmp$getCommunityReferences()))
             expect_equal(76, tmp$getSpeciesRichness(1))
             expect_equal(75, tmp$getSpeciesRichness(2))
-            expect_equal(6, tmp$getSpeciesRichness(3))
-            expect_equal(6, tmp$getSpeciesRichness(4))
+            expect_equal(76, tmp$getSpeciesRichness(3))
+            expect_equal(76, tmp$getSpeciesRichness(4))
             expect_equal(76, tmp$getSpeciesRichness(5))
             expect_equal(75, tmp$getSpeciesRichness(6))
-            expect_equal(6, tmp$getSpeciesRichness(7))
-            expect_equal(6, tmp$getSpeciesRichness(8))
+            expect_equal(76, tmp$getSpeciesRichness(7))
+            expect_equal(76, tmp$getSpeciesRichness(8))
             expect_equal(76, tmp$getSpeciesRichness(9))
             expect_equal(75, tmp$getSpeciesRichness(10))
-            expect_equal(6, tmp$getSpeciesRichness(11))
-            expect_equal(6, tmp$getSpeciesRichness(12))
+            expect_equal(76, tmp$getSpeciesRichness(11))
+            expect_equal(76, tmp$getSpeciesRichness(12))
             expect_equal(76, tmp$getSpeciesRichness(13))
             expect_equal(75, tmp$getSpeciesRichness(14))
-            expect_equal(6, tmp$getSpeciesRichness(15))
-            expect_equal(6, tmp$getSpeciesRichness(16))
+            expect_equal(76, tmp$getSpeciesRichness(15))
+            expect_equal(76, tmp$getSpeciesRichness(16))
             expect_equal(76, tmp$getSpeciesRichness(17))
             expect_equal(75, tmp$getSpeciesRichness(18))
-            expect_equal(6, tmp$getSpeciesRichness(19))
-            expect_equal(6, tmp$getSpeciesRichness(20))
+            expect_equal(76, tmp$getSpeciesRichness(19))
+            expect_equal(76, tmp$getSpeciesRichness(20))
             expect_equal(76, tmp$getSpeciesRichness(21))
             expect_equal(75, tmp$getSpeciesRichness(22))
-            expect_equal(6, tmp$getSpeciesRichness(23))
-            expect_equal(6, tmp$getSpeciesRichness(24))
+            expect_equal(76, tmp$getSpeciesRichness(23))
+            expect_equal(76, tmp$getSpeciesRichness(24))
             expect_equal(76, tmp$getSpeciesRichness(25))
             expect_equal(75, tmp$getSpeciesRichness(26))
-            expect_equal(6, tmp$getSpeciesRichness(27))
-            expect_equal(6, tmp$getSpeciesRichness(28))
+            expect_equal(76, tmp$getSpeciesRichness(27))
+            expect_equal(76, tmp$getSpeciesRichness(28))
             expect_equal(76, tmp$getSpeciesRichness(29))
             expect_equal(75, tmp$getSpeciesRichness(30))
-            expect_equal(6, tmp$getSpeciesRichness(31))
-            expect_equal(6, tmp$getSpeciesRichness(32))
+            expect_equal(76, tmp$getSpeciesRichness(31))
+            expect_equal(76, tmp$getSpeciesRichness(32))
             
           })
 

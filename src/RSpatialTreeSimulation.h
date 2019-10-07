@@ -14,6 +14,8 @@
 #include <Rcpp.h>
 #include "necsim/SpatialTree.h"
 #include "RTreeSimulation.h"
+using namespace necsim;
+
 namespace rcoalescence
 {
     /**
@@ -119,7 +121,7 @@ namespace rcoalescence
          * @brief Calls SpatialTree::runSimulation() to act as a wrapper accessible by R without extra classes.
          * @return bool true if simulation completes successfully
          */
-        bool runSimulation() override;
+        bool runSimulation();
 
     };
 }

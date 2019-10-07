@@ -32,6 +32,7 @@
 #include "RLogging.h"
 
 using namespace std;
+using namespace necsim;
 
 namespace rcoalescence
 {
@@ -221,8 +222,8 @@ namespace rcoalescence
          * @brief Calls Tree::runSimulation() to act as a wrapper accessible by R without extra classes.
          * @return bool true if simulation completes successfully
          */
-        bool runSimulation() override;
-
+        bool runSimulation();
+    
     };
 }
 #endif //RCOALESCENCE_RTREE_H
