@@ -6,20 +6,21 @@
  * @brief Contains a custom CPL error handler.
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
-#ifndef SPECIATIONCOUNTER_cplCustomHandlerNecsim_H
-#define SPECIATIONCOUNTER_cplCustomHandlerNecsim_H
+#ifndef CPL_CUSTOMN_HANDLER_H
+#define CPL_CUSTOMN_HANDLER_H
 #ifdef with_gdal
 
 #include <cpl_error.h>
-
-/**
- * @brief Contains a custom CPLErrorHandler for reporting errors from GDAL imports.
- * @param eErrClass the error class (CE_None, CE_Debug, CE_Warning, CE_Failure or CE_Fatal)
- * @param err_no the error number to report
- * @param msg the message to report
- */
-void cplNecsimCustomErrorHandler(CPLErr eErrClass, int err_no, const char *msg);
-
+namespace necsim
+{
+    /**
+     * @brief Contains a custom CPLErrorHandler for reporting errors from GDAL imports.
+     * @param eErrClass the error class (CE_None, CE_Debug, CE_Warning, CE_Failure or CE_Fatal)
+     * @param err_no the error number to report
+     * @param msg the message to report
+     */
+    void cplNecsimCustomErrorHandler(CPLErr eErrClass, int err_no, const char* msg);
+}
 #endif // with_gdal
 
-#endif //SPECIATIONCOUNTER_cplCustomHandlerNecsim_H
+#endif // CPL_CUSTOMN_HANDLER_H

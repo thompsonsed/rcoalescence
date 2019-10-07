@@ -20,45 +20,47 @@
 #include "Community.h"
 #include "TreeNode.h"
 #include "SpecSimParameters.h"
-
-/**
- * @brief Routines for parsing command-line arguments to apply speciation rates to a necsim output
- * post-simulation.
- */
-class SpeciationCommands
+namespace necsim
 {
-private:
-    // Contains all speciation current_metacommunity_parameters
-    shared_ptr<SpecSimParameters> sp;
-    // Command-line arguments for parsing
-    vector<string> comargs;
-    // number of command-line arguments
-    int argc;
-
-public:
-
     /**
-     * @brief Default constructor for SpeciationCommands class.
+     * @brief Routines for parsing command-line arguments to apply speciation rates to a necsim output
+     * post-simulation.
      */
-    SpeciationCommands() : sp(make_shared<SpecSimParameters>())
+    class SpeciationCommands
     {
+    private:
+        // Contains all speciation current_metacommunity_parameters
+        shared_ptr<SpecSimParameters> sp;
+        // Command-line arguments for parsing
+        vector<string> comargs;
+        // number of command-line arguments
+        int argc;
 
-    }
+    public:
 
-    /**
-     * @brief Run the command line arguments check.
-     * Writes arguments to the SpecSimParameters object
-     * @param argc the number of arguments.
-     * @param comargs a vector filled with the command line arguments
-     */
-    void parseArgs();
+        /**
+         * @brief Default constructor for SpeciationCommands class.
+         */
+        SpeciationCommands() : sp(make_shared<SpecSimParameters>())
+        {
 
-    /**
-     * @brief Runs the main program including parsing command line arguments and running the main analyses.
-     * @param argc the number of command line arguments
-     * @param argv the array of command line arguments
-     * @return
-     */
-    int applyFromComargs(int argc_in, char **argv);
+        }
 
-};
+        /**
+         * @brief Run the command line arguments check.
+         * Writes arguments to the SpecSimParameters object
+         * @param argc the number of arguments.
+         * @param comargs a vector filled with the command line arguments
+         */
+        void parseArgs();
+
+        /**
+         * @brief Runs the main program including parsing command line arguments and running the main analyses.
+         * @param argc the number of command line arguments
+         * @param argv the array of command line arguments
+         * @return
+         */
+        int applyFromComargs(int argc_in, char** argv);
+
+    };
+}

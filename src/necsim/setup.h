@@ -33,47 +33,48 @@
 // Forward declaring the global variables
 // store the log file name for access anywhere.
 using namespace std;
-
-extern string log_name;
-// the old stdout
-extern int saved_stdout;
+namespace necsim
+{
+    extern string log_name;
+    // the old stdout
+    extern int saved_stdout;
 #ifdef DEBUG
-/**
- * @brief Opens the log file for redirecting stdout.
- * 
- * @param append if true, appends to the existing log file.
- */
-void openLogFile(bool append);
+    /**
+     * @brief Opens the log file for redirecting stdout.
+     *
+     * @param append if true, appends to the existing log file.
+     */
+    void openLogFile(bool append);
 #endif
 
-/**
-* @brief Sets up the command-line arguments for default parameters.
-* 
-* This is intended for testing purposes only.
-* @param comargs a vector of command-line arguments for putting the parameters into.
-*/
-void runAsDefault(vector<string> &comargs);
+    /**
+    * @brief Sets up the command-line arguments for default parameters.
+    *
+    * This is intended for testing purposes only.
+    * @param comargs a vector of command-line arguments for putting the parameters into.
+    */
+    void runAsDefault(vector<string> &comargs);
 
-/**
-* @brief Sets up the command-line arguments for larger-scale default parameters.
-* 
-* This is intended for testing purposes only.
-* @param comargs a vector of command-line arguments for putting the parameters into.
-*/
-void runLarge(vector<string> &comargs);
+    /**
+    * @brief Sets up the command-line arguments for larger-scale default parameters.
+    *
+    * This is intended for testing purposes only.
+    * @param comargs a vector of command-line arguments for putting the parameters into.
+    */
+    void runLarge(vector<string> &comargs);
 
-/**
-* @brief Sets up the command-line arguments for default very large scale parameters.
-* 
-* This is intended for testing purposes only.
-* @param comargs a vector of command-line arguments for putting the parameters into.
-*/
-void runXL(vector<string> &comargs);
+    /**
+    * @brief Sets up the command-line arguments for default very large scale parameters.
+    *
+    * This is intended for testing purposes only.
+    * @param comargs a vector of command-line arguments for putting the parameters into.
+    */
+    void runXL(vector<string> &comargs);
 
-/**
- * @brief Removes the command line options supplied, leaving just a clean vector with the correct data in. 
+    /**
+     * @brief Removes the command line options supplied, leaving just a clean vector with the correct data in.
 
- */
-void removeComOption(unsigned long &argc, vector<string> &comargs);
-
+     */
+    void removeComOption(unsigned long &argc, vector<string> &comargs);
+}
 #endif // SETUP

@@ -21,66 +21,67 @@
 
 namespace na = neutral_analytical;
 using namespace std;
-
-class AnalyticalSpeciesAbundancesHandler : public virtual SpeciesAbundancesHandler
+namespace necsim
 {
-protected:
-    unsigned long seen_no_individuals;
-    // Store all previous species ids in a map of cumulative numbers of individuals for searching for ids
-    map<unsigned long, unsigned long> ind_to_species;
-public:
+    class AnalyticalSpeciesAbundancesHandler : public virtual SpeciesAbundancesHandler
+    {
+    protected:
+        unsigned long seen_no_individuals;
+        // Store all previous species ids in a map of cumulative numbers of individuals for searching for ids
+        map<unsigned long, unsigned long> ind_to_species;
+    public:
 
-    /**
-     * @brief Default constructor
-     */
-    AnalyticalSpeciesAbundancesHandler();
+        /**
+         * @brief Default constructor
+         */
+        AnalyticalSpeciesAbundancesHandler();
 
-    /**
-     * @brief Default destructor
-     */
-    ~AnalyticalSpeciesAbundancesHandler() override = default;
+        /**
+         * @brief Default destructor
+         */
+        ~AnalyticalSpeciesAbundancesHandler() override = default;
 
-    /**
-     * @brief Creates the SpeciesAbundancesHandler object
-     * @param random the random number generator
-     * @param metacommunity_size the number of individuals in the metacommunity
-     * @param speciation_rate the speciation rate of the metacommunity
-     * @param local_community_size: the number of individuals in the local community
-     */
-    void setup(shared_ptr<RNGController> random, const unsigned long &metacommunity_size,
-                   const long double &speciation_rate,
-                   const unsigned long &local_community_size) override;
+        /**
+         * @brief Creates the SpeciesAbundancesHandler object
+         * @param random the random number generator
+         * @param metacommunity_size the number of individuals in the metacommunity
+         * @param speciation_rate the speciation rate of the metacommunity
+         * @param local_community_size: the number of individuals in the local community
+         */
+        void setup(shared_ptr<RNGController> random, const unsigned long &metacommunity_size,
+                   const long double &speciation_rate, const unsigned long &local_community_size) override;
 
-    /**
-     * @brief Generates the species abundances using the analytical approximation.
-     */
-    void generateSpeciesAbundances();
+        /**
+         * @brief Generates the species abundances using the analytical approximation.
+         */
+        void generateSpeciesAbundances();
 
-    /**
-     * @brief Gets a randomly generated species identity.
-     * @return the species identity
-     */
-    unsigned long getRandomSpeciesID() override;
+        /**
+         * @brief Gets a randomly generated species identity.
+         * @return the species identity
+         */
+        unsigned long getRandomSpeciesID() override;
 
-    /**
-     * @brief Picks out a random individual from previously-seen individuals.
-     * @param individual_id the individual id number to pick
-     * @return species id of the individual
-     */
-    unsigned long pickPreviousIndividual(const unsigned long &individual_id);
+        /**
+         * @brief Picks out a random individual from previously-seen individuals.
+         * @param individual_id the individual id number to pick
+         * @return species id of the individual
+         */
+        unsigned long pickPreviousIndividual(const unsigned long &individual_id);
 
-    /**
-     * @brief Picks out a new individual/species id with a random species abundance.
-     * @return the species id of the new individual
-     */
-    void addNewSpecies();
+        /**
+         * @brief Picks out a new individual/species id with a random species abundance.
+         * @return the species id of the new individual
+         */
+        void addNewSpecies();
 
-    /**
-     * @brief Gets a random species abundance by sampling from the logarithmic distribution.
-     * @note this produces the abundance of any given species, not the abundance of any given individual
-     * @return the randomly generated abundance of a species
-     */
-    unsigned long getRandomAbundanceOfSpecies();
-};
+        /**
+         * @brief Gets a random species abundance by sampling from the logarithmic distribution.
+         * @note this produces the abundance of any given species, not the abundance of any given individual
+         * @return the randomly generated abundance of a species
+         */
+        unsigned long getRandomAbundanceOfSpecies();
+    };
 
+}
 #endif //ANALYICAL_SPECIES_ABUNDANCES_H

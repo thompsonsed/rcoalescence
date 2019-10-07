@@ -18,62 +18,63 @@
 #include "cpl_custom_handler.h"
 
 using namespace std;
-
-/**
- * @brief Controls writing to console and files for informing of statuses and debugging.
- */
-class Logger
+namespace necsim
 {
-protected:
+    /**
+     * @brief Controls writing to console and files for informing of statuses and debugging.
+     */
+    class Logger
+    {
+    protected:
 #ifdef DEBUG
-    LogFile logfile;
+        LogFile logfile;
 #endif //DEBUG
-public:
-    Logger() = default;
+    public:
+        Logger() = default;
 
-    virtual ~Logger() = default;
+        virtual ~Logger() = default;
 
-    /**
-     * @brief Logs an information message.
-     * @param message the message to write out
-     */
-    virtual void writeInfo(string message);
+        /**
+         * @brief Logs an information message.
+         * @param message the message to write out
+         */
+        virtual void writeInfo(string message);
 
-    /**
-     * @brief Logs a warning message.
-     * @param message the message to write out
-     */
-    virtual void writeWarning(string message);
+        /**
+         * @brief Logs a warning message.
+         * @param message the message to write out
+         */
+        virtual void writeWarning(string message);
 
-    /**
-     * @brief Logs an error message.
-     * @param message the message to write out
-     */
-    virtual void writeError(string message);
+        /**
+         * @brief Logs an error message.
+         * @param message the message to write out
+         */
+        virtual void writeError(string message);
 
-    /**
-     * @brief Logs a critical message.
-     * @param message the message to write out
-     */
-    virtual void writeCritical(string message);
+        /**
+         * @brief Logs a critical message.
+         * @param message the message to write out
+         */
+        virtual void writeCritical(string message);
 
 #ifdef DEBUG
 
-    /**
-     * @brief Logs the message at the desired level.
-     * @param level the level of logging severity
-     * @param message the message to pass out as a string
-     */
-    virtual void writeLog(const int &level, string message);
+        /**
+         * @brief Logs the message at the desired level.
+         * @param level the level of logging severity
+         * @param message the message to pass out as a string
+         */
+        virtual void writeLog(const int &level, string message);
 
-    /**
-     * @brief Logs the message at the desired level.
-     * @param level the level of logging severity
-     * @param message the message to pass out as a stringstream
-     */
-    virtual void writeLog(const int &level, stringstream &message);
+        /**
+         * @brief Logs the message at the desired level.
+         * @param level the level of logging severity
+         * @param message the message to pass out as a stringstream
+         */
+        virtual void writeLog(const int &level, stringstream &message);
 
 #endif // DEBUG
-};
-
+    };
+}
 #endif // LOGGING_IMPORT_H

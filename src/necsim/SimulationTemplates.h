@@ -19,46 +19,46 @@
 #include <sstream>
 #include "Logging.h"
 #include "custom_exceptions.h"
-
-/**
- * @brief Gets the [2] element from the vector (which should contain the config file from command-line arguments
- * @param com_args the vector of command-line arguments
- * @return the string at the [2] position containing the path to the config file
- */
-const string &getConfigFileFromCmdArgs(const vector<string> &com_args)
+namespace necsim
 {
-    if(com_args.size() != 3)
+    /**
+     * @brief Gets the [2] element from the vector (which should contain the config file from command-line arguments
+     * @param com_args the vector of command-line arguments
+     * @return the string at the [2] position containing the path to the config file
+     */
+    const string &getConfigFileFromCmdArgs(const vector<string> &com_args)
     {
-        stringstream ss;
-        ss << "Incorrect number of command-line arguments supplied. Should be 3, got " << com_args.size() << endl;
-        throw FatalException(ss.str());
+        if(com_args.size() != 3)
+        {
+            stringstream ss;
+            ss << "Incorrect number of command-line arguments supplied. Should be 3, got " << com_args.size() << endl;
+            throw FatalException(ss.str());
+        }
+        else
+        {
+            return com_args[2];
+        }
     }
-    else
+
+    /**
+     * @brief Template class for running simulations from all Tree types.
+     * @tparam T the class (either Tree, or a child of Tree) of the simulation
+     * @param config_file the config file to read simulation parameters from
+     */
+    template<class T> void runMain(const string &config_file)
     {
-        return com_args[2];
+        // Create our tree object that contains the simulation
+        T tree;
+        tree.importSimulationVariables(config_file);
+        // Setup the sim
+        tree.setup();
+        // Detect speciation rates to apply
+        bool isComplete = tree.runSimulation();
+        if(isComplete)
+        {
+            tree.applyMultipleRates();
+        }
+        writeInfo("*************************************************\n");
     }
 }
-
-/**
- * @brief Template class for running simulations from all Tree types.
- * @tparam T the class (either Tree, or a child of Tree) of the simulation
- * @param config_file the config file to read simulation parameters from
- */
-template<class T>
-void runMain(const string &config_file)
-{
-    // Create our tree object that contains the simulation
-    T tree;
-    tree.importSimulationVariables(config_file);
-    // Setup the sim
-    tree.setup();
-    // Detect speciation rates to apply
-    bool isComplete = tree.runSimulation();
-    if(isComplete)
-    {
-        tree.applyMultipleRates();
-    }
-    writeInfo("*************************************************\n");
-}
-
 #endif //SIMULATIONTEMPLATES_H

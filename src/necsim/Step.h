@@ -12,69 +12,66 @@
 #define STEP_H
 
 #include "Cell.h"
-
-/**
- * @class Step
- * @brief Stores the elements associated with a single step in a coalescence simulation.
- * 
- * This object should only contain transient variables that are used within a single simulation step and therefore
- * should not be important for pausing/resuming simulations.
- */
-struct Step
+#include "MapLocation.h"
+namespace necsim
 {
-    unsigned long chosen, coalchosen;
-    long oldx, oldy, oldxwrap, oldywrap;
-    bool coal, bContinueSim;
-    unsigned int time_reference;
+    /**
+     * @class Step
+     * @brief Stores the elements associated with a single step in a coalescence simulation.
+     *
+     * This object should only contain transient variables that are used within a single simulation step and therefore
+     * should not be important for pausing/resuming simulations.
+     */
+    struct Step : virtual public MapLocation
+    {
+        unsigned long chosen, coalchosen;
+        bool coal, bContinueSim;
+        unsigned int time_reference;
 #ifdef verbose
-    long number_printed;
+        long number_printed;
 #endif
 
-    /**
-     * @brief Step constructor
-     * @return
-     */
-    Step()
-    {
-        chosen = 0;
-        coalchosen = 0;
-        oldx = 0;
-        oldy = 0;
-        oldxwrap = 0;
-        oldywrap = 0;
-        coal = false;
-        bContinueSim = true;
-        time_reference = 0;
+        /**
+         * @brief Step constructor
+         * @return
+         */
+        Step()
+        {
+            chosen = 0;
+            coalchosen = 0;
+            coal = false;
+            bContinueSim = true;
+            time_reference = 0;
 #ifdef verbose
-        number_printed = 0;
+            number_printed = 0;
 #endif
-    }
+        }
 
-    Step(const Cell &cell)
-    {
-        oldx = cell.x;
-        oldy = cell.y;
-        oldxwrap = 0;
-        oldywrap = 0;
-        coal = false;
-        bContinueSim = true;
-    }
+        Step(const Cell &cell)
+        {
+            x = cell.x;
+            y = cell.y;
+            xwrap = 0;
+            ywrap = 0;
+            coal = false;
+            bContinueSim = true;
+        }
 
-    /**
-     * @brief Removes all stored data from the step.
-     * This should be run at the start of a single coalescence step.
-     */
-    void wipeData()
-    {
-        chosen = 0;
-        coalchosen = 0;
-        oldx = 0;
-        oldy = 0;
-        oldxwrap = 0;
-        oldywrap = 0;
-        coal = false;
-    }
+        /**
+         * @brief Removes all stored data from the step.
+         * This should be run at the start of a single coalescence step.
+         */
+        void wipeData()
+        {
+            chosen = 0;
+            coalchosen = 0;
+            x = 0;
+            y = 0;
+            xwrap = 0;
+            ywrap = 0;
+            coal = false;
+        }
 
-};
-
+    };
+}
 #endif

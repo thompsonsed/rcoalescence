@@ -18,39 +18,43 @@
 #include "Logging.h"
 
 using namespace std;
-
-/*!
- * @struct FatalException
- * @brief  This is called any time a fatal exception is called and the program is unwound and ended.
- */
-struct FatalException : public runtime_error
+namespace necsim
 {
-    FatalException() : runtime_error("Fatal exception thrown at run time, quitting program. "){}
-
-    /**
-     * @brief Writes the message out to the logger if debug mode is enabled, otherwise just throws a runtime_error.
-     * @param msg the message to write out and pass to runtime_error
+    /*!
+     * @struct FatalException
+     * @brief  This is called any time a fatal exception is called and the program is unwound and ended.
      */
-    explicit FatalException(string msg) : runtime_error(msg)
+    struct FatalException : public runtime_error
     {
-#ifdef DEBUG
-        writeLog(50, msg);
-#endif //DEBUG
-    }
-};
+        FatalException() : runtime_error("Fatal exception thrown at run time, quitting program. ")
+        { }
 
-/**
- * @brief A structure for all exceptions thrown within config processes.
- */
-struct ConfigException : public FatalException
-{
-    ConfigException() : FatalException("Exception thrown at run time in config: "){};
+        /**
+         * @brief Writes the message out to the logger if debug mode is enabled, otherwise just throws a runtime_error.
+         * @param msg the message to write out and pass to runtime_error
+         */
+        explicit FatalException(string msg) : runtime_error(msg)
+        {
+#ifdef DEBUG
+            writeLog(50, msg);
+#endif //DEBUG
+        }
+    };
 
     /**
-     * @brief Generates a FatalException with the specified error message.
-     * @param msg the message to pass to FatalException
+     * @brief A structure for all exceptions thrown within config processes.
      */
-    explicit ConfigException(string msg) : FatalException(std::move(msg)){}
-};
+    struct ConfigException : public FatalException
+    {
+        ConfigException() : FatalException("Exception thrown at run time in config: ")
+        { };
 
+        /**
+         * @brief Generates a FatalException with the specified error message.
+         * @param msg the message to pass to FatalException
+         */
+        explicit ConfigException(string msg) : FatalException(std::move(msg))
+        { }
+    };
+}
 #endif // CUSTOM_EXCEPTION_H
