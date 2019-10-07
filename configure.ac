@@ -145,7 +145,10 @@ if test -r "${GDAL_DATA_TEST_FILE}" ; then
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
-  AC_MSG_ERROR([pcs.csv not found in GDAL data directory.])
+  if (${GDAL_VERSION} < 3.0)
+  then
+    AC_MSG_ERROR([pcs.csv not found in GDAL data directory.])
+  fi
 fi
 AC_CHECK_HEADERS([gdal_priv.h], [use_gdal=1], AC_MSG_ERROR([Ensure gdal is properly installed - cannot find gdal_priv.h]))
 AC_CHECK_HEADERS([gdal.h], [use_gdal=1], AC_MSG_ERROR([Ensure gdal is properly installed - cannot find gdal_priv.h]))

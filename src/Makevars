@@ -3,7 +3,7 @@ PKG_CXXFLAGS=-I. -std=c++14
 PKG_CPPFLAGS= -I/usr/include/gdal
 CXXFLAGS=-g -O2
 CPPFLAGS=-I. -std=c++14  -I/usr/include/gdal -I/usr/include/gdal
-defines= -Dwith_gdal -Dsql_ram
+defines= -Dwith_gdal -Dsql_ram -Dwith_rcoalescence
 CXX_STD = CXX14
 PKG_CXXFLAGS += $(defines) $(CPPFLAGS) $(CXXFLAGS)
 
