@@ -281,10 +281,10 @@ test_that("More complex spatial example using protracted speciation",
               fine_map_file = "sample/example_fine.tif",
               coarse_map_file = "sample/example_coarse.tif",
               sample_mask_file = "sample/example_mask.tif",
-              landscape_type = "tiled_fine",
+              landscape_type = "tiled_coarse",
               uses_logging = FALSE,
               min_speciation_gen = 10,
-              max_speciation_gen = 100000,
+              max_speciation_gen = 1000000,
               times_list = c(0.0, 1.0, 10.0, 20.0)
             )
             tmp$addHistoricalMap(
@@ -568,5 +568,5 @@ test_that("More complex spatial example using protracted speciation",
             
           })
 
-unlink(file.path("output"), recursive = TRUE)
-unlink(file.path("default"), recursive = TRUE)
+# unlink(file.path("output"), recursive = TRUE)
+# unlink(file.path("default"), recursive = TRUE)
