@@ -10,6 +10,7 @@
  */
 
 #include "SQLiteHandler.h"
+
 namespace necsim
 {
     SQLStatement::SQLStatement() : last_command(), stmt(nullptr)
@@ -28,7 +29,7 @@ namespace necsim
               && (rc == SQLITE_BUSY || rc == SQLITE_LOCKED))
         {
             rc = sqlite3_step(stmt);
-            sleep(1);
+            std::this_thread::sleep_for(1s);
             time(&end_check);
         }
         return rc;
@@ -83,7 +84,7 @@ namespace necsim
         {
             counter++;
             rc = sqlite3_backup_step(backupdb, -1);
-            sleep(1);
+            std::this_thread::sleep_for(1s);
         }
         if(rc != SQLITE_OK && rc != SQLITE_DONE)
         {
@@ -106,7 +107,10 @@ namespace necsim
     shared_ptr<SQLStatement> SQLiteHandler::prepare(const std::string &command)
     {
         createStatement();
-        int rc = sqlite3_prepare_v2(database, command.c_str(), static_cast<int>(strlen(command.c_str())), &stmt->stmt,
+        int rc = sqlite3_prepare_v2(database,
+                                    command.c_str(),
+                                    static_cast<int>(strlen(command.c_str())),
+                                    &stmt->stmt,
                                     nullptr);
         if(rc != SQLITE_OK && rc != SQLITE_DONE)
         {

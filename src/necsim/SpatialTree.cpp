@@ -1185,10 +1185,15 @@ namespace necsim
     string SpatialTree::simulationParametersSqlInsertion()
     {
         string to_execute;
+        stringstream ss1, ss2;
+        ss1 << setprecision(64);
+        ss1 << spec;
+        ss2 << setprecision(64);
+        ss2 << sim_parameters->m_prob;
         to_execute = "INSERT INTO SIMULATION_PARAMETERS VALUES(" + to_string((long long) seed) + ","
                      + to_string((long long) job_type);
-        to_execute += ",'" + out_directory + "'," + boost::lexical_cast<std::string>((long double) spec) + ","
-                      + to_string((long double) sim_parameters->sigma) + ",";
+        to_execute +=
+                ",'" + out_directory + "'," + ss1.str() + "," + to_string((long double) sim_parameters->sigma) + ",";
         to_execute += to_string((long double) sim_parameters->tau) + "," + to_string((long double) sim_parameters->deme)
                       + ",";
         to_execute += to_string((long double) sim_parameters->deme_sample) + "," + to_string((long long) maxtime) + ",";
@@ -1214,7 +1219,7 @@ namespace necsim
         to_execute += to_string((long long) sim_parameters->sample_y_offset) + ", '";
         to_execute += historical_coarse_map_input + "','" + historical_fine_map_input + "'," + to_string(sim_complete);
         to_execute += ", '" + sim_parameters->dispersal_method + "', ";
-        to_execute += boost::lexical_cast<std::string>(sim_parameters->m_prob) + ", ";
+        to_execute += ss2.str() + ", ";
         to_execute += to_string((long double) sim_parameters->cutoff) + ", ";
         to_execute += to_string(sim_parameters->restrict_self) + ", '";
         to_execute += sim_parameters->landscape_type + "', ";
@@ -2106,7 +2111,7 @@ namespace necsim
 
     void SpatialTree::updateInhabitedCellOnHeap(const Cell &pos)
     {
-        eastl::change_heap(heap.begin(), heap.size(), cellToHeapPositions.get(pos.y, pos.x));
+        eastl::change_heap(heap.begin(), (unsigned long) heap.size(), cellToHeapPositions.get(pos.y, pos.x));
     }
 
     void SpatialTree::updateAllProbabilities()
@@ -2163,7 +2168,7 @@ namespace necsim
         eastl::make_heap(heap.begin(), heap.end());
     }
 
-    template<bool restoreHeap = true> void SpatialTree::addNewEvent(const unsigned long &x, const unsigned long &y)
+    template<bool restoreHeap> void SpatialTree::addNewEvent(const unsigned long &x, const unsigned long &y)
     {
         const MapLocation &location = probabilities.get(y, x).getMapLocation();
         if(getNumberLineagesAtLocation(location) > 0)

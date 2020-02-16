@@ -4,7 +4,7 @@ PKG_CPPFLAGS=@PKG_CPPFLAGS@
 CXXFLAGS=@CXXFLAGS@
 CPPFLAGS=@CPPFLAGS@
 defines=@defines@
-CXX_STD = CXX14
+CXX_STD = CXX17
 PKG_CXXFLAGS += $(defines) $(CPPFLAGS) $(CXXFLAGS)
 
 PKG_LIBS += -lboost_filesystem  -Dwith_gdal

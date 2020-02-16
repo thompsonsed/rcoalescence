@@ -1,6 +1,6 @@
 
 RCOALESCENCE_SRC = `"$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" --vanilla -e "cat(system.file('include', 'src', package = 'StanHeaders'))"`
-CXX_STD = CXX14
+CXX_STD = CXX17
 VERSION = 2.2.3
 COMPILED_BY ?= gcc-4.6.3
 TARGET = lib$(subst gcc,,$(COMPILED_BY))$(R_ARCH)

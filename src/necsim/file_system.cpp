@@ -15,11 +15,16 @@
 
 #include <string>
 #include <sstream>
-#include <boost/filesystem.hpp>
+//#include <std/filesystem.hpp>
+
+#include <chrono>
+#include <thread>
+#include "cpp17_includes.h"
+
 
 #ifdef WIN_INSTALL
 #include <windows.h>
-#define sleep Sleep
+//#define sleep Sleep
 #endif
 
 #include "file_system.h"
@@ -54,7 +59,7 @@ namespace necsim
             while((rc != SQLITE_OK && rc != SQLITE_DONE) && i < 10)
             {
                 i++;
-                sleep(1);
+                std::this_thread::sleep_for(1s);
                 rc = sqlite3_open_v2(database_name.c_str(), &database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
                                      "unix-dotfile");
             }
@@ -63,7 +68,7 @@ namespace necsim
             while((rc != SQLITE_OK && rc != SQLITE_DONE) && j < 10)
             {
                 j++;
-                sleep(1);
+                std::this_thread::sleep_for(1s);
                 rc = sqlite3_open(database_name.c_str(), &database);
             }
             if(rc != SQLITE_OK && rc != SQLITE_DONE)
@@ -79,8 +84,8 @@ namespace necsim
 
     void createParent(string file)
     {
-        // Boost < 1.59 support
-        boost::filesystem::path file_path(file);
+        // std < 1.59 support
+        fs::path file_path(file);
         auto parent = file_path.parent_path().string();
         if(parent.length() > 0)
         {
@@ -89,12 +94,12 @@ namespace necsim
             {
                 parent.erase(it);
             }
-            boost::filesystem::path parent_path(parent);
-            if(!boost::filesystem::exists(parent_path))
+            fs::path parent_path(parent);
+            if(!fs::exists(parent_path))
             {
                 if(!parent_path.empty())
                 {
-                    if(!boost::filesystem::create_directories(parent_path))
+                    if(!fs::create_directories(parent_path))
                     {
                         throw runtime_error("Cannot create parent folder for " + file);
                     }
@@ -105,7 +110,7 @@ namespace necsim
 
     bool doesExist(string testfile)
     {
-        if(boost::filesystem::exists(testfile))
+        if(fs::exists(testfile))
         {
             stringstream os;
             os << "\rChecking folder existance..." << testfile << " exists.               " << endl;

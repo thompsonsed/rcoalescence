@@ -1,3 +1,4 @@
+tests/testthat/output/
 config.status
 src/necsim/Logger.cpp
 src/necsim/main.cpp

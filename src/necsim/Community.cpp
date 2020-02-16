@@ -8,11 +8,14 @@
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
 //#define use_csv
+
 #include <algorithm>
 #include <set>
 #include <unordered_map>
 #include <numeric>
+#include "cpp17_includes.h"
 #include "Community.h"
+#include "RNGController.h"
 
 namespace necsim
 {
@@ -26,7 +29,7 @@ namespace necsim
 
     long double inverseSpeciation(const long double &speciation_rate, const unsigned long &no_generations)
     {
-        return 1.0 - pow((long double)(1.0 - speciation_rate), (long double)(no_generations));
+        return 1.0 - pow((long double) (1.0 - speciation_rate), (long double) (no_generations));
     }
 
     Samplematrix::Samplematrix()
@@ -221,7 +224,8 @@ namespace necsim
                 if(lineage_age >= applied_protracted_parameters.min_speciation_gen)
                 {
                     if(checkSpeciation(this_node->getSpecRate(),
-                                       current_community_parameters->speciation_rate, this_node->getGenerationRate()))
+                                       current_community_parameters->speciation_rate,
+                                       this_node->getGenerationRate()))
                     {
                         this_node->speciate();
                     }
@@ -234,7 +238,8 @@ namespace necsim
             else
             {
                 if(checkSpeciation(this_node->getSpecRate(),
-                                   current_community_parameters->speciation_rate, this_node->getGenerationRate()))
+                                   current_community_parameters->speciation_rate,
+                                   this_node->getGenerationRate()))
                 {
                     this_node->speciate();
                 }
@@ -536,7 +541,7 @@ namespace necsim
         // open the database objects
         SQLiteHandler out_database;
         // open one db in memory and one from the file.
-        if(!boost::filesystem::exists(input_file))
+        if(!fs::exists(input_file))
         {
             stringstream ss;
             ss << "Output database does not exist at " << input_file << ": cannot open sql connection." << endl;
@@ -1391,7 +1396,7 @@ namespace necsim
         os << "Reading current_metacommunity_parameters..." << flush;
 #endif
         string sql_parameters = "SELECT speciation_rate, grid_x, grid_y, protracted, min_speciation_gen, max_speciation_gen, "
-                                "sample_x_offset, sample_y_offset, sample_x, sample_y  FROM SIMULATION_PARAMETERS;";
+                                "sample_x_offset, sample_y_offset, sample_x, sample_y, seed  FROM SIMULATION_PARAMETERS;";
         auto stmt = database->prepare(sql_parameters);
         database->step();
         min_spec_rate = sqlite3_column_double(stmt->stmt, 0);
@@ -1404,6 +1409,7 @@ namespace necsim
         samplemask_y_offset = sqlite3_column_int64(stmt->stmt, 7);
         samplemask_x_size = sqlite3_column_int64(stmt->stmt, 8);
         samplemask_y_size = sqlite3_column_int64(stmt->stmt, 9);
+        seed = sqlite3_column_int64(stmt->stmt, 10);
         if(protracted)
         {
             if(minimum_protracted_parameters.max_speciation_gen == 0.0)
@@ -2080,6 +2086,54 @@ namespace necsim
         writeSpeciesList(nodes->size() - 1);
         forceSimCompleteParameter();
         exportDatabase();
+
+    }
+
+    void Community::applyNonSpatialRemainingLineages(const string &filename, const unsigned long &n_individuals)
+    {
+        throw FatalException("Applying non-spatial speciation process to end simulation is not yet implemented.");
+//        importSimParameters(filename);
+//        importSamplemask("null");
+//        importData(filename);
+//        spec_sim_parameters->filename = filename;
+//        // Skip the first entry as it's always blank
+//        (*nodes)[0] = TreeNode();
+//        vector<TreeNode*> activeNodes;
+//
+//        for(unsigned long i = 1; i < nodes->size(); i++)
+//        {
+//            TreeNode* this_node = &(*nodes)[i];
+//            if(this_node->getParent() == 0
+//               && !checkSpeciation(this_node->getSpecRate(), min_spec_rate, this_node->getGenerationRate()))
+//            {
+//                activeNodes.push_back(this_node);
+//            }
+//        }
+//        random_numbers::RNGController rngController;
+//        rngController.setSeed(seed);
+//        double baseline_probability = 1.0/double(n_individuals);
+//        double coalescence_probability = baseline_probability * activeNodes.size();
+//        unsigned long total = activeNodes.size();
+//        map<bool, unsigned long> coalescence_and_parent;
+//        while(total > 1)
+//        {
+//            double time_coalescence =
+//            if(rngController.d01() < )
+//        }
+//        while(activeNodes.size() > 1)
+//        {
+//            unsigned long random_index = rngController.i0(activeNodes.size());
+//        }
+//        for(unsigned long i = 1; i < activeNodes.size(); i ++)
+//        {
+//
+//        }
+//
+//        deleteSpeciesList();
+//        createSpeciesList();
+//        writeSpeciesList(nodes->size() - 1);
+//        forceSimCompleteParameter();
+//        exportDatabase();
 
     }
 

@@ -4,7 +4,7 @@ PKG_CPPFLAGS= -I/usr/include/gdal
 CXXFLAGS=-g -O2
 CPPFLAGS=-I. -std=c++14  -I/usr/include/gdal -I/usr/include/gdal
 defines= -Dwith_gdal -Dsql_ram -Dwith_rcoalescence
-CXX_STD = CXX14
+CXX_STD = CXX17
 PKG_CXXFLAGS += $(defines) $(CPPFLAGS) $(CXXFLAGS)
 
 PKG_LIBS += -lboost_filesystem  -Dwith_gdal

@@ -13,7 +13,9 @@
  */
 
 #include "ConfigParser.h"
-#include <boost/filesystem/operations.hpp>
+//#include <std/filesystem/operations.hpp>
+
+#include "cpp17_includes.h"
 #include "custom_exceptions.h"
 #include "Logging.h"
 namespace necsim
@@ -100,7 +102,7 @@ namespace necsim
     void ConfigParser::parseConfig()
     {
         ifstream is_file;
-        if(!boost::filesystem::exists(config_file))
+        if(!fs::exists(config_file))
         {
             stringstream ss;
             ss << "No config file found at " << config_file << ". Check file exists." << endl;

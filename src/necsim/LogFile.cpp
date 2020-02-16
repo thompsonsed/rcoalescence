@@ -9,7 +9,9 @@
 
 #include <sstream>
 #include <iomanip>
-#include <boost/filesystem.hpp>
+#include <string>
+//#include <std/filesystem.hpp>
+#include "cpp17_includes.h"
 #include "LogFile.h"
 #include "file_system.h"
 #include "custom_exceptions.h"
@@ -32,18 +34,18 @@ namespace necsim
         time_t now = time(0);
         static char name[30];
         strftime(name, sizeof(name), LOGNAME_FORMAT, localtime(&now));
-        boost::filesystem::path full_path(boost::filesystem::current_path());
+        fs::path full_path(fs::current_path());
         string out = full_path.string() + "/log/" + string(name) + ".log";
         return out;
     }
 
     void getUniqueFileName(string &basic_string)
     {
-        boost::filesystem::path file_path(basic_string);
+        fs::path file_path(basic_string);
         const string file_name = basic_string.substr(0, basic_string.find('.'));
         const string file_extension = basic_string.substr(basic_string.find('.'));
         unsigned long iterator = 0;
-        while(boost::filesystem::exists(file_path))
+        while(fs::exists(file_path))
         {
             if(iterator > 10000000)
             {
@@ -51,7 +53,7 @@ namespace necsim
                 throw FatalException("Could not create unique file name after 10000000 tries.");
             }
             basic_string = file_name + "_" + to_string(iterator) + file_extension; // NOLINT
-            file_path = boost::filesystem::path(basic_string);
+            file_path = fs::path(basic_string);
             iterator++;
         }
     }
@@ -100,7 +102,7 @@ namespace necsim
             throw FatalException("Logging level must be one of 0, 10, 20, 30, 40 or 50.");
         }
         output_stream << getTime() << " ";
-        replace(message.begin(), message.end(), '\n', ' ');
+        message.replace(message.begin(), message.end(), '\n', ' ');
         output_stream << levels_map[level] << ": " << message << endl;
 
     }

@@ -16,15 +16,15 @@
 #include <cstring>
 #include <stdexcept>
 #include <string>
-# include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
+//# include <boost/filesystem.hpp>
+//#include <boost/lexical_cast.hpp>
 #include <set>
 #include <utility>
 #include <memory>
 
 #ifdef WIN_INSTALL
 #include <windows.h>
-#define sleep Sleep
+//#define sleep Sleep
 #endif
 
 #include "TreeNode.h"
@@ -46,7 +46,8 @@ namespace necsim
      * @param number_of_generations the number of generations the lineage has existed
      * @return bool the speciation state of the lineage
      */
-    bool checkSpeciation(const long double &random_number, const long double &speciation_rate,
+    bool checkSpeciation(const long double &random_number,
+                         const long double &speciation_rate,
                          const unsigned long &no_generations);
 
     /**
@@ -56,8 +57,7 @@ namespace necsim
      * @param no_generations the number of generations speciation can occur over
      * @return
      */
-    long double inverseSpeciation(const long double &speciation_rate,
-                             const unsigned long &no_generations);
+    long double inverseSpeciation(const long double &speciation_rate, const unsigned long &no_generations);
 
     /**
      * @brief Contains the information needed for defining a fragment.
@@ -153,7 +153,7 @@ namespace necsim
         // The dimensions of the sample grid size.
         unsigned long grid_x_size, grid_y_size;
         // The dimensions of the original sample map file
-        unsigned long samplemask_x_size, samplemask_y_size, samplemask_x_offset, samplemask_y_offset;
+        unsigned long samplemask_x_size, samplemask_y_size, samplemask_x_offset, samplemask_y_offset, seed;
         // Vector containing past speciation rates
         CommunitiesArray past_communities;
         MetacommunitiesArray past_metacommunities;
@@ -176,13 +176,11 @@ namespace necsim
                                                              species_abundances(make_shared<vector<unsigned long>>()),
                                                              iSpecies(0), has_imported_samplemask(false),
                                                              has_imported_data(false), samplemask(), fragments(),
-                                                             current_community_parameters(
-                                                                     make_shared<CommunityParameters>()),
-                                                             current_metacommunity_parameters(
-                                                                     make_shared<MetacommunityParameters>()),
+                                                             current_community_parameters(make_shared<CommunityParameters>()),
+                                                             current_metacommunity_parameters(make_shared<MetacommunityParameters>()),
                                                              min_spec_rate(0.0), grid_x_size(0), grid_y_size(0),
                                                              samplemask_x_size(0), samplemask_y_size(0),
-                                                             samplemask_x_offset(0), samplemask_y_offset(0),
+                                                             samplemask_x_offset(0), samplemask_y_offset(0), seed(0),
                                                              past_communities(), past_metacommunities(),
                                                              protracted(false), minimum_protracted_parameters(),
                                                              applied_protracted_parameters(), max_species_id(0),
@@ -460,7 +458,9 @@ namespace necsim
          * @param proc_parameters protracted speciation parameters to add
          * @return
          */
-        bool checkCalculationsPerformed(const long double &speciation_rate, const double &time, const bool &fragments,
+        bool checkCalculationsPerformed(const long double &speciation_rate,
+                                        const double &time,
+                                        const bool &fragments,
                                         const MetacommunityParameters &metacomm_parameters,
                                         const ProtractedSpeciationParameters &proc_parameters);
 
@@ -475,7 +475,9 @@ namespace necsim
          * @param metacommunity_speciation_rate the metacommunity speciation rate of the performed calculation
          * @param protracted_parameters protracted speciation parameters to add
          */
-        void addCalculationPerformed(const long double &speciation_rate, const double &time, const bool &fragments,
+        void addCalculationPerformed(const long double &speciation_rate,
+                                     const double &time,
+                                     const bool &fragments,
                                      const MetacommunityParameters &metacomm_parameters,
                                      const ProtractedSpeciationParameters &protracted_parameters);
 
@@ -674,6 +676,8 @@ namespace necsim
          * @brief Speciates the remaining lineages in an incomplete simulation to force it to appear complete.
          */
         void speciateRemainingLineages(const string &filename);
+
+        void applyNonSpatialRemainingLineages(const string &filename, const unsigned long &n_individuals);
 
         /**
          * @brief Gets the species richness for the community reference from the database.

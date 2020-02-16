@@ -12,11 +12,7 @@
 
 #include <algorithm>
 
-#ifdef WIN_INSTALL
-#include <windows.h>
-#define sleep Sleep
-#endif
-
+#include "cpp17_includes.h"
 #include "Tree.h"
 #include "Logging.h"
 #include "LogFile.h"
@@ -64,7 +60,7 @@ namespace necsim
             catch(runtime_error &re)
             {
                 writeInfo("Output folder does not exist... creating...");
-                bool bOutputFolder = boost::filesystem::create_directory(sim_parameters->output_directory);
+                bool bOutputFolder = fs::create_directory(sim_parameters->output_directory);
                 if(bOutputFolder)
                 {
                     writeInfo("done.\n");
@@ -1160,9 +1156,9 @@ namespace necsim
         string sqlfolder = out_directory;
         try
         {
-            if(!boost::filesystem::exists(boost::filesystem::path(sqlfolder)))
+            if(!fs::exists(fs::path(sqlfolder)))
             {
-                boost::filesystem::create_directory(boost::filesystem::path(sqlfolder));
+                fs::create_directory(fs::path(sqlfolder));
             }
             sql_output_database += string("/data_") + to_string(job_type) + "_" + to_string(seed) + ".db";
         }
@@ -1171,7 +1167,7 @@ namespace necsim
             writeWarning(fe.what());
             sql_output_database = string("data_") + to_string(job_type) + "_" + to_string(seed) + ".db";
         }
-        boost::filesystem::remove(boost::filesystem::path(sql_output_database));
+        fs::remove(fs::path(sql_output_database));
     }
 
     void Tree::sqlCreateSimulationParameters()
@@ -1202,9 +1198,12 @@ namespace necsim
     string Tree::simulationParametersSqlInsertion()
     {
         string to_execute;
+        stringstream ss1, ss2;
+        ss1 << setprecision(64);
+        ss1 << spec;
         to_execute = "INSERT INTO SIMULATION_PARAMETERS VALUES(" + to_string((long long) seed) + ","
                      + to_string((long long) job_type);
-        to_execute += ",'" + out_directory + "'," + boost::lexical_cast<std::string>((long double) spec) + ","
+        to_execute += ",'" + out_directory + "'," + ss1.str() + ","
                       + to_string(0.0) + ",";
         to_execute += to_string(0.0) + "," + to_string((long double) deme) + ",";
         to_execute += to_string((long double) deme_sample) + "," + to_string((long long) maxtime) + ",";
@@ -1245,12 +1244,12 @@ namespace necsim
         os.str("");
         // Create the pause directory
         string pause_folder = out_directory + "/Pause/";
-        boost::filesystem::path pause_dir(pause_folder);
-        if(!boost::filesystem::exists(pause_dir))
+        fs::path pause_dir(pause_folder);
+        if(!fs::exists(pause_dir))
         {
             try
             {
-                boost::filesystem::create_directory(pause_dir);
+                fs::create_directory(pause_dir);
             }
             catch(exception &e)
             {

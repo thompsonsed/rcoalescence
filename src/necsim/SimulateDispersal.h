@@ -209,7 +209,7 @@ namespace necsim
          * @param dispersal_coordinator Reference to the dispersal corrdinator to use
          * @param generation Reference to the generation variable used byt the dispersal coordinator
          */
-        template <bool chooseRandomCells=false>
+        template <bool chooseRandomCells = true>
         void runDistanceLoop(const unsigned long bidx,
                              const unsigned long eidx,
                              const unsigned long num_repeats,
@@ -230,7 +230,7 @@ namespace necsim
          * @param mutex The mutex to synchronise progress feedback to the user
          * @param finished The total number of cells simulated across all workers
          */
-        template <bool chooseRandomCells=false>
+        template <bool chooseRandomCells = true>
         void runDistanceWorker(const unsigned long seed,
                                const unsigned long bidx,
                                const unsigned long eidx,
