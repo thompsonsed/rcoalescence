@@ -22,8 +22,6 @@ OBJECTS = $(SOURCES_CPP:.cpp=.o)
 
 all: clean winlibs
 
-CXX_STD = CXX11
-
 winlibs:
 	mkdir -p ../inst
 	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R" $(VERSION)
