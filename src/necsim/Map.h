@@ -115,7 +115,7 @@ namespace necsim
                 file_name = filename_in;
                 setCPLErrorHandler();
 //                GDALDataset * tmp_ptr = (GDALDataset*)GDALOpen(file_name.c_str(), GA_ReadOnly);
-                po_dataset = make_shared<GDALDataset*>((GDALDataset*)GDALOpen(file_name.c_str(), GA_ReadOnly));
+                po_dataset = make_shared<GDALDataset*>((GDALDataset*) GDALOpen(file_name.c_str(), GA_ReadOnly));
                 removeCPLErrorHandler();
             }
             else
@@ -178,7 +178,7 @@ namespace necsim
                 ss << "No raster band detected in " << file_name << endl;
                 throw FatalException(ss.str());
             }
-            po_band = make_shared<GDALRasterBand*>((GDALRasterBand*)(*po_dataset)->GetRasterBand(1));
+            po_band = make_shared<GDALRasterBand*>((GDALRasterBand*) (*po_dataset)->GetRasterBand(1));
             removeCPLErrorHandler();
             if(po_band == nullptr)
             {
@@ -486,8 +486,17 @@ namespace necsim
             for(uint32_t j = 0; j < num_rows; j++)
             {
                 printNumberComplete(j, number_printed);
-                cpl_error = (*po_band)->RasterIO(GF_Read, 0, j, static_cast<int>(block_x_size), 1, &matrix[j * num_cols],
-                                              static_cast<int>(block_x_size), 1, gdal_data_type, 0, 0);
+                cpl_error = (*po_band)->RasterIO(GF_Read,
+                                                 0,
+                                                 j,
+                                                 static_cast<int>(block_x_size),
+                                                 1,
+                                                 &matrix[j * num_cols],
+                                                 static_cast<int>(block_x_size),
+                                                 1,
+                                                 gdal_data_type,
+                                                 0,
+                                                 0);
                 checkTifImportFailure();
                 // Now convert the no data values to 0
                 for(uint32_t i = 0; i < num_cols; i++)
@@ -517,8 +526,17 @@ namespace necsim
             for(uint32_t j = 0; j < num_rows; j++)
             {
                 printNumberComplete(j, number_printed);
-                cpl_error = (*po_band)->RasterIO(GF_Read, 0, j, static_cast<int>(block_x_size), 1, &t1[0],
-                                              static_cast<int>(block_x_size), 1, GDT_Float64, 0, 0);
+                cpl_error = (*po_band)->RasterIO(GF_Read,
+                                                 0,
+                                                 j,
+                                                 static_cast<int>(block_x_size),
+                                                 1,
+                                                 &t1[0],
+                                                 static_cast<int>(block_x_size),
+                                                 1,
+                                                 GDT_Float64,
+                                                 0,
+                                                 0);
                 checkTifImportFailure();
                 // now copy the data to our Map, converting float to int. Round or floor...? hmm, floor?
                 for(unsigned long i = 0; i < num_cols; i++)
@@ -595,8 +613,17 @@ namespace necsim
             for(uint32_t j = 0; j < num_rows; j++)
             {
                 printNumberComplete(j, number_printed);
-                cpl_error = (*po_band)->RasterIO(GF_Read, 0, j, int_block_x_size, 1, t1, int_block_x_size, 1, dt_buff, 0,
-                                              0);
+                cpl_error = (*po_band)->RasterIO(GF_Read,
+                                                 0,
+                                                 j,
+                                                 int_block_x_size,
+                                                 1,
+                                                 t1,
+                                                 int_block_x_size,
+                                                 1,
+                                                 dt_buff,
+                                                 0,
+                                                 0);
                 checkTifImportFailure();
                 for(unsigned long i = 0; i < num_cols; i++)
                 {
@@ -769,6 +796,7 @@ namespace necsim
         defaultImport();
     }
 
-#endif // with_gdal
 }
+#endif // with_gdal
+
 #endif //MAP_H
