@@ -21,10 +21,19 @@
 
 // Provide support for C++ 14
 #if __cplusplus < 201703L
-#ifdef
+#ifdef USING_BOOST
+
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
+
+#else
+
+#include "ghc/filesystem.hpp"
+
+namespace fs = ghc::filesystem;
+
+#endif
 
 #else // Support for C++ 17
 
