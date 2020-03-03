@@ -16,8 +16,7 @@
 #include "RSpatialTreeSimulation.h"
 #include "RProtractedTreeSimulation.h"
 #include "RProtractedSpatialTreeSimulation.h"
-// [[Rcpp::plugins(cpp11)]]
-// [[Rcpp::depends(BH)]]
+// [[Rcpp::plugins(cpp17)]]
 //' @useDynLib rcoalescence, .registration=TRUE
 
 bool logging_mode;
