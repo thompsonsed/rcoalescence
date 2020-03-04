@@ -15,7 +15,20 @@
 
 
 #ifdef WIN_INSTALL
+// #ifdef R_COMPILER
+// #undef Realloc
+// #ifndef R_Realloc
+// #define R_Realloc(p,n,t) (t *) R_chk_realloc( (void *)(p), (size_t)((n) * sizeof(t)) )
+// #endif
+// #include <shlobj.h>
+// #undef Free
+// #endif
 #include <windows.h>
+#include <winerror.h>
+#ifndef ERROR_FILE_TOO_LARGE
+#define ERROR_FILE_TOO_LARGE 223L
+#endif
+
 //#define sleep Sleep
 #endif
 

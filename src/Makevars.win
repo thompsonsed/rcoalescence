@@ -1,0 +1,54 @@
+
+# RCOALESCENCE_SRC = `"$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" --vanilla -e "cat(system.file('include', 'src', package = 'StanHeaders'))"`
+#CXX17 = g++-7 -std=gnu++17 -fPIC
+CXX_STD = CXX11
+VERSION = 2.2.3
+COMPILED_BY ?= gcc-4.9.3
+TARGET = lib$(subst gcc,,$(COMPILED_BY))$(R_ARCH)
+RWINLIB = ../windows/gdal2-$(VERSION)
+PKG_CPPFLAGS = -I"../inst/include" \
+  -I$(RWINLIB)/include/gdal/ \
+  -I$(RWINLIB)/include/geos \
+  -I$(RWINLIB)/include/proj \
+  -Inecsim \
+  -Isqlite3 \
+  -lstdc++fs \
+  -lboost_filesystem \
+  -Dwith_gdal \
+  -DWIN_INSTALL \
+  -DR_COMPILER \
+  -std=c++1y \
+  -fpermissive \
+  -DSTRICT_R_HEADERS
+  #-std=gnu++14
+  	
+  
+  	
+  	
+SHLIB_LDFLAGS = $(SHLIB_CXXLDFLAGS) 
+SHLIB_LD = $(SHLIB_CXXLD)
+PKG_LIBS += -L$(RWINLIB)/$(TARGET) \
+        -L$(RWINLIB)/lib$(R_ARCH) \
+	-lgdal -lsqlite3 -lspatialite -lproj -lgeos_c -lgeos  \
+	-ljson-c -lnetcdf -lmariadbclient -lpq -lintl -lwebp -lcurl -lssh2 -lssl -lcrypto \
+	-lkea -lhdf5_cpp -lhdf5_hl -lhdf5 -lexpat -lfreexl -lcfitsio \
+	-lmfhdf -ldf -lxdr \
+	-lopenjp2 -ljasper -lpng16 -ljpeg -ltiff -lgeotiff -lgif -lxml2 -llzma -lszip -lz \
+	-lodbc32 -lodbccp32 -liconv -lpsapi -lws2_32 -lcrypt32 -lwldap32 -lsecur32 -lgdi32
+# Hack to get through R CHECK
+PKG_LIBS:=$(filter-out $(FLIBS), $(PKG_LIBS))
+SOURCES_CPP=$(wildcard necsim/*.cpp) $(wildcard *.cpp)
+OBJECTS = $(SOURCES_CPP:.cpp=.o)
+
+all: clean winlibs
+
+winlibs:
+	mkdir -p ../inst
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" --vanilla "../tools/winlibs.R" $(VERSION)
+	cp -r $(RWINLIB)/share/gdal ../inst/
+	cp -r $(RWINLIB)/share/proj ../inst/
+
+clean:
+	rm -f $(SHLIB) $(OBJECTS)
+
+.PHONY: all winlibs clean

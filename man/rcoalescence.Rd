@@ -3,7 +3,6 @@
 \docType{package}
 \name{rcoalescence}
 \alias{rcoalescence}
-\alias{rcoalescence-package}
 \title{rcoalescence: Efficient spatial and non-spatial neutral ecology simulator written in C++}
 \description{
 A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for
