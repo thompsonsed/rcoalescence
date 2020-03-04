@@ -30,3 +30,7 @@ config\.log
 config\.status
 
 aclocal\.m4
+inst/
+windows/
+output/
+*.dll

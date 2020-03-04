@@ -17,7 +17,7 @@ SystemRequirements: GNU make, Requires GDAL >= 1.11.4, available
         frameworks built by William Kyngesburye at http://www.kyngchaos.com/ may be used for source 
         installs on OSX or installation performed using Homebrew. 
         Requires GNU make for compilation and boost headers (available through BH package).
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests: testthat
 Collate:
     'RcppCoalescenceModule.R'
