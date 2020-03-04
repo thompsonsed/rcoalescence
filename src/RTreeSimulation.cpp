@@ -210,8 +210,8 @@ void RTreeSimulation::output()
     else
     {
         community.output();
-        community.closeSqlConnection();
     }
+    community.closeSqlConnection();
     output_database = sql_output_database;
     has_outputted = true;
 
