@@ -53,6 +53,10 @@ namespace necsim
 
     void SQLiteHandler::open(const std::string &file_name)
     {
+        if(database != nullptr)
+        {
+            close();
+        }
         openSQLiteDatabase(file_name, database);
         this->file_name = file_name;
     }
