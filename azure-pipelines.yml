@@ -24,7 +24,7 @@ resources:
     - repository: r-azure-pipelines
       type: github
       name: r-lib/r-azure-pipelines
-      endpoint: thompsonsed/rcoalescence
+      endpoint: https://github.com/thompsonsed/rcoalescence.git
 
 jobs:
   - template: azure-tidyverse.yml@r-azure-pipelines
