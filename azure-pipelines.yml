@@ -27,4 +27,4 @@ resources:
       endpoint: thompsonsed
 
 jobs:
-  - template: azure-rcoalescence.yml@r-azure-pipelines
+  - template: .azure/azure-rcoalescence.yml@r-azure-pipelines
