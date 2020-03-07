@@ -19,7 +19,7 @@ RBIN="${R_HOME}/bin/R"
 : ${CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`}
 : ${LDFLAGS=`"${RBIN}" CMD config LDFLAGS`}
 
-PKG_CXXFLAGS="-I. -std=c++14"
+PKG_CXXFLAGS="-I."
 
 AC_LANG(C++)
 AC_PROG_CXX
@@ -31,26 +31,32 @@ LIBS="$LIBS -lsqlite3"
 
 dnl Check boost headers
 AC_LANG(C++)
-BOOST_REQUIRE([1.54.0], AC_ERROR([A working boost library v1.54 or greater is required. Make sure it is correctly installed on your system.]))
-
-ifdef(BOOST_CPPFLAGS,[boost_found="yes"],[boost_found="no"])
-substring="-I/"
-if [[ "$BOOST_CPPFLAGS" == "${BOOST_CPPFLAGS%$substring*}" ]];
+BOOST_REQUIRE([1.54.0], [boost_found="yes"])
+if [[ "$boost_found" == "yes" ]];
 then
-	LIBS="$LIBS -lboost_filesystem -lboost_system -lpthread"
-	AC_MSG_WARN([Library locations not detecting: using default locations.])
-	boost_found="install detected: location unknown"
+  AC_MSG_NOTICE([A working boost library v1.54 or greater is required, or C++17. Make sure it is correctly installed on your system.])
+  
 else
-	dnl goofy workaround for boost libraries
-	lib_boost="${BOOST_CPPFLAGS}"
-	lib_boost="${lib_boost/-I/-L}"
-	lib_boost="${lib_boost/include/lib}"
-	CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-	LDFLAGS="$LDFLAGS $lib_boost"
-	LIBS="$LIBS -lboost_filesystem -lboost_system -lpthread"
-	boost_found="yes"
+  
+  ifdef(BOOST_CPPFLAGS,[boost_found="yes"],[boost_found="no"])
+  substring="-I/"
+  if [[ "$BOOST_CPPFLAGS" == "${BOOST_CPPFLAGS%$substring*}" ]];
+  then
+  	LIBS="$LIBS -lboost_filesystem -lboost_system -lpthread"
+  	AC_MSG_WARN([Library locations not detecting: using default locations.])
+  	boost_found="install detected: location unknown"
+  else
+  	dnl goofy workaround for boost libraries
+  	lib_boost="${BOOST_CPPFLAGS}"
+  	lib_boost="${lib_boost/-I/-L}"
+  	lib_boost="${lib_boost/include/lib}"
+  	CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
+  	LDFLAGS="$LDFLAGS $lib_boost"
+  	LIBS="$LIBS -lboost_filesystem -lboost_system -lpthread"
+  	boost_found="yes"
+  fi
+  BOOST_FIND_HEADER([boost/filesystem.hpp])
 fi
-BOOST_FIND_HEADER([boost/filesystem.hpp])
 
 dnl Check for gdal library
 GDAL_CONFIG="gdal-config"
