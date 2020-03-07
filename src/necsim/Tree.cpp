@@ -1152,7 +1152,7 @@ namespace necsim
 
     void Tree::setupOutputDirectory()
     {
-        if(sql_output_database == "null")
+        if(sql_output_database == "null" || ! fs::exists(fs::path(sql_output_database)))
         {
             sql_output_database = out_directory;
             string sqlfolder = out_directory;
