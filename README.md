@@ -6,7 +6,7 @@
 *rcoalescence* is a sister project to 
 [pycoalescence](http://pycoalescence.readthedocs.io/ "pycoalescence documentation") for running spatially-explicit neutral models for ecological systems. The package is available for macOS and Linux operating systems.
 
-*Package migrated from [bitbucket](bitbucket.org/thompsonsed/rcoalescence.git) on 07/03/2020.*
+*Package migrated from [bitbucket](https://bitbucket.org/thompsonsed/rcoalescence.git) on 07/03/2020.*
 
 ### Key Features ###
 
