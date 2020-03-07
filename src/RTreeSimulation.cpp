@@ -18,6 +18,8 @@ RTreeSimulation::RTreeSimulation()
 {
     output_database = "not_set";
     setLoggingMode(false);
+    community.setInternalDatabase();
+    metacommunity.setInternalDatabase();
 }
 
 RTreeSimulation::~RTreeSimulation()
@@ -214,7 +216,6 @@ void RTreeSimulation::output()
     community.closeSqlConnection();
     output_database = sql_output_database;
     has_outputted = true;
-
 }
 
 void RTreeSimulation::setLoggingMode(bool log_mode)
