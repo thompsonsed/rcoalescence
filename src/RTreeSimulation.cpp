@@ -18,8 +18,6 @@ RTreeSimulation::RTreeSimulation()
 {
     output_database = "not_set";
     setLoggingMode(false);
-    community.setInternalDatabase();
-    metacommunity.setInternalDatabase();
 }
 
 RTreeSimulation::~RTreeSimulation()
@@ -187,6 +185,8 @@ void RTreeSimulation::checkWrittenMainSim()
         community.setSpecSimParameters(spec_sim_parameters);
         setupCommunity();
         has_written_main_sim = true;
+        community.unsetMemoryOption();
+        metacommunity.unsetMemoryOption();
     }
 }
 

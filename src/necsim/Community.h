@@ -231,6 +231,11 @@ namespace necsim
         void setDatabase(shared_ptr<SQLiteHandler> dbin);
 
         /**
+         * @brief Removes the setting of the memory option, indicating the database is written to hard drive.
+         */
+        void unsetMemoryOption();
+
+        /**
          * @brief Get the boolean of whether the data has been imported yet.
          * @return true if database has been imported.
          */

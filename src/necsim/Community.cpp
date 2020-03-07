@@ -112,6 +112,11 @@ namespace necsim
         database_set = true;  // this just specifies that the database has been created in memory.
     }
 
+    void Community::unsetMemoryOption()
+    {
+        in_mem = false;
+    }
+
     bool Community::hasImportedData()
     {
         return has_imported_data;
