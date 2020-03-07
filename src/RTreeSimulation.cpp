@@ -133,6 +133,8 @@ void RTreeSimulation::apply(shared_ptr<SpecSimParameters> specSimParameters)
             community.setSimParameters(sim_parameters);
             community.doApplicationInternal(std::move(specSimParameters), data);
         }
+        community.unsetMemoryOption();
+        metacommunity.unsetMemoryOption();
     }
 }
 
