@@ -1152,22 +1152,25 @@ namespace necsim
 
     void Tree::setupOutputDirectory()
     {
-        sql_output_database = out_directory;
-        string sqlfolder = out_directory;
-        try
+        if(sql_output_database == "null")
         {
-            if(!fs::exists(fs::path(sqlfolder)))
+            sql_output_database = out_directory;
+            string sqlfolder = out_directory;
+            try
             {
-                fs::create_directory(fs::path(sqlfolder));
+                if(!fs::exists(fs::path(sqlfolder)))
+                {
+                    fs::create_directory(fs::path(sqlfolder));
+                }
+                sql_output_database += string("/data_") + to_string(job_type) + "_" + to_string(seed) + ".db";
             }
-            sql_output_database += string("/data_") + to_string(job_type) + "_" + to_string(seed) + ".db";
+            catch(FatalException &fe)
+            {
+                writeWarning(fe.what());
+                sql_output_database = string("data_") + to_string(job_type) + "_" + to_string(seed) + ".db";
+            }
+            fs::remove(fs::path(sql_output_database));
         }
-        catch(FatalException &fe)
-        {
-            writeWarning(fe.what());
-            sql_output_database = string("data_") + to_string(job_type) + "_" + to_string(seed) + ".db";
-        }
-        fs::remove(fs::path(sql_output_database));
     }
 
     void Tree::sqlCreateSimulationParameters()

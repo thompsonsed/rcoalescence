@@ -625,7 +625,9 @@ namespace necsim
         void sqlCreate();
 
         /**
-         * @brief Creates the output directory, if it doesn't already exist, and deletes any existing database with the
+         * @brief if the sql_output_database variable is "null", sets the output database and directory.
+         *
+         * Creates the output directory, if it doesn't already exist, and deletes any existing database with the
          * output name.
          */
         void setupOutputDirectory();
