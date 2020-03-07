@@ -1,6 +1,6 @@
 # README #
 
-[![CircleCI](https://img.shields.io/circleci/project/bitbucket/thompsonsed/rcoalescence.svg?label=CircleCI&logo=circleci)](https://circleci.com/bb/thompsonsed/rcoalescence) | [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
+[![CircleCI](https://img.shields.io/circleci/project/github/thompsonsed/rcoalescence.svg?label=CircleCI&logo=circleci)](https://circleci.com/github/thompsonsed/rcoalescence) | [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
 
 *rcoalescence* is a sister project to 
@@ -18,14 +18,14 @@
 ### Setup and installation ###
 
 * First make sure the requirements are installed (see below).
-* Then the package can be installed directly from bitbucket using ``devtools::install_bitbucket("thompsonsed/rcoalescence")``
+* Then the package can be installed directly from github using ``devtools::install_github("thompsonsed/rcoalescence")``
 
 
 ### Prerequisites ###
 
 Before attempting installation, the following prequisites should be installed.
 
-* The devtools package (for installing from bitbucket) and Rcpp (for compiling the package). Run ``install.packages(c("devtools", "Rcpp"))``
+* The devtools package (for installing from github) and Rcpp (for compiling the package). Run ``install.packages(c("devtools", "Rcpp"))``
 * GDAL, which can be installed through different methods, depending on your system. For macOS, use ``brew install gdal``, for Ubuntu, ``apt-get install gdal-dev`` (or equivalent for other Linux distributions), and for Windows there are prebuilt binaries available [here](http://www.gisinternals.com/release.php).
 * A C++ compiler for your system. On macOS, make sure xcode is installed (``xcode-select --install``). Linux systems should come with gcc by default.
 * The Boost library (also available with the [BH R package](https://cran.r-project.org/package=BH)).
