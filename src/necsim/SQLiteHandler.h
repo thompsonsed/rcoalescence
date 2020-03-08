@@ -178,6 +178,12 @@ namespace necsim
         bool isOpen();
 
         /**
+         * @brief Checks if the database has ever been opened on this connection (i.e. there is a valid file name set).
+         * @return true, if the database has previously been opened.
+         */
+        bool hasOpened();
+
+        /**
          * @brief Checks if the database has the specified table.
          * @param table_name the table name to check for existence
          * @return true if the table exists

@@ -144,7 +144,7 @@ namespace necsim
 #endif //DEBUG
 
         // Make sure that the connection is opened to file.
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             openSQLConnection(sp->filename);
         }

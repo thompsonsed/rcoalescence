@@ -196,6 +196,11 @@ namespace necsim
         return database != nullptr;
     }
 
+    bool SQLiteHandler::hasOpened()
+    {
+        return !file_name.empty();
+    }
+
     bool SQLiteHandler::hasTable(const std::string &table_name)
     {
         string call1 = "select count(type) from sqlite_master where type='table' and name='" + table_name + "'";

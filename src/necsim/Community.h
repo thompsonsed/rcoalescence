@@ -137,10 +137,10 @@ namespace necsim
         bool in_mem; // boolean for whether the database is in memory or not.
         bool database_set; // boolean for whether the database has been set already.
         shared_ptr<SQLiteHandler> database; // stores the in-memory database connection.
-        bool bSqlConnection; // true if the data connection has been established.
+        bool sql_connection_open; // true if the data connection has been established.
         shared_ptr<vector<TreeNode>> nodes; // in older versions this was called lineage_indices.
         shared_ptr<vector<unsigned long>> species_abundances;
-        unsigned long iSpecies;
+        unsigned long species_index;
         bool has_imported_samplemask; // checks whether the samplemask has already been imported.
         bool has_imported_data; // checks whether the main sim data has been imported.
         Samplematrix samplemask; // the samplemask object for defining the areas we want to sample from.
@@ -172,9 +172,9 @@ namespace necsim
          */
         explicit Community(shared_ptr<vector<TreeNode>> r) : in_mem(false), database_set(false),
                                                              database(make_shared<SQLiteHandler>()),
-                                                             bSqlConnection(false), nodes(std::move(r)),
+                                                             sql_connection_open(false), nodes(std::move(r)),
                                                              species_abundances(make_shared<vector<unsigned long>>()),
-                                                             iSpecies(0), has_imported_samplemask(false),
+                                                             species_index(0), has_imported_samplemask(false),
                                                              has_imported_data(false), samplemask(), fragments(),
                                                              current_community_parameters(make_shared<CommunityParameters>()),
                                                              current_metacommunity_parameters(make_shared<MetacommunityParameters>()),

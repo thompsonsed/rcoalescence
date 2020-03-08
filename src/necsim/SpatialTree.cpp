@@ -1064,7 +1064,7 @@ namespace necsim
         {
             (*data)[i].qReset();
         }
-        //		os << "Estimated species number is: " << iSpecies << endl;
+        //		os << "Estimated species number is: " << species_index << endl;
         return iSpecies;
     }
 

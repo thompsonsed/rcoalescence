@@ -451,8 +451,8 @@ namespace necsim
 #ifdef DEBUG
         writeLog(10, "Completed tree creation.");
 #endif // DEBUG
-        iSpecies = species_count;
-        //		os << "iSpecies: " << iSpecies << endl;
+        species_index = species_count;
+        //		os << "species_index: " << species_index << endl;
         return species_count;
     }
 
@@ -466,7 +466,7 @@ namespace necsim
     {
         writeInfo("\tCalculating species abundances...\n");
         species_abundances = make_shared<vector<unsigned long>>();
-        species_abundances->resize(iSpecies + 1, 0);
+        species_abundances->resize(species_index + 1, 0);
         for(unsigned long i = 1; i < nodes->size(); i++)
         {
             TreeNode* this_node = &(*nodes)[i];
@@ -567,13 +567,13 @@ namespace necsim
             database->close();
             database->open(input_file);
         }
-        bSqlConnection = true;
+        sql_connection_open = true;
     }
 
     void Community::closeSQLConnection()
     {
         database->close();
-        bSqlConnection = false;
+        sql_connection_open = false;
         in_mem = false;
         database_set = false;
     }
@@ -582,7 +582,7 @@ namespace necsim
     {
         if(in_mem)
         {
-            bSqlConnection = false;
+            sql_connection_open = false;
         }
         else
         {
@@ -592,19 +592,24 @@ namespace necsim
 
     void Community::resumeSQLConnection()
     {
-        if(in_mem)
+        if(!in_mem)
         {
-            bSqlConnection = true;
+            if(database->hasOpened())
+            {
+                database->open();
+            }
+            else
+            {
+                database->open(":memory:");
+                in_mem = true;
+            }
         }
-        else
-        {
-            database->open();
-        }
+        sql_connection_open = true;
     }
 
     void Community::setInternalDatabase()
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             database->open(":memory:");
         }
@@ -614,14 +619,14 @@ namespace necsim
     void Community::internalOption()
     {
         has_imported_data = true;
-        bSqlConnection = true;
+        sql_connection_open = true;
         database_set = true;
         in_mem = true;
     }
 
     void Community::importData(string inputfile)
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             openSQLConnection(inputfile);
         }
@@ -709,7 +714,7 @@ namespace necsim
 
     void Community::getMaxSpeciesAbundancesID()
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             throw FatalException("Attempted to get from sql database without opening database connection.");
         }
@@ -740,12 +745,12 @@ namespace necsim
 
     unsigned long Community::getSpeciesNumber()
     {
-        return iSpecies;
+        return species_index;
     }
 
     void Community::getMaxSpeciesLocationsID()
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             throw FatalException("Attempted to get from sql database without opening database connection.");
         }
@@ -763,7 +768,7 @@ namespace necsim
 
     void Community::getMaxFragmentAbundancesID()
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             throw FatalException("Attempted to get from sql database without opening database connection.");
         }
@@ -967,7 +972,7 @@ namespace necsim
 
     bool Community::checkSpeciesLocationsReference()
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             throw FatalException("Attempted to get from sql database without opening database connection.");
         }
@@ -984,7 +989,7 @@ namespace necsim
 
     bool Community::checkSpeciesAbundancesReference()
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             throw FatalException("Attempted to get from sql database without opening database connection.");
         }
@@ -1408,7 +1413,7 @@ namespace necsim
         {
             return;
         }
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
 #ifdef DEBUG
             stringstream os;
@@ -1460,7 +1465,7 @@ namespace necsim
 
     void Community::forceSimCompleteParameter()
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             openSQLConnection(spec_sim_parameters->filename);
         }
@@ -1912,7 +1917,7 @@ namespace necsim
         {
             if(parameter->updated)
             {
-                if(!bSqlConnection)
+                if(!sql_connection_open)
                 {
                     throw FatalException("Attempted to update sql database without opening database connection.");
                 }
@@ -2168,7 +2173,7 @@ namespace necsim
 
     unsigned long Community::getSpeciesRichness(const unsigned long &community_reference)
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             throw FatalException("Attempted to get from sql database without opening database connection.");
         }
@@ -2185,7 +2190,7 @@ namespace necsim
 
     shared_ptr<map<unsigned long, unsigned long>> Community::getSpeciesAbundances(const unsigned long &community_reference)
     {
-        if(!bSqlConnection)
+        if(!sql_connection_open)
         {
             throw FatalException("Attempted to get from sql database without opening database connection.");
         }
