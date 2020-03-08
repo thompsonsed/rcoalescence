@@ -7,3 +7,4 @@
 ^.aclocal.m4
 .circleci/*
 .azure/*
+azure-pipelines.yml
