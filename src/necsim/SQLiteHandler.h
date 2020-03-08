@@ -82,7 +82,7 @@ namespace necsim
          * @brief Opens a database connection to the previously specified file name.
          *
          * If the file name is ":memory:", instead opens a connection to an in-memory database object.
-         * If a connection has previously been opened, closes the connection first.
+         * If a connection has previously been opened, keeps the existing connection.
          *
          * @param file_name the name of the file to open (or ":memory:" for in-memory databases)
          */

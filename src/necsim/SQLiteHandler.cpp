@@ -58,7 +58,10 @@ namespace necsim
             throw FatalException("Cannot open a database connection before setting a file name. "
                                  "If attempting to open an in-memory database, please use file_name=':memory:'.");
         }
-        open(file_name);
+        if(database == nullptr)
+        {
+            open(file_name);
+        }
     }
 
     void SQLiteHandler::open(const std::string &file_name)

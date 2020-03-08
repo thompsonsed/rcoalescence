@@ -235,18 +235,18 @@ void RTreeSimulation::checkWrittenMainSim()
         community.setSpecSimParameters(spec_sim_parameters);
         setupCommunity();
         has_written_main_sim = true;
-        community.unsetMemoryOption();
-        metacommunity.unsetMemoryOption();
+//        community.unsetMemoryOption();
+//        metacommunity.unsetMemoryOption();
     }
 }
 
 void RTreeSimulation::output()
 {
-    resumeSQLConnection();
     if(has_outputted)
     {
         throw FatalException("Output database has already been generated.");
     }
+    resumeSQLConnection();
     setupOutputDirectory();
     checkWrittenMainSim();
     spec_sim_parameters->filename = sql_output_database;
