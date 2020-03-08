@@ -3,6 +3,7 @@
 \docType{package}
 \name{rcoalescence}
 \alias{rcoalescence}
+\alias{rcoalescence-package}
 \title{rcoalescence: Efficient spatial and non-spatial neutral ecology simulator written in C++}
 \description{
 A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for
@@ -26,11 +27,10 @@ There are several dependencies required before installation of this package will
     \href{https://support.rstudio.com/hc/en-us/articles/200486498}{(see here)}.
     \item A C++ compiler that is detectable by R.
     \item The devtools package.
-    \item Boost library for C++, available \href{https://www.boost.org/}{here}.
-    \item Gdal library for C++, available \href{http://www.gdal.org/}{here}.
+    \item Gdal library for C++, available \href{http://www.gdal.org/}{here}. Installed automatically for windows.
     \item Sqlite3 library for C++, available \href{https://www.sqlite.org/index.html}{here}.
 
-    \item Several R packages are dependencies, including Rcpp and BH. These should be installed
+    \item Several R packages are dependencies, including Rcpp. These should be installed
     automatically.
 }
 }
@@ -38,7 +38,7 @@ There are several dependencies required before installation of this package will
 \subsection{Install method}{
 
 First, make sure devtools and the C++ library dependencies are installed. Then run,
-\code{library(devtools)} and \code{install_bitbucket("thompsonsed/rcoalescence")}
+\code{library(devtools)} and \code{install_github("thompsonsed/rcoalescence")}
 
 }
 }
@@ -70,14 +70,16 @@ during installation.
 
 \subsection{Missing boost requirements}{
 
-Ensure that boost has been properly compiled. Try installing the package BH from CRAN - if this
+Boost should not be essential for package functionality. Instead, you can have a C++17 compiler, 
+or depend on the included file system methodsEnsure that boost has been properly compiled. 
+If you still require boost support, try installing the package BH from CRAN - if this
 works then you should be fine. Alternatively, if you know the directory containing boost, supply
 it manually to using PKG_LIBS=/dir/ during installation.
 }
 
 \subsection{Still facing issues}{
 
-Try downloading the package from bitbucket manually and use \code{install_local()}.
+Try downloading the package from github manually and use \code{install_local()}.
 If you have autotools installed, run \code{autoreconf} and \code{autoconf} from the before
 attempting package
 }

@@ -34,20 +34,20 @@
 #include "RProtractedTreeSimulation.h"
 #include "RProtractedSpatialTreeSimulation.h"
 // [[Rcpp::plugins(cpp17)]]
-// [[Rcpp::depends(BH)]]
 //' @useDynLib rcoalescence, .registration=TRUE
+//' @exportPattern "^[[:alpha:]]+"
 
 bool logging_mode;
 
 using namespace rcoalescence;
 
-RCPP_EXPOSED_CLASS(TreeSimulation);
-
-RCPP_EXPOSED_CLASS(SpatialTreeSimulation);
-
-RCPP_EXPOSED_CLASS(ProtractedTreeSimulation);
-
-RCPP_EXPOSED_CLASS(ProtractedSpatialTreeSimulation);
+//RCPP_EXPOSED_CLASS(TreeSimulation);
+//
+//RCPP_EXPOSED_CLASS(SpatialTreeSimulation);
+//
+//RCPP_EXPOSED_CLASS(ProtractedTreeSimulation);
+//
+//RCPP_EXPOSED_CLASS(ProtractedSpatialTreeSimulation);
 
 RCPP_MODULE(coalescenceModule)
 {
