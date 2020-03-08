@@ -68,8 +68,8 @@ namespace necsim
         ~CommunityParameters() = default;
 
         /**
-         * @brief Constructor for CommunityParameters, for storing a pairs of previous calculations, requiring a speciation rate
-         * and a time.
+         * @brief Constructor for CommunityParameters, for storing a pairs of previous calculations, requiring a
+         * speciation rate and a time.
          * Overloaded version with setup routines.
          * @param reference_in the reference to set for this CommunityParameters set
          * @param speciation_rate_in the speciation rate of the previous calculation

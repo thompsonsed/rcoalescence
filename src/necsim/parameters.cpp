@@ -69,7 +69,7 @@ namespace necsim
     }
 
     CommunitiesArray::CommunitiesArray() : comm_parameters()
-    { };
+    { }
 
     void CommunitiesArray::pushBack(unsigned long reference, long double speciation_rate, long double time,
                                     bool fragment, unsigned long metacommunity_reference,
