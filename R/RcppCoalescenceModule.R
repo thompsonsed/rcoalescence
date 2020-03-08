@@ -413,7 +413,7 @@ TreeSimulation <- setRcppClass(
         stop("Output database has not been set.")
       }
       else {
-        output_database <<- output_db
+        .self$output_database <- output_db
         checkOutputDatabaseExists()
       }
     },
@@ -452,7 +452,7 @@ TreeSimulation <- setRcppClass(
 
     createDefaultOutputDatabase = function() {
       "Creates the default output database string"
-      output_database <<-
+      .self$output_database <-
         file.path(
           getOutputDirectory(),
           paste("data_", getJobType(), "_",
