@@ -7,9 +7,9 @@ src/necsim/cmake*
 .Rproj.user
 .Rhistory
 lib/cmake-build-debug/CMakeFiles/
-
+default/
 lib/\.idea/
-
+tests/testthat/default/
 src/\.idea/
 src/cmake-build*
 *.o
