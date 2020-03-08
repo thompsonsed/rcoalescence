@@ -14,7 +14,7 @@ src/\.idea/
 src/cmake-build*
 *.o
 *.o-*
-
+src/Makevars
 
 \.RData
 
