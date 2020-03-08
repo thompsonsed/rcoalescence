@@ -31,7 +31,7 @@ LIBS="$LIBS -lsqlite3"
 
 dnl Check boost headers
 AC_LANG(C++)
-BOOST_REQUIRE([1.54.0], [boost_found="yes"])
+BOOST_REQUIRE([1.54.0], [boost_found="no"])
 if [[ "$boost_found" == "yes" ]];
 then
   AC_MSG_NOTICE([A working boost library v1.54 or greater is required, or C++17. Make sure it is correctly installed on your system.])

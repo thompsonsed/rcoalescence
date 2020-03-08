@@ -3884,7 +3884,7 @@ $as_echo "$boost_cv_inc_path" >&6; }
         boost_errmsg="cannot find Boost headers version >= $boost_version_req_string"
         { $as_echo "$as_me:${as_lineno-$LINENO}: $boost_errmsg" >&5
 $as_echo "$as_me: $boost_errmsg" >&6;}
-        boost_found="yes"
+        boost_found="no"
         ;;#(
       yes)
         BOOST_CPPFLAGS=
