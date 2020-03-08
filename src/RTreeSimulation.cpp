@@ -26,6 +26,7 @@ RTreeSimulation::~RTreeSimulation()
 {
     community.closeSQLConnection();
     metacommunity.closeSQLConnection();
+    metacommunity.closeSQLConnection();
 }
 
 void RTreeSimulation::setKeyParameters(const long long &job_type,
@@ -143,8 +144,8 @@ void RTreeSimulation::apply(shared_ptr<SpecSimParameters> specSimParameters)
             community.setSimParameters(sim_parameters);
             community.doApplicationInternal(std::move(specSimParameters), data);
         }
-        community.unsetMemoryOption();
-        metacommunity.unsetMemoryOption();
+//        community.unsetMemoryOption(); // TODO remove
+//        metacommunity.unsetMemoryOption(); // TODO remove
     }
 }
 
@@ -235,8 +236,8 @@ void RTreeSimulation::checkWrittenMainSim()
         community.setSpecSimParameters(spec_sim_parameters);
         setupCommunity();
         has_written_main_sim = true;
-//        community.unsetMemoryOption();
-//        metacommunity.unsetMemoryOption();
+//        community.unsetMemoryOption(); // TODO remove
+//        metacommunity.unsetMemoryOption(); // TODO remove
     }
 }
 
