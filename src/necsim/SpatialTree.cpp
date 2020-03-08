@@ -1187,6 +1187,7 @@ namespace necsim
         string to_execute;
         stringstream ss1, ss2;
         ss1 << setprecision(64);
+
         ss1 << spec;
         ss2 << setprecision(64);
         ss2 << sim_parameters->m_prob;

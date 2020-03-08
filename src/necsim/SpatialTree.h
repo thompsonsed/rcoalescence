@@ -34,9 +34,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <memory>
-// extra boost include - this requires the installation of boost on the system
-// note that this requires compilation with the -lboost_filesystem and -lboost_system linkers.
-#include <boost/filesystem.hpp>
+
 
 // include fast-csv-parser by Ben Strasser (available from https://github.com/ben-strasser/fast-cpp-csv-parser)
 // for fast file reading
@@ -68,6 +66,7 @@
 //#endif
 
 // other includes for required files
+#include "cpp17_includes.h"
 #include "Tree.h"
 #include "Matrix.h"
 #include "RNGController.h"
@@ -130,7 +129,6 @@ namespace necsim
         unsigned long global_individuals;
         // Mean death rate across the simulated world
         double summed_death_rate;
-
 
         // Defines a cell that is unused
         static const unsigned long UNUSED = static_cast<unsigned long>(-1);
