@@ -70,8 +70,8 @@ during installation.
 
 \subsection{Missing boost requirements}{
 
-Boost should not be essential for package functionality. Instead, you can have a C++17 compiler, 
-or depend on the included file system methodsEnsure that boost has been properly compiled. 
+Boost should not be essential for package functionality. Instead, you can have a C++17 compiler,
+or depend on the included file system methodsEnsure that boost has been properly compiled.
 If you still require boost support, try installing the package BH from CRAN - if this
 works then you should be fine. Alternatively, if you know the directory containing boost, supply
 it manually to using PKG_LIBS=/dir/ during installation.
