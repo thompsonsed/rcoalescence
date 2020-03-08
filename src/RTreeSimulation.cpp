@@ -9,12 +9,14 @@
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
 #include "RTreeSimulation.h"
+
 using namespace rcoalescence;
 using namespace std;
 using namespace necsim;
-RTreeSimulation::RTreeSimulation()
-        : Tree(), spec_sim_parameters(make_shared<SpecSimParameters>()), metacommunity(), multiple_output(false),
-          has_outputted(false), has_written_main_sim(false), uses_metacommunity(false)
+
+RTreeSimulation::RTreeSimulation() : Tree(), spec_sim_parameters(make_shared<SpecSimParameters>()), metacommunity(),
+                                     multiple_output(false), has_outputted(false), has_written_main_sim(false),
+                                     uses_metacommunity(false)
 {
     output_database = "not_set";
     setLoggingMode(false);
@@ -22,17 +24,18 @@ RTreeSimulation::RTreeSimulation()
 
 RTreeSimulation::~RTreeSimulation()
 {
-    community.closeSqlConnection();
-    metacommunity.closeSqlConnection();
+    community.closeSQLConnection();
+    metacommunity.closeSQLConnection();
 }
 
-void RTreeSimulation::setKeyParameters(const long long &job_type, const long long &seed_in,
+void RTreeSimulation::setKeyParameters(const long long &job_type,
+                                       const long long &seed_in,
                                        const string &output_directory_in,
-                                       const unsigned long &max_time_in, const unsigned long &desired_specnum_in,
+                                       const unsigned long &max_time_in,
+                                       const unsigned long &desired_specnum_in,
                                        vector<double> times_list)
 {
-    sim_parameters->setKeyParameters(job_type, seed_in, output_directory_in, max_time_in, desired_specnum_in,
-                                     "null");
+    sim_parameters->setKeyParameters(job_type, seed_in, output_directory_in, max_time_in, desired_specnum_in, "null");
     if(!times_list.empty())
     {
         for(auto &times: times_list)
@@ -46,15 +49,20 @@ void RTreeSimulation::setKeyParameters(const long long &job_type, const long lon
 
 void RTreeSimulation::setMinSpeciationRate(const long double &spec_in)
 {
-    sim_parameters->setSpeciationParameters(spec_in, sim_parameters->is_protracted, sim_parameters->min_speciation_gen,
+    sim_parameters->setSpeciationParameters(spec_in,
+                                            sim_parameters->is_protracted,
+                                            sim_parameters->min_speciation_gen,
                                             sim_parameters->max_speciation_gen);
 }
 
-void RTreeSimulation::setSimulationProtractedParameters(const bool &protracted_in, const double &min_speciation_gen_in,
+void RTreeSimulation::setSimulationProtractedParameters(const bool &protracted_in,
+                                                        const double &min_speciation_gen_in,
                                                         const double &max_speciation_gen_in)
 {
     sim_parameters->setSpeciationParameters(sim_parameters->spec,
-                                            protracted_in, min_speciation_gen_in, max_speciation_gen_in);
+                                            protracted_in,
+                                            min_speciation_gen_in,
+                                            max_speciation_gen_in);
 }
 
 void RTreeSimulation::addSpeciationRate(const double &speciation_rate_in)
@@ -72,8 +80,10 @@ void RTreeSimulation::addMetacommunityParameters(const unsigned long &metacommun
     ss << metacommunity_speciation_rate << ", option = " << metacommunity_option << " and external reference = ";
     ss << metacommunity_reference << endl;
     writeInfo(ss.str());
-    spec_sim_parameters->addMetacommunityParameters(metacommunity_size, metacommunity_speciation_rate,
-                                                    metacommunity_option, metacommunity_reference);
+    spec_sim_parameters->addMetacommunityParameters(metacommunity_size,
+                                                    metacommunity_speciation_rate,
+                                                    metacommunity_option,
+                                                    metacommunity_reference);
 }
 
 void RTreeSimulation::addProtractedParameters(const double &min_speciation_gen, const double &max_speciation_gen)
@@ -138,17 +148,48 @@ void RTreeSimulation::apply(shared_ptr<SpecSimParameters> specSimParameters)
     }
 }
 
-void RTreeSimulation::applySpeciation(const string &file_in, const bool &use_spatial_in, const string &sample_file,
-                                      const string &use_fragments_in, vector<double> times_list)
+void RTreeSimulation::pauseSQLConnection()
 {
+    if(uses_metacommunity)
+    {
+        metacommunity.pauseSQLConnection();
+    }
+    else
+    {
+        community.pauseSQLConnection();
+    }
+}
+
+void RTreeSimulation::resumeSQLConnection()
+{
+    if(uses_metacommunity)
+    {
+        metacommunity.resumeSQLConnection();
+    }
+    else
+    {
+        community.resumeSQLConnection();
+    }
+
+}
+
+void RTreeSimulation::applySpeciation(const string &file_in,
+                                      const bool &use_spatial_in,
+                                      const string &sample_file,
+                                      const string &use_fragments_in,
+                                      vector<double> times_list)
+{
+    resumeSQLConnection();
     checkWrittenMainSim();
     spec_sim_parameters->setup(file_in, use_spatial_in, sample_file, times_list, use_fragments_in);
     apply(spec_sim_parameters);
     spec_sim_parameters->wipe();
+    pauseSQLConnection();
 }
 
 Rcpp::DataFrame RTreeSimulation::getSpeciesAbundances(const unsigned long &community_reference)
 {
+    resumeSQLConnection();
     auto row = community.getSpeciesAbundances(community_reference);
     Rcpp::IntegerVector species_ids(row->size());
     Rcpp::IntegerVector no_individuals(row->size());
@@ -160,26 +201,33 @@ Rcpp::DataFrame RTreeSimulation::getSpeciesAbundances(const unsigned long &commu
     }
     Rcpp::DataFrame out_df = Rcpp::DataFrame::create(Rcpp::Named("species_id") = species_ids,
                                                      Rcpp::Named("no_individuals") = no_individuals);
+    pauseSQLConnection();
     return out_df;
 }
 
 unsigned long RTreeSimulation::getSpeciesRichness(const unsigned long &community_reference)
 {
-    return community.getSpeciesRichness(community_reference);
+    resumeSQLConnection();
+    unsigned long richness = community.getSpeciesRichness(community_reference);
+    pauseSQLConnection();
+    return richness;
 }
 
 unsigned long RTreeSimulation::getLastSpeciesRichness()
 {
+    resumeSQLConnection();
     if(uses_metacommunity)
     {
         return metacommunity.getSpeciesNumber();
     }
-    return community.getSpeciesNumber();
+    unsigned long num_species = community.getSpeciesNumber();
+    pauseSQLConnection();
+    return num_species;
 }
-
 
 void RTreeSimulation::checkWrittenMainSim()
 {
+    resumeSQLConnection();
     if(!has_written_main_sim)
     {
         sortData();
@@ -194,6 +242,7 @@ void RTreeSimulation::checkWrittenMainSim()
 
 void RTreeSimulation::output()
 {
+    resumeSQLConnection();
     if(has_outputted)
     {
         throw FatalException("Output database has already been generated.");
@@ -209,13 +258,12 @@ void RTreeSimulation::output()
     if(uses_metacommunity)
     {
         metacommunity.output();
-        metacommunity.closeSqlConnection();
     }
     else
     {
         community.output();
     }
-    community.closeSqlConnection();
+    pauseSQLConnection();
     output_database = sql_output_database;
     has_outputted = true;
 }

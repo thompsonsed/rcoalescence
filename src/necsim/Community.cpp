@@ -541,7 +541,7 @@ namespace necsim
         }
     }
 
-    void Community::openSqlConnection(string input_file)
+    void Community::openSQLConnection(string input_file)
     {
         // open the database objects
         SQLiteHandler out_database;
@@ -570,12 +570,36 @@ namespace necsim
         bSqlConnection = true;
     }
 
-    void Community::closeSqlConnection()
+    void Community::closeSQLConnection()
     {
         database->close();
         bSqlConnection = false;
         in_mem = false;
         database_set = false;
+    }
+
+    void Community::pauseSQLConnection()
+    {
+        if(in_mem)
+        {
+            bSqlConnection = false;
+        }
+        else
+        {
+            database->close();
+        }
+    }
+
+    void Community::resumeSQLConnection()
+    {
+        if(in_mem)
+        {
+            bSqlConnection = true;
+        }
+        else
+        {
+            database->open();
+        }
     }
 
     void Community::setInternalDatabase()
@@ -599,7 +623,7 @@ namespace necsim
     {
         if(!bSqlConnection)
         {
-            openSqlConnection(inputfile);
+            openSQLConnection(inputfile);
         }
         if(!has_imported_data)
         {
@@ -938,7 +962,7 @@ namespace necsim
             // create the backup object to write data to the file from memory.
             out_database.backupFrom(*database);
         }
-        closeSqlConnection();
+        closeSQLConnection();
     }
 
     bool Community::checkSpeciesLocationsReference()
@@ -1390,7 +1414,7 @@ namespace necsim
             stringstream os;
             os << "opening connection..." << flush;
 #endif
-            openSqlConnection(file);
+            openSQLConnection(file);
 #ifdef DEBUG
             os << "done." << endl;
             writeInfo(os.str());
@@ -1438,7 +1462,7 @@ namespace necsim
     {
         if(!bSqlConnection)
         {
-            openSqlConnection(spec_sim_parameters->filename);
+            openSQLConnection(spec_sim_parameters->filename);
         }
         string update_command = "UPDATE SIMULATION_PARAMETERS SET sim_complete=1 WHERE sim_complete=0;";
         database->execute(update_command);

@@ -206,7 +206,7 @@ namespace necsim
             {
                 nodes.reset();
             }
-            closeSqlConnection();
+            closeSQLConnection();
         }
 
         /**
@@ -301,12 +301,26 @@ namespace necsim
          * files.
          * @param input_file the sql database output from a necsim simulation.
          */
-        void openSqlConnection(string input_file);
+        void openSQLConnection(string input_file);
 
         /**
          * @brief Safely destroys the SQL connection.
          */
-        void closeSqlConnection();
+        void closeSQLConnection();
+
+        /**
+         * @brief Pauses the SQL connection, to be re-opened at a later time.
+         *
+         * Has no effect if the database is stored in memory.
+         */
+        void pauseSQLConnection();
+
+        /**
+         * @brief Resumes the SQL connection, assuming it has previously been paused.
+         *
+         * Has no effect if the database is stored in memory.
+         */
+        void resumeSQLConnection();
 
         /**
          * @brief Opens a connection to an in-memory database. This will eventually be written to the output file.

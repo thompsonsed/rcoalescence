@@ -146,7 +146,7 @@ namespace necsim
         // Make sure that the connection is opened to file.
         if(!bSqlConnection)
         {
-            openSqlConnection(sp->filename);
+            openSQLConnection(sp->filename);
         }
         checkSimulationParameters();
         for(const auto &item: sp->metacommunity_parameters)
@@ -186,7 +186,7 @@ namespace necsim
     void Metacommunity::readSAD()
     {
         Community external_metacommunity;
-        external_metacommunity.openSqlConnection(current_metacommunity_parameters->option);
+        external_metacommunity.openSQLConnection(current_metacommunity_parameters->option);
         shared_ptr<map<unsigned long, unsigned long>> sad = external_metacommunity.getSpeciesAbundances(
                 current_metacommunity_parameters->external_reference);
         species_abundances_handler.reset();

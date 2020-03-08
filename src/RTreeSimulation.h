@@ -66,8 +66,11 @@ namespace rcoalescence
          * @param desired_specnum_in the desired number of species to aim towards (currently not functional)
          * @param times_list the file containing a list of temporal sampling points
          */
-        void setKeyParameters(const long long &job_type, const long long &seed_in, const string &output_directory_in,
-                              const unsigned long &max_time_in, const unsigned long &desired_specnum_in,
+        void setKeyParameters(const long long &job_type,
+                              const long long &seed_in,
+                              const string &output_directory_in,
+                              const unsigned long &max_time_in,
+                              const unsigned long &desired_specnum_in,
                               vector<double> times_list);
 
         /**
@@ -82,7 +85,8 @@ namespace rcoalescence
          * @param min_speciation_gen_in the minimum speciation generation for protracted simulations
          * @param max_speciation_gen_in the maximum speciation generation for protracted simulations
          */
-        void setSimulationProtractedParameters(const bool &protracted_in, const double &min_speciation_gen_in,
+        void setSimulationProtractedParameters(const bool &protracted_in,
+                                               const double &min_speciation_gen_in,
                                                const double &max_speciation_gen_in);
 
         /**
@@ -143,6 +147,20 @@ namespace rcoalescence
         long long getJobType() override;
 
         /**
+         * @brief CLoses the connection to the SQL file.
+         *
+         * Together with resumeSQLConnection(), the functions wrap  all SQL calls from R, opening or closing the database.
+         */
+        void pauseSQLConnection();
+
+        /**
+         * @brief Opens the connection to the SQL file.
+         *
+         * Together with pauseSQLConnection(), the functions wrap  all SQL calls from R, opening or closing the database.
+         */
+        void resumeSQLConnection();
+
+        /**
          * @brief Applies the provided speciation parameters to the coalescence tree.
          * Records data for all times stored in the reference_times vector.
          * @param file_in the file path to save the database to
@@ -156,8 +174,11 @@ namespace rcoalescence
          * @param metacommunity_size_in the metacommunity size for protracted simulations
          * @param metacommunity_speciation_rate_in the metacommunity speciation rate for protracted simulations
          */
-        void applySpeciation(const string &file_in, const bool &use_spatial_in, const string &sample_file,
-                             const string &use_fragments_in, vector<double> times_list);
+        void applySpeciation(const string &file_in,
+                             const bool &use_spatial_in,
+                             const string &sample_file,
+                             const string &use_fragments_in,
+                             vector<double> times_list);
 
         /**
          * @brief Calculates the abundance of each species and returns a dataframe containing species ids and abundances.
@@ -223,7 +244,7 @@ namespace rcoalescence
          * @return bool true if simulation completes successfully
          */
         bool runSimulation();
-    
+
     };
 }
 #endif //RCOALESCENCE_RTREE_H
