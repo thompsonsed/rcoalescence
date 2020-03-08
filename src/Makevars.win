@@ -16,7 +16,7 @@ PKG_CPPFLAGS = -I"../inst/include" \
   -lboost_filesystem \
   -Dwith_gdal \
   -DWIN_INSTALL \
-  -DR_COMPILER \
+  -Duse_rcoalescence \
   -std=c++1y \
   -fpermissive \
   -DSTRICT_R_HEADERS
