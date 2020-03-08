@@ -20,8 +20,8 @@
 #include <cmath>
 #include <stdexcept>
 #include <memory>
-#include <boost/filesystem.hpp>
 
+#include "cpp17_includes.h"
 #include "Map.h"
 #include "DataMask.h"
 #include "SimParameters.h"
