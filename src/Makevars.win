@@ -25,8 +25,8 @@ PKG_CPPFLAGS = -I"../inst/include" \
   
   	
   	
-SHLIB_LDFLAGS = $(SHLIB_CXXLDFLAGS) 
-SHLIB_LD = $(SHLIB_CXXLD)
+#SHLIB_LDFLAGS = $(SHLIB_CXXLDFLAGS) 
+#SHLIB_LD = $(SHLIB_CXXLD)
 PKG_LIBS += -L$(RWINLIB)/$(TARGET) \
         -L$(RWINLIB)/lib$(R_ARCH) \
 	-lgdal -lsqlite3 -lspatialite -lproj -lgeos_c -lgeos  \
@@ -36,7 +36,7 @@ PKG_LIBS += -L$(RWINLIB)/$(TARGET) \
 	-lopenjp2 -ljasper -lpng16 -ljpeg -ltiff -lgeotiff -lgif -lxml2 -llzma -lszip -lz \
 	-lodbc32 -lodbccp32 -liconv -lpsapi -lws2_32 -lcrypt32 -lwldap32 -lsecur32 -lgdi32
 # Hack to get through R CHECK
-PKG_LIBS:=$(filter-out $(FLIBS), $(PKG_LIBS))
+#PKG_LIBS:=$(filter-out $(FLIBS), $(PKG_LIBS))
 SOURCES_CPP=$(wildcard necsim/*.cpp) $(wildcard *.cpp)
 OBJECTS = $(SOURCES_CPP:.cpp=.o)
 

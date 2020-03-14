@@ -11,13 +11,14 @@ LazyData: true
 Depends: Rcpp, RSQLite, R (>= 3.4.0)
 Imports: methods
 NeedsCompilation: yes
+StagedInstall: no
 LinkingTo: Rcpp (>= 0.12.14)
 SystemRequirements: GNU make, Requires GDAL >= 1.11.4, available
         from https://trac.osgeo.org/gdal/wiki/DownloadSource; GDAL OSX
         frameworks built by William Kyngesburye at http://www.kyngchaos.com/ may be used for source 
         installs on OSX or installation performed using Homebrew. 
         Requires GNU make for compilation and boost headers (available through BH package).
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Suggests: testthat
 Collate:
     'RcppCoalescenceModule.R'
