@@ -1,0 +1,28 @@
+---
+title: "Introduction to rcoalescence"
+author: "Sam Thompson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rcoalescence-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rcoalescence)
+```
+# Overview
+
+`rcoalescence` is a package for simulating spatially explicit neutral models of ecological systems. The models rely on the user providing a set of simulation parameters, including maps which define the density of organisms across the landscape. Then, the simulation is performed which mimics some of the processes that control biodiversity (including ecological drift, speciation and dispersal). Following this, the simulation output provides a species identity for every individual in the landscape, which can be compared against real data or used to explore potential biodiversity outcomes.
+
+
+# Setting up a basic simulation
+

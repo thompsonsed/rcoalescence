@@ -33,3 +33,4 @@ aclocal\.m4
 windows/
 output/
 *.dll
+inst/doc

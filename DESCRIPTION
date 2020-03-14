@@ -19,7 +19,11 @@ SystemRequirements: GNU make, Requires GDAL >= 1.11.4, available
         installs on OSX or installation performed using Homebrew. 
         Requires GNU make for compilation and boost headers (available through BH package).
 RoxygenNote: 7.1.0
-Suggests: testthat
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown
 Collate:
     'RcppCoalescenceModule.R'
     'RcppExports.R'
+VignetteBuilder: knitr
