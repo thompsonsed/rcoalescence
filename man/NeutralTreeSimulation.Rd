@@ -158,7 +158,7 @@ unlink("output", recursive = TRUE)
 # Example simulation using the supplied dimensions and offsets
 library(rcoalescence)
 # Define the directory containing the maps
-getMapDir() <- function(){
+getMapDir <- function(){
   return(system.file("sample", package = "rcoalescence"))
 }
 
@@ -254,7 +254,7 @@ unlink("output", recursive = TRUE)
 library(rcoalescence)
 # Define the folder for the maps
 # Define the directory containing the maps
-getMapDir() <- function(){
+getMapDir <- function(){
   return(system.file("sample", package = "rcoalescence"))
 }
 simulation <- ProtractedSpatialTreeSimulation$new()

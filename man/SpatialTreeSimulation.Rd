@@ -174,7 +174,7 @@ These are for rebuilding the coalescence tree under different conditions.
 # Example simulation using the supplied dimensions and offsets
 library(rcoalescence)
 # Define the directory containing the maps
-getMapDir() <- function(){
+getMapDir <- function(){
   return(system.file("sample", package = "rcoalescence"))
 }
 

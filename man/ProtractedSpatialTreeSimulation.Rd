@@ -138,7 +138,7 @@ These are for rebuilding the coalescence tree under different conditions.
 library(rcoalescence)
 # Define the folder for the maps
 # Define the directory containing the maps
-getMapDir() <- function(){
+getMapDir <- function(){
   return(system.file("sample", package = "rcoalescence"))
 }
 simulation <- ProtractedSpatialTreeSimulation$new()
