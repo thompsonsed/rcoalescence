@@ -34,3 +34,5 @@ windows/
 output/
 *.dll
 inst/doc
+inst/gdal
+inst/proj

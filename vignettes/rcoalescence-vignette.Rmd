@@ -24,5 +24,25 @@ library(rcoalescence)
 `rcoalescence` is a package for simulating spatially explicit neutral models of ecological systems. The models rely on the user providing a set of simulation parameters, including maps which define the density of organisms across the landscape. Then, the simulation is performed which mimics some of the processes that control biodiversity (including ecological drift, speciation and dispersal). Following this, the simulation output provides a species identity for every individual in the landscape, which can be compared against real data or used to explore potential biodiversity outcomes.
 
 
-# Setting up a basic simulation
+# Setting up a basic non-spatial simulation
 
+To set up a simulation, we first create a new TreeSimulation object and add the required simulation parameters. When a simulation is non-spatial, it is as if all individuals exist within a single well-mixed cell in the landscape.
+
+```{r}
+# First we run a simulation to generate a sample database
+simulation <- TreeSimulation$new()
+# Simulate 100 individuals in a non-spatial manner
+simulation$setSimulationParameters(
+  seed = 10, # the seed for random number generation
+  task = 1, # the task for file naming
+  output_directory = "output", # the path to the output directory
+  min_speciation_rate = 0.01, # the speciation rate to initially use
+  deme = 100 # the number of individuals that occupy a single cell
+)
+```
+
+The simulation can now be run using `runSimulation()`. If this function returns `FALSE`, the simulation has not completed successfully within the time specified. 
+
+```{r}
+simulation$runSimulation()
+```
