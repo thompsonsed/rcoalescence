@@ -1,7 +1,7 @@
 # Example simulation using the supplied dimensions and offsets
 library(rcoalescence)
 # Define the directory containing the maps
-getMapDir <- function(){
+getMapDir <- function() {
   return(system.file("sample", package = "rcoalescence"))
 }
 
@@ -22,10 +22,12 @@ simulation$setSimulationParameters(
   sample_mask_file = file.path(getMapDir(), "example_mask.tif") # the path to the sample mask
 )
 # Add a historical map
-simulation$addHistoricalMap(historical_fine_map =file.path(getMapDir(), "example_historical_fine.tif"),
-                            historical_coarse_map = file.path(getMapDir(), "example_coarse.tif"))
+simulation$addHistoricalMap(
+  historical_fine_map = file.path(getMapDir(), "example_historical_fine.tif"),
+  historical_coarse_map = file.path(getMapDir(), "example_coarse.tif")
+)
 # Run the actual simulation
-simulation$runSimulation() 
+simulation$runSimulation()
 
 # Post-simulation
 # Apply additional speciation rates
