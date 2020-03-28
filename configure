@@ -3270,7 +3270,8 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-PKG_LIBS=${PKGLIBS}
+
+PKG_LIBS=${PKG_LIBS}
 
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
@@ -4132,13 +4133,25 @@ use_gdal=0
 
 CPPFLAGS="${PKG_CXXFLAGS} ${CPPFLAGS} ${GDAL_CPPFLAGS}"
 LIBS="${PKG_LIBS} ${LIBS} ${GDAL_LIBS}"
+CXXFLAGS="${CXXFLAGS} ${CPPFLAGS}"
+CFLAGS="${CXXFLAGS} ${CPPFLAGS}"
+PKG_LIBS="${PKG_LIBS} ${GDAL_LIBS}"
+PKG_CXXFLAGS="${PKG_CXXFLAGS} ${GDAL_CPPFLAGS}"
+PKG_CPPFLAGS="${PKG_CPPFLAGS} ${GDAL_CPPFLAGS}"
+PKG_CFLAGS="${PKG_CFLAGS} ${GDAL_CPPFLAGS}"
+LIBS="${LIBS} ${GDAL_LIBS}"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: C flags: ${CXXFLAGS}" >&5
+$as_echo "$as_me: C flags: ${CXXFLAGS}" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: CPP flags: ${CPPFLAGS}" >&5
 $as_echo "$as_me: CPP flags: ${CPPFLAGS}" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: CXX flags: ${CXXFLAGS}" >&5
+$as_echo "$as_me: CXX flags: ${CXXFLAGS}" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: PKG_CXX flags: ${PKG_CXXFLAGS}" >&5
+$as_echo "$as_me: PKG_CXX flags: ${PKG_CXXFLAGS}" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: PKG_C flags: ${PKG_CFLAGS}" >&5
+$as_echo "$as_me: PKG_C flags: ${PKG_CFLAGS}" >&6;}
 
-PKG_CPPFLAGS="${PKG_CPPFLAGS} ${GDAL_CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} ${GDAL_CPPFLAGS}"
-PKG_LIBS="${PKG_LIBS} ${GDAL_LIBS}"
-LIBS="${LIBS} ${GDAL_LIBS}"
+
 
 GDAL_DATA_TEST_FILE="${GDAL_DATADIR}/pcs.csv"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking GDAL: ${GDAL_DATADIR}/pcs.csv readable" >&5

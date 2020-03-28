@@ -6,6 +6,7 @@
 #' @importFrom methods new
 #' @import methods
 #' @import RSQLite
+#' @import Rcpp
 #' @name rcoalescence
 #' @author Sam Thompson
 #' @description A convenience wrapper for necsim, a Neutral Ecology Coalescence SIMulator for
