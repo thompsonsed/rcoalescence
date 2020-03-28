@@ -138,7 +138,7 @@ These are for rebuilding the coalescence tree under different conditions.
 library(rcoalescence)
 # Define the folder for the maps
 # Define the directory containing the maps
-getMapDir <- function(){
+getMapDir <- function() {
   return(system.file("sample", package = "rcoalescence"))
 }
 simulation <- ProtractedSpatialTreeSimulation$new()
@@ -147,7 +147,7 @@ simulation$setSimulationParameters(
   task = 1,
   output_directory = "output",
   min_speciation_rate = 0.5,
-  sigma = 2 * (2 ** 0.5),
+  sigma = 2 * (2**0.5),
   deme = 1,
   deme_sample = 0.1,
   fine_map_file = file.path(getMapDir(), "example_fine.tif"),
@@ -173,7 +173,7 @@ simulation$setSimulationParameters(
   task = 1,
   output_directory = "output",
   min_speciation_rate = 0.001,
-  sigma = 2 * (2 ** 0.5),
+  sigma = 2 * (2**0.5),
   deme = 1,
   deme_sample = 0.1,
   fine_map_file = file.path(getMapDir(), "example_fine.tif"),

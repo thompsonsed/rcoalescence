@@ -158,7 +158,7 @@ unlink("output", recursive = TRUE)
 # Example simulation using the supplied dimensions and offsets
 library(rcoalescence)
 # Define the directory containing the maps
-getMapDir <- function(){
+getMapDir <- function() {
   return(system.file("sample", package = "rcoalescence"))
 }
 
@@ -179,10 +179,12 @@ simulation$setSimulationParameters(
   sample_mask_file = file.path(getMapDir(), "example_mask.tif") # the path to the sample mask
 )
 # Add a historical map
-simulation$addHistoricalMap(historical_fine_map =file.path(getMapDir(), "example_historical_fine.tif"),
-                            historical_coarse_map = file.path(getMapDir(), "example_coarse.tif"))
+simulation$addHistoricalMap(
+  historical_fine_map = file.path(getMapDir(), "example_historical_fine.tif"),
+  historical_coarse_map = file.path(getMapDir(), "example_coarse.tif")
+)
 # Run the actual simulation
-simulation$runSimulation() 
+simulation$runSimulation()
 
 # Post-simulation
 # Apply additional speciation rates
@@ -254,7 +256,7 @@ unlink("output", recursive = TRUE)
 library(rcoalescence)
 # Define the folder for the maps
 # Define the directory containing the maps
-getMapDir <- function(){
+getMapDir <- function() {
   return(system.file("sample", package = "rcoalescence"))
 }
 simulation <- ProtractedSpatialTreeSimulation$new()
@@ -263,7 +265,7 @@ simulation$setSimulationParameters(
   task = 1,
   output_directory = "output",
   min_speciation_rate = 0.5,
-  sigma = 2 * (2 ** 0.5),
+  sigma = 2 * (2**0.5),
   deme = 1,
   deme_sample = 0.1,
   fine_map_file = file.path(getMapDir(), "example_fine.tif"),
@@ -289,7 +291,7 @@ simulation$setSimulationParameters(
   task = 1,
   output_directory = "output",
   min_speciation_rate = 0.001,
-  sigma = 2 * (2 ** 0.5),
+  sigma = 2 * (2**0.5),
   deme = 1,
   deme_sample = 0.1,
   fine_map_file = file.path(getMapDir(), "example_fine.tif"),
