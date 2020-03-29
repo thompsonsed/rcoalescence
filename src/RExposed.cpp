@@ -11,6 +11,7 @@
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
 
+#include <unistd.h>
 #include "Rcpp.h"
 #include "RTreeSimulation.h"
 #include "RSpatialTreeSimulation.h"

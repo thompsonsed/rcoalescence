@@ -25,12 +25,34 @@
 
 ### Prerequisites ###
 
-Before attempting installation, the following prequisites should be installed.
+The installation method differs depending on your operating system. However, some R packages are required on all operating systems. These are:
 
-* The devtools package (for installing from github), RSQLite (for generating the simulation databases) and Rcpp (for compiling the package). Run ``install.packages(c("devtools", "Rcpp", "RSQLite"))``
-* GDAL, which can be installed through different methods, depending on your system. For macOS, use ``brew install gdal``, for Ubuntu, ``apt-get install gdal-dev`` (or equivalent for other Linux distributions), and for Windows there are prebuilt binaries available [here](http://www.gisinternals.com/release.php).
-* A C++ compiler for your system. On macOS, make sure xcode is installed (``xcode-select --install``). Linux systems should come with gcc by default.
-* The Sqlite3 library, which usually comes with your system.
+- *devtools*
+- *Rcpp*
+- *RSQLite*
+
+We also suggest *dplyr*, *rmarkdown* and *knitr*. All these packages can be installed using ``install.packages(c("devtools", "Rcpp", "RSQLite", "tidyverse", "rmarkdown", "knitr"))``.
+
+#### Installing on Linux ####
+
+- Ensure you have R > 3.4.0 installed, plus a compiler that supports C++14 or later (e.g. gcc or clang).
+- Install gdal >2.4.0 from your distribution's repositories (e.g. ``sudo apt-get install gdal-dev`` for Ubuntu), or build from source.
+- Install the necessary R package requirements (see above).
+- Run ``devtools::install_github("thompsonsed/rcoalescence")``.
+
+#### Installing on macOS ####
+
+- Ensure you have R > 3.4.0 installed, plus a compiler that supports C++14 or later (e.g. gcc or clang).
+- Install gdal >2.4.0. If you have homebrew installed, this can be done using ``brew install gdal``.
+- Make sure xcode is installed (``xcode-select --install``). Linux systems should come with gcc by default.
+- Install the necessary R package requirements (see above).
+- Run ``devtools::install_github("thompsonsed/rcoalescence")``.
+
+#### Installing on Windows ####
+
+- Make sure that you have installed R > 3.6.0 with [Rtools version 3.5 or later](https://cran.r-project.org/bin/windows/Rtools/index.html). 
+- Install the necessary R package requirements (see above).
+- Run ``devtools::install_github("thompsonsed/rcoalescence")``. This will also download gdal (if it can't be found already).
 
 ### Usage ###
 
