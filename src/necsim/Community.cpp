@@ -75,8 +75,8 @@ namespace necsim
         nodes = std::move(l);
     }
 
-    ProtractedSpeciationParameters Community::setupInternal(shared_ptr<SimParameters> sim_parameters,
-                                                            shared_ptr<SQLiteHandler> database)
+    ProtractedSpeciationParameters
+    Community::setupInternal(shared_ptr<SimParameters> sim_parameters, shared_ptr<SQLiteHandler> database)
     {
         if(!has_imported_data)
         {
@@ -139,13 +139,8 @@ namespace necsim
         if(!has_imported_samplemask)
         {
             stringstream os;
-            samplemask.importBooleanMask(grid_x_size,
-                                         grid_y_size,
-                                         samplemask_x_size,
-                                         samplemask_y_size,
-                                         samplemask_x_offset,
-                                         samplemask_y_offset,
-                                         sSamplemask);
+            samplemask.importBooleanMask(grid_x_size, grid_y_size, samplemask_x_size, samplemask_y_size,
+                                         samplemask_x_offset, samplemask_y_offset, sSamplemask);
             if(sSamplemask != "null")
             {
                 unsigned long total = 0;
@@ -204,7 +199,7 @@ namespace necsim
 #endif // DEBUG
         for(unsigned long i = 1; i < nodes->size(); i++)
         {
-            TreeNode* this_node = &(*nodes)[i];
+            TreeNode *this_node = &(*nodes)[i];
 #ifdef DEBUG
             if((*nodes)[i].getParent() >= nodes->size())
             {
@@ -215,21 +210,18 @@ namespace necsim
                                      "Bug in expansion of data structures or object set up likely.");
             }
 #endif //DEBUG
-            this_node->setExistence(this_node->isTip() && samplemask.getMaskVal(this_node->getXpos(),
-                                                                                this_node->getYpos(),
-                                                                                this_node->getXwrap(),
-                                                                                this_node->getYwrap()) && doubleCompare(
-                    this_node->getGeneration(),
-                    current_community_parameters->time,
-                    0.0001));
+            this_node->setExistence(this_node->isTip() &&
+                                    samplemask.getMaskVal(this_node->getXpos(), this_node->getYpos(),
+                                                          this_node->getXwrap(), this_node->getYwrap()) &&
+                                    doubleCompare(this_node->getGeneration(), current_community_parameters->time,
+                                                  0.0001));
             // Calculate if speciation occured at any point in the lineage's branch
             if(protracted)
             {
                 long double lineage_age = this_node->getGeneration() + this_node->getGenerationRate();
                 if(lineage_age >= applied_protracted_parameters.min_speciation_gen)
                 {
-                    if(checkSpeciation(this_node->getSpecRate(),
-                                       current_community_parameters->speciation_rate,
+                    if(checkSpeciation(this_node->getSpecRate(), current_community_parameters->speciation_rate,
                                        this_node->getGenerationRate()))
                     {
                         this_node->speciate();
@@ -242,8 +234,7 @@ namespace necsim
             }
             else
             {
-                if(checkSpeciation(this_node->getSpecRate(),
-                                   current_community_parameters->speciation_rate,
+                if(checkSpeciation(this_node->getSpecRate(), current_community_parameters->speciation_rate,
                                    this_node->getGenerationRate()))
                 {
                     this_node->speciate();
@@ -275,7 +266,7 @@ namespace necsim
             bSorter = false;
             for(unsigned long i = 1; i < nodes->size(); i++)
             {
-                TreeNode* this_node = &(*nodes)[i];
+                TreeNode *this_node = &(*nodes)[i];
                 // check if any parents exist
                 if(!(*nodes)[this_node->getParent()].exists() && this_node->exists() && !this_node->hasSpeciated())
                 {
@@ -292,9 +283,9 @@ namespace necsim
                         ss << "Random number: " << this_node->getSpecRate() << endl;
                         ss << "Gens alive: " << this_node->getGenerationRate() << endl;
                         ss << "Gen added: " << this_node->getGeneration() << endl;
-                        ss << "Speciation check: " << checkSpeciation(this_node->getSpecRate(),
-                                                                      current_community_parameters->speciation_rate,
-                                                                      this_node->getGenerationRate()) << endl;
+                        ss << "Speciation check: "
+                           << checkSpeciation(this_node->getSpecRate(), current_community_parameters->speciation_rate,
+                                              this_node->getGenerationRate()) << endl;
                         throw FatalException(ss.str());
                     }
                     (*nodes)[this_node->getParent()].setExistence(true);
@@ -338,7 +329,7 @@ namespace necsim
             //		old_ids_to_new_ids.reserve(species_count);
             for(unsigned long i = 1; i < nodes->size(); i++)
             {
-                TreeNode* this_node = &(*nodes)[i];
+                TreeNode *this_node = &(*nodes)[i];
                 if(this_node->hasSpeciated() && this_node->exists())
                 {
                     auto map_id = old_ids_to_new_ids.find(this_node->getSpeciesID());
@@ -374,7 +365,7 @@ namespace necsim
             species_count = 0;
             for(unsigned long i = 0; i < nodes->size(); i++)
             {
-                TreeNode* this_node = &(*nodes)[i];
+                TreeNode *this_node = &(*nodes)[i];
                 // count all speciation events, not just the ones that exist!
                 if(this_node->hasSpeciated() && this_node->exists() && this_node->getSpeciesID() != 0)
                 {
@@ -396,7 +387,7 @@ namespace necsim
             // speciation events.
             for(unsigned long i = (nodes->size()) - 1; i > 0; i--)
             {
-                TreeNode* this_node = &(*nodes)[i];
+                TreeNode *this_node = &(*nodes)[i];
                 //				os << i << endl;
                 if(this_node->getSpeciesID() == 0 && this_node->exists())
                 {
@@ -414,9 +405,9 @@ namespace necsim
                         ss << "Random number: " << this_node->getSpecRate() << endl;
                         ss << "Gens alive: " << this_node->getGenerationRate() << endl;
                         ss << "Gen added: " << this_node->getGeneration() << endl;
-                        ss << "Speciation check: " << checkSpeciation(this_node->getSpecRate(),
-                                                                      current_community_parameters->speciation_rate,
-                                                                      this_node->getGenerationRate()) << endl;
+                        ss << "Speciation check: "
+                           << checkSpeciation(this_node->getSpecRate(), current_community_parameters->speciation_rate,
+                                              this_node->getGenerationRate()) << endl;
                         throw FatalException(ss.str());
                     }
                     this_node->burnSpecies((*nodes)[parent].getSpeciesID());
@@ -456,7 +447,7 @@ namespace necsim
         return species_count;
     }
 
-    void Community::addSpecies(unsigned long &species_count, TreeNode* tree_node, set<unsigned long> &species_list)
+    void Community::addSpecies(unsigned long &species_count, TreeNode *tree_node, set<unsigned long> &species_list)
     {
         species_count++;
         tree_node->burnSpecies(species_count);
@@ -469,10 +460,10 @@ namespace necsim
         species_abundances->resize(species_index + 1, 0);
         for(unsigned long i = 1; i < nodes->size(); i++)
         {
-            TreeNode* this_node = &(*nodes)[i];
-            if(this_node->isTip()
-               && doubleCompare(this_node->getGeneration(), current_community_parameters->time, 0.0001)
-               && this_node->exists())
+            TreeNode *this_node = &(*nodes)[i];
+            if(this_node->isTip() &&
+               doubleCompare(this_node->getGeneration(), current_community_parameters->time, 0.0001) &&
+               this_node->exists())
             {
 #ifdef DEBUG
                 if(this_node->getSpeciesID() >= species_abundances->size())
@@ -543,37 +534,29 @@ namespace necsim
 
     void Community::openSQLConnection(string input_file)
     {
-        if(database->hasOpened())
+        // open the database objects
+        SQLiteHandler out_database;
+        // open one db in memory and one from the file.
+        if(!fs::exists(input_file))
         {
-            in_mem = database->inMemory();
-            database->open();
+            stringstream ss;
+            ss << "Output database does not exist at " << input_file << ": cannot open sql connection." << endl;
+            throw FatalException(ss.str());
         }
-        else
+        try
         {
-            // open the database objects
-            SQLiteHandler out_database;
-            // open one db in memory and one from the file.
-            if(!fs::exists(input_file))
-            {
-                stringstream ss;
-                ss << "Output database does not exist at " << input_file << ": cannot open sql connection." << endl;
-                throw FatalException(ss.str());
-            }
-            try
-            {
-                database->open(":memory:");
-                out_database.open(input_file);
-                in_mem = true;
-                database->backupFrom(out_database);
-                out_database.close();
-            }
-            catch(FatalException &fe)
-            {
-                writeWarning("Can't open in-memory database. Writing to file instead (this will be slower).\n");
-                in_mem = false;
-                database->close();
-                database->open(input_file);
-            }
+            database->open(":memory:");
+            out_database.open(input_file);
+            in_mem = true;
+            database->backupFrom(out_database);
+            out_database.close();
+        }
+        catch(FatalException &fe)
+        {
+            writeWarning("Can't open in-memory database. Writing to file instead (this will be slower).\n");
+            in_mem = false;
+            database->close();
+            database->open(input_file);
         }
         sql_connection_open = true;
     }
@@ -588,14 +571,11 @@ namespace necsim
 
     void Community::pauseSQLConnection()
     {
-        if(in_mem)
-        {
-            sql_connection_open = false;
-        }
-        else
+        if(!in_mem)
         {
             database->close();
         }
+        sql_connection_open = false;
     }
 
     void Community::resumeSQLConnection()
@@ -608,9 +588,17 @@ namespace necsim
             }
             else
             {
+                if(database_set)
+                {
+                    throw FatalException("Database has been set, but not yet opened so can't determine file name.");
+                }
                 database->open(":memory:");
                 in_mem = true;
             }
+        }
+        else if(!database->inMemory())
+        {
+            database->open(":memory:");
         }
         sql_connection_open = true;
     }
@@ -626,10 +614,6 @@ namespace necsim
 
     void Community::internalOption()
     {
-        if(database->hasOpened())
-        {
-            closeSQLConnection();
-        }
         has_imported_data = true;
         sql_connection_open = true;
         database_set = true;
@@ -901,19 +885,16 @@ namespace necsim
         {
             return false;
         }
-        bool has_pair = past_communities.hasPair(speciation_rate,
-                                                 time,
-                                                 fragments,
-                                                 metacommunity_reference,
+        bool has_pair = past_communities.hasPair(speciation_rate, time, fragments, metacommunity_reference,
                                                  proc_parameters);
-        if(fragments
-           && past_communities.hasPair(speciation_rate, time, false, metacommunity_reference, proc_parameters))
+        if(fragments &&
+           past_communities.hasPair(speciation_rate, time, false, metacommunity_reference, proc_parameters))
         {
             return false;
 
         }
-        if(!fragments
-           && past_communities.hasPair(speciation_rate, time, true, metacommunity_reference, proc_parameters))
+        if(!fragments &&
+           past_communities.hasPair(speciation_rate, time, true, metacommunity_reference, proc_parameters))
         {
             return true;
         }
@@ -1039,16 +1020,13 @@ namespace necsim
         // Make sure only the tips which we want to check are recorded
         for(unsigned long i = 1; i < nodes->size(); i++)
         {
-            TreeNode* this_node = &(*nodes)[i];
+            TreeNode *this_node = &(*nodes)[i];
             //			os << nodes[i].exists() << endl;
-            if(this_node->isTip() && this_node->exists()
-               && doubleCompare(static_cast<double>(this_node->getGeneration()),
-                                static_cast<double>(current_community_parameters->time),
-                                0.0001))
+            if(this_node->isTip() && this_node->exists() &&
+               doubleCompare(static_cast<double>(this_node->getGeneration()),
+                             static_cast<double>(current_community_parameters->time), 0.0001))
             {
-                if(samplemask.getMaskVal(this_node->getXpos(),
-                                         this_node->getYpos(),
-                                         this_node->getXwrap(),
+                if(samplemask.getMaskVal(this_node->getXpos(), this_node->getYpos(), this_node->getXwrap(),
                                          this_node->getYwrap()))
                 {
                     long x = this_node->getXpos();
@@ -1094,8 +1072,8 @@ namespace necsim
                         if(i > 0 && j > 0)
                         {
                             // Perform the check
-                            in_fragment = !(samplemask.sample_mask.getCopy(j, i - 1)
-                                            || samplemask.sample_mask.getCopy(j - 1, i));
+                            in_fragment = !(samplemask.sample_mask.getCopy(j, i - 1) ||
+                                            samplemask.sample_mask.getCopy(j - 1, i));
                         }
                             // if it is on an edge, we need to check the fragment
                         else
@@ -1289,7 +1267,7 @@ namespace necsim
             fragments.resize(tmp_raw_read.size());
             for(unsigned long i = 0; i < tmp_raw_read.size(); i++)
             {
-                vector<string>* this_fragment = &tmp_raw_read[i];
+                vector<string> *this_fragment = &tmp_raw_read[i];
                 if(this_fragment->size() != 6)
                 {
                     // Only throw an error if the size is not 1 (which usually means that there is an extra line
@@ -1359,12 +1337,11 @@ namespace necsim
             unsigned long iSpecCount = 0;
             for(unsigned long j = 0; j < nodes->size(); j++)
             {
-                TreeNode* this_node = &(*nodes)[j];
-                if(this_node->isTip() && samplemask.getMaskVal(this_node->getXpos(),
-                                                               this_node->getYpos(),
-                                                               this_node->getXwrap(),
-                                                               this_node->getYwrap())
-                   && doubleCompare(this_node->getGeneration(), current_community_parameters->time, 0.0001))
+                TreeNode *this_node = &(*nodes)[j];
+                if(this_node->isTip() &&
+                   samplemask.getMaskVal(this_node->getXpos(), this_node->getYpos(), this_node->getXwrap(),
+                                         this_node->getYwrap()) &&
+                   doubleCompare(this_node->getGeneration(), current_community_parameters->time, 0.0001))
                 {
                     // if they exist exactly in the generation of interest.
                     this_node->setExistence(true);
@@ -1403,11 +1380,13 @@ namespace necsim
             {
                 if(minimum_protracted_parameters.max_speciation_gen == 0.0)
                 {
-                    throw FatalException("Protracted speciation does not make sense when maximum speciation gen is 0.0.");
+                    throw FatalException(
+                            "Protracted speciation does not make sense when maximum speciation gen is 0.0.");
                 }
                 if(minimum_protracted_parameters.min_speciation_gen > minimum_protracted_parameters.max_speciation_gen)
                 {
-                    throw FatalException("Cannot have simulation with minimum speciation generation less than maximum!");
+                    throw FatalException(
+                            "Cannot have simulation with minimum speciation generation less than maximum!");
                 }
             }
         }
@@ -1500,19 +1479,21 @@ namespace necsim
                              minimum_protracted_parameters.min_speciation_gen,
                              minimum_protracted_parameters.min_speciation_gen * 0.0000001))
             {
-                writeInfo("Setting applied minimum protracted generation to simulated minimum protracted generation.\n");
+                writeInfo(
+                        "Setting applied minimum protracted generation to simulated minimum protracted generation.\n");
                 applied_protracted_parameters.min_speciation_gen = minimum_protracted_parameters.min_speciation_gen;
             }
             if(doubleCompare(applied_protracted_parameters.max_speciation_gen,
                              minimum_protracted_parameters.max_speciation_gen,
                              minimum_protracted_parameters.max_speciation_gen * 0.0000001))
             {
-                writeInfo("Setting applied maximum protracted generation to simulated maximum protracted generation.\n");
+                writeInfo(
+                        "Setting applied maximum protracted generation to simulated maximum protracted generation.\n");
                 applied_protracted_parameters.max_speciation_gen = minimum_protracted_parameters.max_speciation_gen;
             }
 
-            if(applied_protracted_parameters.min_speciation_gen > minimum_protracted_parameters.min_speciation_gen
-               || applied_protracted_parameters.max_speciation_gen > minimum_protracted_parameters.max_speciation_gen)
+            if(applied_protracted_parameters.min_speciation_gen > minimum_protracted_parameters.min_speciation_gen ||
+               applied_protracted_parameters.max_speciation_gen > minimum_protracted_parameters.max_speciation_gen)
             {
 #ifdef DEBUG
                 writeLog(50,
@@ -1594,8 +1575,7 @@ namespace necsim
                                               sqlite3_column_double(stmt2->stmt, 1),
                                               sqlite3_column_double(stmt2->stmt, 2),
                                               bool(sqlite3_column_int64(stmt2->stmt, 3)),
-                                              static_cast<unsigned long>(sqlite3_column_int64(stmt2->stmt, 4)),
-                                              tmp);
+                                              static_cast<unsigned long>(sqlite3_column_int64(stmt2->stmt, 4)), tmp);
                 }
                 rc = stmt2->step();
             }
@@ -1625,7 +1605,7 @@ namespace necsim
                 past_metacommunities.pushBack(sqlite3_column_int64(stmt4->stmt, 0),
                                               sqlite3_column_int64(stmt4->stmt, 2),
                                               sqlite3_column_double(stmt4->stmt, 1),
-                                              (char*) (sqlite3_column_text(stmt4->stmt, 3)),
+                                              (char *) (sqlite3_column_text(stmt4->stmt, 3)),
                                               sqlite3_column_int64(stmt4->stmt, 4));
                 rc = stmt4->step();
             }
@@ -1658,10 +1638,7 @@ namespace necsim
 #endif
             meta_reference = past_metacommunities.addNew(metacomm_parameters);
         }
-        current_community_parameters = past_communities.addNew(speciation_rate,
-                                                               time,
-                                                               fragments,
-                                                               meta_reference,
+        current_community_parameters = past_communities.addNew(speciation_rate, time, fragments, meta_reference,
                                                                protracted_parameters);
 #ifdef DEBUG
         for(const auto &i : past_communities.comm_parameters)
@@ -1733,8 +1710,8 @@ namespace necsim
         CommunitiesArray communities_to_write;
         for(auto &community_param : past_communities.comm_parameters)
         {
-            if(find(unique_community_refs.begin(), unique_community_refs.end(), community_param->reference)
-               == unique_community_refs.end())
+            if(find(unique_community_refs.begin(), unique_community_refs.end(), community_param->reference) ==
+               unique_community_refs.end())
             {
                 communities_to_write.pushBack(community_param);
                 unique_community_refs.push_back(community_param->reference);
@@ -1811,8 +1788,8 @@ namespace necsim
         {
             for(auto &community_param : past_metacommunities.metacomm_parameters)
             {
-                if(find(unique_metacommunity_refs.begin(), unique_metacommunity_refs.end(), community_param->reference)
-                   == unique_metacommunity_refs.end())
+                if(find(unique_metacommunity_refs.begin(), unique_metacommunity_refs.end(),
+                        community_param->reference) == unique_metacommunity_refs.end())
                 {
                     metacommunities_to_write.pushBack(community_param);
                     unique_metacommunity_refs.push_back(community_param->reference);
@@ -1839,10 +1816,7 @@ namespace necsim
                 sqlite3_bind_int64(stmt->stmt, 1, item->reference);
                 sqlite3_bind_double(stmt->stmt, 2, static_cast<double>(item->speciation_rate));
                 sqlite3_bind_int64(stmt->stmt, 3, item->metacommunity_size);
-                sqlite3_bind_text(stmt->stmt,
-                                  4,
-                                  item->option.c_str(),
-                                  static_cast<int>(item->option.length()),
+                sqlite3_bind_text(stmt->stmt, 4, item->option.c_str(), static_cast<int>(item->option.length()),
                                   SQLITE_TRANSIENT);
                 sqlite3_bind_int64(stmt->stmt, 5, item->external_reference);
                 int step = stmt->step();
@@ -1971,8 +1945,8 @@ namespace necsim
             }
         }
         writeInfo(os.str());
-        if(!spec_sim_parameters->protracted_parameters.empty()
-           && spec_sim_parameters->metacommunity_parameters.hasMetacommunityOption())
+        if(!spec_sim_parameters->protracted_parameters.empty() &&
+           spec_sim_parameters->metacommunity_parameters.hasMetacommunityOption())
         {
             os.str("");
             os << "Protracted speciation parameters (min, max) are: " << endl;
@@ -2017,17 +1991,11 @@ namespace necsim
                 for(auto time : spec_sim_parameters->all_times)
                 {
                     resetTree();
-                    if(!checkCalculationsPerformed(sr,
-                                                   time,
-                                                   spec_sim_parameters->use_fragments,
-                                                   *current_metacommunity_parameters,
-                                                   applied_protracted_parameters))
+                    if(!checkCalculationsPerformed(sr, time, spec_sim_parameters->use_fragments,
+                                                   *current_metacommunity_parameters, applied_protracted_parameters))
                     {
-                        addCalculationPerformed(sr,
-                                                time,
-                                                spec_sim_parameters->use_fragments,
-                                                *current_metacommunity_parameters,
-                                                applied_protracted_parameters);
+                        addCalculationPerformed(sr, time, spec_sim_parameters->use_fragments,
+                                                *current_metacommunity_parameters, applied_protracted_parameters);
                         createDatabase();
                         if(spec_sim_parameters->use_spatial)
                         {
@@ -2120,9 +2088,9 @@ namespace necsim
         (*nodes)[0] = TreeNode();
         for(unsigned long i = 1; i < nodes->size(); i++)
         {
-            TreeNode* this_node = &(*nodes)[i];
-            if(this_node->getParent() == 0
-               && !checkSpeciation(this_node->getSpecRate(), min_spec_rate, this_node->getGenerationRate()))
+            TreeNode *this_node = &(*nodes)[i];
+            if(this_node->getParent() == 0 &&
+               !checkSpeciation(this_node->getSpecRate(), min_spec_rate, this_node->getGenerationRate()))
             {
                 this_node->setSpec(0.0);
             }
@@ -2200,7 +2168,8 @@ namespace necsim
         return static_cast<unsigned long>(tmp_val);
     }
 
-    shared_ptr<map<unsigned long, unsigned long>> Community::getSpeciesAbundances(const unsigned long &community_reference)
+    shared_ptr<map<unsigned long, unsigned long>>
+    Community::getSpeciesAbundances(const unsigned long &community_reference)
     {
         if(!sql_connection_open)
         {
@@ -2257,6 +2226,5 @@ namespace necsim
     {
         return !database->isOpen();
     }
-
 
 }

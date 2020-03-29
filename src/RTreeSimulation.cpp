@@ -26,7 +26,6 @@ RTreeSimulation::~RTreeSimulation()
 {
     community.closeSQLConnection();
     metacommunity.closeSQLConnection();
-    metacommunity.closeSQLConnection();
 }
 
 void RTreeSimulation::setKeyParameters(const long long &job_type,
