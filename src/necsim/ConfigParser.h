@@ -28,6 +28,11 @@
 
 #ifndef WIN_INSTALL
 
+#ifdef __darwin_uuid_t
+#ifndef uuid_t
+typedef __darwin_uuid_t uuid_t;
+#endif// uuid_t
+#endif // __darwin_uuid_t
 #include <unistd.h>
 
 #endif
