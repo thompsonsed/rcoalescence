@@ -23,6 +23,10 @@
 #include <memory>
 #endif
 
+#ifndef WIN_INSTALL
+#include <unistd.h>
+#endif // WIN_INSTALL
+
 #include <Rcpp.h>
 //#include <Rcpp/r/headers.h>
 //#include <Rcpp/DataFrame.h>

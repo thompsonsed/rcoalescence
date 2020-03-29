@@ -8,6 +8,10 @@
  * Contact: samuel.thompson14@imperial.ac.uk or thompsonsed@gmail.com
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
+#ifndef WIN_INSTALL
+#include <unistd.h>
+#endif // WIN_INSTALL
+
 #include <Rcpp/r/headers.h>
 #include <Rcpp.h>
 #include "RLogging.h"

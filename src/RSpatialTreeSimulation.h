@@ -11,6 +11,10 @@
 #ifndef RCOALESCENCE_R_SPATIAL_TREE_H
 #define RCOALESCENCE_R_SPATIAL_TREE_H
 
+#ifndef WIN_INSTALL
+#include <unistd.h>
+#endif // WIN_INSTALL
+
 #include <Rcpp.h>
 #include "necsim/SpatialTree.h"
 #include "RTreeSimulation.h"
