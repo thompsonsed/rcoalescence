@@ -94,30 +94,33 @@ namespace necsim
 
     void SQLiteHandler::backupFrom(SQLiteHandler &sqlite_handler)
     {
-        sqlite3_backup* backupdb = sqlite3_backup_init(database, "main", sqlite_handler.database, "main");
-        int rc = sqlite3_backup_step(backupdb, -1);
-        int counter = 0;
-        while(counter < 10 && (rc == SQLITE_BUSY || rc == SQLITE_LOCKED))
+        if(&sqlite_handler != this)
         {
-            counter++;
-            rc = sqlite3_backup_step(backupdb, -1);
-            std::this_thread::sleep_for(1s);
-        }
-        if(rc != SQLITE_OK && rc != SQLITE_DONE)
-        {
-            std::stringstream ss;
-            ss << "Database backup cannot be completed to " << file_name << " from " << sqlite_handler.file_name;
-            ss << ". Check write access on output folder." << endl << getErrorMsg(rc);
-            throw FatalException(ss.str());
-        }
-        rc = sqlite3_backup_finish(backupdb);
-        //			os << "rc: " << rc << endl;
-        if(rc != SQLITE_DONE && rc != SQLITE_OK)
-        {
-            std::stringstream ss;
-            ss << "Database backup cannot be finished to " << file_name << " from " << sqlite_handler.file_name;
-            ss << ". Check write access on output folder." << endl << getErrorMsg(rc);
-            throw FatalException(ss.str());
+            sqlite3_backup *backupdb = sqlite3_backup_init(database, "main", sqlite_handler.database, "main");
+            int rc = sqlite3_backup_step(backupdb, -1);
+            int counter = 0;
+            while(counter < 10 && (rc == SQLITE_BUSY || rc == SQLITE_LOCKED))
+            {
+                counter++;
+                rc = sqlite3_backup_step(backupdb, -1);
+                std::this_thread::sleep_for(1s);
+            }
+            if(rc != SQLITE_OK && rc != SQLITE_DONE)
+            {
+                std::stringstream ss;
+                ss << "Database backup cannot be completed to " << file_name << " from " << sqlite_handler.file_name;
+                ss << ". Check write access on output folder." << endl << getErrorMsg(rc);
+                throw FatalException(ss.str());
+            }
+            rc = sqlite3_backup_finish(backupdb);
+            //			os << "rc: " << rc << endl;
+            if(rc != SQLITE_DONE && rc != SQLITE_OK)
+            {
+                std::stringstream ss;
+                ss << "Database backup cannot be finished to " << file_name << " from " << sqlite_handler.file_name;
+                ss << ". Check write access on output folder." << endl << getErrorMsg(rc);
+                throw FatalException(ss.str());
+            }
         }
     }
 
@@ -202,6 +205,16 @@ namespace necsim
     bool SQLiteHandler::hasOpened()
     {
         return !file_name.empty();
+    }
+
+
+    bool SQLiteHandler::inMemory()
+    {
+        if(!hasOpened())
+        {
+            return false;
+        }
+        return file_name == ":memory:" && isOpen();
     }
 
     bool SQLiteHandler::hasTable(const std::string &table_name)

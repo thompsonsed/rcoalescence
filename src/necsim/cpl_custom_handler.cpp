@@ -18,9 +18,9 @@ namespace necsim
         stringstream error_msg;
         if(!loggerIsSetup())
         {
-#ifndef with_rcoalescence
+#ifndef use_rcoalescence
             cerr << "Logging object has not been set before CPL error thrown: " << err_no << ". " << msg << endl;
-#endif // with_rcoalescence
+#endif // use_rcoalescence
         }
         else
         {

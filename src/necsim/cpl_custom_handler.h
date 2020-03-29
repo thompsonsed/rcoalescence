@@ -6,8 +6,8 @@
  * @brief Contains a custom CPL error handler.
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
-#ifndef CPL_CUSTOMN_HANDLER_H
-#define CPL_CUSTOMN_HANDLER_H
+#ifndef CPL_CUSTOM_HANDLER_H
+#define CPL_CUSTOM_HANDLER_H
 #ifdef with_gdal
 
 #include <cpl_error.h>
@@ -23,4 +23,4 @@ namespace necsim
 }
 #endif // with_gdal
 
-#endif // CPL_CUSTOMN_HANDLER_H
+#endif // CPL_CUSTOM_HANDLER_H

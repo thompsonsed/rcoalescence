@@ -184,6 +184,11 @@ namespace necsim
         bool hasOpened();
 
         /**
+         * @brief Checks if the SQLiteHandler has opened a connection in memory.
+         * @return
+         */
+        bool inMemory();
+        /**
          * @brief Checks if the database has the specified table.
          * @param table_name the table name to check for existence
          * @return true if the table exists

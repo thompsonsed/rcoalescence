@@ -543,29 +543,37 @@ namespace necsim
 
     void Community::openSQLConnection(string input_file)
     {
-        // open the database objects
-        SQLiteHandler out_database;
-        // open one db in memory and one from the file.
-        if(!fs::exists(input_file))
+        if(database->hasOpened())
         {
-            stringstream ss;
-            ss << "Output database does not exist at " << input_file << ": cannot open sql connection." << endl;
-            throw FatalException(ss.str());
+            in_mem = database->inMemory();
+            database->open();
         }
-        try
+        else
         {
-            database->open(":memory:");
-            out_database.open(input_file);
-            in_mem = true;
-            database->backupFrom(out_database);
-            out_database.close();
-        }
-        catch(FatalException &fe)
-        {
-            writeWarning("Can't open in-memory database. Writing to file instead (this will be slower).\n");
-            in_mem = false;
-            database->close();
-            database->open(input_file);
+            // open the database objects
+            SQLiteHandler out_database;
+            // open one db in memory and one from the file.
+            if(!fs::exists(input_file))
+            {
+                stringstream ss;
+                ss << "Output database does not exist at " << input_file << ": cannot open sql connection." << endl;
+                throw FatalException(ss.str());
+            }
+            try
+            {
+                database->open(":memory:");
+                out_database.open(input_file);
+                in_mem = true;
+                database->backupFrom(out_database);
+                out_database.close();
+            }
+            catch(FatalException &fe)
+            {
+                writeWarning("Can't open in-memory database. Writing to file instead (this will be slower).\n");
+                in_mem = false;
+                database->close();
+                database->open(input_file);
+            }
         }
         sql_connection_open = true;
     }
@@ -618,6 +626,10 @@ namespace necsim
 
     void Community::internalOption()
     {
+        if(database->hasOpened())
+        {
+            closeSQLConnection();
+        }
         has_imported_data = true;
         sql_connection_open = true;
         database_set = true;
@@ -981,7 +993,7 @@ namespace necsim
         count_command += to_string(current_community_parameters->reference) + ";";
         auto stmt = database->prepare(count_command);
         database->step();
-        int tmp_val = sqlite3_column_int64(stmt->stmt, 0);
+        unsigned long tmp_val = sqlite3_column_int64(stmt->stmt, 0);
         // close the old statement
         database->finalise();
         return tmp_val > 0;
