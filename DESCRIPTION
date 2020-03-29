@@ -8,7 +8,7 @@ Description: Package for simulating according to ecological neutral theory on sp
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: Rcpp, RSQLite, R (>= 3.6.0)
+Depends: Rcpp, RSQLite, R (>= 3.4.0)
 Imports: methods
 NeedsCompilation: yes
 StagedInstall: no
