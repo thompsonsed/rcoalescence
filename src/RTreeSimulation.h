@@ -51,6 +51,7 @@ namespace rcoalescence
         Metacommunity metacommunity; // Provide both a Community and Metacommunity object for both use case
         bool multiple_output;
         bool has_outputted;
+        bool has_run_setup;
         bool has_written_main_sim;
         bool uses_metacommunity;
 

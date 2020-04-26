@@ -155,7 +155,7 @@ namespace necsim
         string landscape_type;
         // true if the landscapes boundaries are infinite
         bool infinite_boundaries;
-        string NextMap;
+        string next_map;
         // If this is false, there is no coarse map defined, so ignore the boundaries.
         bool has_coarse;
 
@@ -171,21 +171,17 @@ namespace necsim
         /**
          * @brief The default constructor.
          */
-        Landscape() : mapvars(make_shared<SimParameters>())
+        Landscape() : fine_map(), historical_fine_map(), coarse_map(), historical_coarse_map(),
+                      mapvars(make_shared<SimParameters>()), fine_x_min(0), fine_y_min(0), coarse_x_min(0),
+                      coarse_y_min(0), fine_x_max(0), fine_y_max(0), coarse_x_max(0), coarse_y_max(0), fine_x_offset(0),
+                      fine_y_offset(0), coarse_x_offset(0), coarse_y_offset(0), scale(1.0), x_dim(0), y_dim(0), deme(1),
+                      check_set_dim(false), dispersal_relative_cost(1.0), update_time(0), habitat_change_rate(1.0),
+                      gen_since_historical(1.0), current_map_time(0.0), is_historical(false), has_historical(false),
+                      habitat_max(1), fine_max(0), coarse_max(0), historical_fine_max(0), historical_coarse_max(0),
+                      landscape_type("closed"), infinite_boundaries(false), next_map(""), has_coarse(false),
+                      getValFunc(nullptr)
         {
-            check_set_dim = false; // sets the check to false.
-            is_historical = false;
-            current_map_time = 0;
-            habitat_max = 1;
-            getValFunc = nullptr;
-            has_coarse = false;
-            has_historical = false;
-            landscape_type = "closed";
-            fine_max = 0;
-            coarse_max = 0;
-            historical_fine_max = 0;
-            historical_coarse_max = 0;
-            infinite_boundaries = false;
+            setLandscape("closed");
         }
 
         /**
@@ -725,7 +721,7 @@ namespace necsim
                << r.dispersal_relative_cost << "\n";
             os << r.update_time << "\n" << r.habitat_change_rate << "\n" << r.gen_since_historical << "\n"
                << r.current_map_time << "\n" << r.is_historical << "\n";
-            os << r.NextMap << "\n" << r.landscape_type << "\n" << r.fine_max << "\n" << r.coarse_max << "\n";
+            os << r.next_map << "\n" << r.landscape_type << "\n" << r.fine_max << "\n" << r.coarse_max << "\n";
             os << r.historical_fine_max << "\n" << r.historical_coarse_max << "\n" << r.habitat_max << "\n"
                << r.has_coarse << "\n" << r.has_historical << "\n";
             return os;
@@ -748,7 +744,7 @@ namespace necsim
                >> r.y_dim >> r.deme >> r.check_set_dim >> r.dispersal_relative_cost;
             is >> r.update_time >> r.habitat_change_rate >> r.gen_since_historical >> r.current_map_time
                >> r.is_historical;
-            getline(is, r.NextMap);
+            getline(is, r.next_map);
             is >> r.landscape_type;
             is >> r.fine_max >> r.coarse_max;
             is >> r.historical_fine_max >> r.historical_coarse_max;

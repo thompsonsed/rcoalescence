@@ -588,22 +588,24 @@ TreeSimulation <- setRcppClass(
       if (is.na(community_reference)) {
         community_reference <- 1
       }
+      community_reference_vector <- as.vector(communit)
       checkOutputDatabaseExists()
       conn <-
-        dbConnect(SQLite(), output_database)
+        dbConnect(SQLite(), sim$output_database)
       species_locations <-
         dbGetQuery(
           conn,
-          paste(
-            "SELECT COUNT(DISTINCT(species_id)) FROM SPECIES_ABUNDANCES WHERE
+          paste0(
+            "SELECT COUNT(DISTINCT(species_id)), community_reference FROM SPECIES_ABUNDANCES WHERE
               no_individuals > 0 AND ",
-            "community_reference ==",
-            community_reference,
-            sep = ""
+            "community_reference IN (",
+            paste0("'", community_reference_vector, "'", collapse=", "), 
+            ") GROUP BY community_reference"
           )
         )
       dbDisconnect(conn)
-      return(species_locations[[1]])
+      names(species_locations) <- c("community_reference", "species_richness")
+      return(species_locations)
     }
   )
 )
@@ -635,7 +637,7 @@ SpatialTreeSimulation <- setRcppClass(
                                         1.0,
                                       restrict_self = FALSE,
                                       landscape_type = "closed",
-                                      dispersal_file = "null",
+                                      dispersal_file = "none",
                                       reproduction_file = "null") {
       "Sets the dispersal parameters for the simulation"
       ._setDispersalParameters(

@@ -324,24 +324,35 @@ namespace necsim
         mapvars->grid_y_size = mapvars->fine_map_y_size;
         x_dim = mapvars->grid_x_size;
         y_dim = mapvars->grid_y_size;
-        fine_map.calculateOffset(coarse_map, x_offset, y_offset);
-        mapvars->coarse_map_x_offset = static_cast<unsigned long>(x_offset);
-        mapvars->coarse_map_y_offset = static_cast<unsigned long>(y_offset);
-        mapvars->coarse_map_scale = fine_map.roundedScale(coarse_map);
-        scale = mapvars->coarse_map_scale;
-        if(x_offset < 0 || y_offset < 0)
+        if(has_coarse)
         {
-            stringstream ss;
-            ss << "Fine map upper-left coordinates: " << fine_map.getUpperLeftX() << ", " << fine_map.getUpperLeftY();
-            ss << endl << "Coarse map upper-left coordinates: " << coarse_map.getUpperLeftX() << ", ";
-            ss << fine_map.getUpperLeftY();
-            writeInfo(ss.str());
-            ss.str("");
-            ss << "Offsets of " << mapvars->coarse_map_file << " from " << mapvars->fine_map_file << " are negative (";
-            ss << x_offset << ", " << y_offset << "): ";
-            ss << "check map files are set correctly." << endl;
-            throw FatalException(ss.str());
+            fine_map.calculateOffset(coarse_map, x_offset, y_offset);
+            mapvars->coarse_map_x_offset = static_cast<unsigned long>(x_offset);
+            mapvars->coarse_map_y_offset = static_cast<unsigned long>(y_offset);
+            mapvars->coarse_map_scale = fine_map.roundedScale(coarse_map);
+            if(x_offset < 0 || y_offset < 0)
+            {
+                stringstream ss;
+                ss << "Fine map upper-left coordinates: " << fine_map.getUpperLeftX() << ", "
+                   << fine_map.getUpperLeftY();
+                ss << endl << "Coarse map upper-left coordinates: " << coarse_map.getUpperLeftX() << ", ";
+                ss << fine_map.getUpperLeftY();
+                writeInfo(ss.str());
+                ss.str("");
+                ss << "Offsets of " << mapvars->coarse_map_file << " from " << mapvars->fine_map_file
+                   << " are negative (";
+                ss << x_offset << ", " << y_offset << "): ";
+                ss << "check map files are set correctly." << endl;
+                throw FatalException(ss.str());
+            }
         }
+        else
+        {
+            mapvars->coarse_map_x_offset = 0;
+            mapvars->coarse_map_y_offset = 0;
+            mapvars->coarse_map_scale = 1.0;
+        }
+        scale = mapvars->coarse_map_scale;
         stringstream ss;
         ss << "Dimensions detected as: " << endl;
         ss << "Fine map" << endl;
@@ -951,228 +962,229 @@ namespace necsim
         return ret;
     };
 
-double Landscape::distanceToNearestHabitat(const long &start_x,
+    double Landscape::distanceToNearestHabitat(const long &start_x,
+                                               const long &start_y,
+                                               const long &start_x_wrap,
+                                               const long &start_y_wrap,
+                                               const double &generation)
+    {
+        double end_x = start_x + 0.5;
+        double end_y = start_y + 0.5;
+        findNearestHabitatCell(start_x, start_y, start_x_wrap, start_y_wrap, end_x, end_y, generation);
+        return calculateDistance((double) start_x, (double) start_y, end_x, end_y);
+    }
+
+    void Landscape::findNearestHabitatCell(const long &start_x,
                                            const long &start_y,
                                            const long &start_x_wrap,
                                            const long &start_y_wrap,
+                                           double &end_x,
+                                           double &end_y,
                                            const double &generation)
-{
-    double end_x = start_x + 0.5;
-    double end_y = start_y + 0.5;
-    findNearestHabitatCell(start_x, start_y, start_x_wrap, start_y_wrap, end_x, end_y, generation);
-    return calculateDistance((double) start_x, (double) start_y, end_x, end_y);
-}
+    {
+        double theta = 0;
+        double radius = 1.0;
+        if(!getVal(end_x, end_y, start_x_wrap, start_y_wrap, generation))
+        {
+            while(true)
+            {
+                theta += 0.5 * M_PI / (2.0 * max(radius, 1.0));
+                radius = theta / (2 * M_PI);
+                end_x = archimedesSpiralX(start_x, start_y, radius, theta);
+                end_y = archimedesSpiralY(start_x, start_y, radius, theta);
 
-void Landscape::findNearestHabitatCell(const long &start_x,
+                // Double check that the distance is not greater than the map size
+                // This acts as a fail-safe in case someone presents a historical map with no habitat cells on
+                if(!isOnMap(end_x, end_y, start_x_wrap, start_y_wrap))
+                {
+                    if(radius > fine_map.getCols() && radius > fine_map.getRows()
+                       && radius > coarse_map.getCols() * scale && radius > coarse_map.getRows() * scale)
+                    {
+                        // First try every cell in the landscape.
+                        if(findAnyHabitatCell(start_x, start_y, start_x_wrap, start_y_wrap, end_x, end_y, generation))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            stringstream ss;
+                            ss << "Could not find a habitat cell for parent from (" << start_x << ", " << start_y;
+                            ss << ") (" << start_x_wrap << ", " << start_y_wrap << ") - reached a radius of " << radius;
+                            ss << ". Check that your map files always have a place for lineages to disperse from."
+                               << endl;
+                            throw FatalException(ss.str());
+                        }
+                    }
+                }
+                else
+                {
+                    if(checkMap(end_x, end_y, start_x_wrap, start_y_wrap, generation))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    bool Landscape::findAnyHabitatCell(const long &start_x,
                                        const long &start_y,
                                        const long &start_x_wrap,
                                        const long &start_y_wrap,
                                        double &end_x,
                                        double &end_y,
                                        const double &generation)
-{
-    double theta = 0;
-    double radius = 1.0;
-    if(!getVal(end_x, end_y, start_x_wrap, start_y_wrap, generation))
     {
-        while(true)
+        long min_x = fine_x_min;
+        long min_y = fine_y_min;
+        long max_x = fine_x_max;
+        long max_y = fine_y_max;
+        if(has_coarse)
         {
-            theta += 0.5 * M_PI / (2.0 * max(radius, 1.0));
-            radius = theta / (2 * M_PI);
-            end_x = archimedesSpiralX(start_x, start_y, radius, theta);
-            end_y = archimedesSpiralY(start_x, start_y, radius, theta);
-
-            // Double check that the distance is not greater than the map size
-            // This acts as a fail-safe in case someone presents a historical map with no habitat cells on
-            if(!isOnMap(end_x, end_y, start_x_wrap, start_y_wrap))
-            {
-                if(radius > fine_map.getCols() && radius > fine_map.getRows() && radius > coarse_map.getCols() * scale
-                   && radius > coarse_map.getRows() * scale)
-                {
-                    // First try every cell in the landscape.
-                    if(findAnyHabitatCell(start_x, start_y, start_x_wrap, start_y_wrap, end_x, end_y, generation))
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        stringstream ss;
-                        ss << "Could not find a habitat cell for parent from (" << start_x << ", " << start_y;
-                        ss << ") (" << start_x_wrap << ", " << start_y_wrap << ") - reached a radius of " << radius;
-                        ss << ". Check that your map files always have a place for lineages to disperse from." << endl;
-                        throw FatalException(ss.str());
-                    }
-                }
-            }
-            else
-            {
-                if(checkMap(end_x, end_y, start_x_wrap, start_y_wrap, generation))
-                {
-                    break;
-                }
-            }
+            min_x = coarse_x_min;
+            min_y = coarse_y_min;
+            max_x = coarse_x_max;
+            max_y = coarse_y_max;
         }
-    }
-}
-
-bool Landscape::findAnyHabitatCell(const long &start_x,
-                                   const long &start_y,
-                                   const long &start_x_wrap,
-                                   const long &start_y_wrap,
-                                   double &end_x,
-                                   double &end_y,
-                                   const double &generation)
-{
-    long min_x = fine_x_min;
-    long min_y = fine_y_min;
-    long max_x = fine_x_max;
-    long max_y = fine_y_max;
-    if(has_coarse)
-    {
-        min_x = coarse_x_min;
-        min_y = coarse_y_min;
-        max_x = coarse_x_max;
-        max_y = coarse_y_max;
-    }
-    stringstream ss;
-    ss << "Looking for habitat cells within (" << min_x << ", " << max_x;
-    ss << "), (" << min_y << ", " << max_y << ")." << endl;
-    writeInfo(ss.str());
-    vector<pair<long, long>> locations;
-    long start_x_reform = start_x + (x_dim * start_x_wrap);
-    long start_y_reform = start_y + (y_dim * start_y_wrap);
-    for(long y = min_y; y < max_y; y++)
-    {
-        for(long x = min_x; x < max_x; x++)
-        {
-            if(checkMap(x, y, 0, 0, generation))
-            {
-                pair<long, long> p(x, y);
-                locations.emplace_back(p);
-            }
-        }
-    }
-    if(locations.empty())
-    {
         stringstream ss;
-        ss << "Could not find any habitat cell on map with extremes (" << min_x << ", " << max_x;
+        ss << "Looking for habitat cells within (" << min_x << ", " << max_x;
         ss << "), (" << min_y << ", " << max_y << ")." << endl;
-        writeCritical(ss.str());
-        return false;
-    }
-    // Find the nearest cell
-    double minimum_distance = calculateDistance((double) start_x_reform,
+        writeInfo(ss.str());
+        vector<pair<long, long>> locations;
+        long start_x_reform = start_x + (x_dim * start_x_wrap);
+        long start_y_reform = start_y + (y_dim * start_y_wrap);
+        for(long y = min_y; y < max_y; y++)
+        {
+            for(long x = min_x; x < max_x; x++)
+            {
+                if(checkMap(x, y, 0, 0, generation))
+                {
+                    pair<long, long> p(x, y);
+                    locations.emplace_back(p);
+                }
+            }
+        }
+        if(locations.empty())
+        {
+            stringstream ss;
+            ss << "Could not find any habitat cell on map with extremes (" << min_x << ", " << max_x;
+            ss << "), (" << min_y << ", " << max_y << ")." << endl;
+            writeCritical(ss.str());
+            return false;
+        }
+        // Find the nearest cell
+        double minimum_distance = calculateDistance((double) start_x_reform,
+                                                    (double) start_y_reform,
+                                                    (double) locations[0].first,
+                                                    (double) locations[0].second);
+        end_x = (double) locations[0].first;
+        end_y = (double) locations[0].second;
+        for(const auto &item : locations)
+        {
+            double distance = calculateDistance((double) start_x_reform,
                                                 (double) start_y_reform,
-                                                (double) locations[0].first,
-                                                (double) locations[0].second);
-    end_x = (double) locations[0].first;
-    end_y = (double) locations[0].second;
-    for(const auto &item : locations)
-    {
-        double distance = calculateDistance((double) start_x_reform,
-                                            (double) start_y_reform,
-                                            (double) item.first,
-                                            (double) item.second);
-        if(distance < minimum_distance)
-        {
-            end_x = (double) item.first;
-            end_y = (double) item.second;
+                                                (double) item.first,
+                                                (double) item.second);
+            if(distance < minimum_distance)
+            {
+                end_x = (double) item.first;
+                end_y = (double) item.second;
+            }
         }
+        return true;
     }
-    return true;
-}
 
-void Landscape::clearMap()
-{
-    current_map_time = 0;
-    check_set_dim = false;
-    is_historical = false;
-}
-
-string Landscape::printVars()
-{
-    stringstream os;
-    os << "fine x limits: " << fine_x_min << " , " << fine_x_max << endl;
-    os << "fine y limits: " << fine_y_min << " , " << fine_y_max << endl;
-    os << "fine map offset: " << fine_x_offset << " , " << fine_y_offset << endl;
-    os << "coarse x limits: " << coarse_x_min << " , " << coarse_x_max << endl;
-    os << "coarse y limits: " << coarse_y_min << " , " << coarse_y_max << endl;
-    os << "x,y dims: " << x_dim << " , " << y_dim << endl;
-    return os.str();
-}
-
-unsigned long Landscape::getHabitatMax()
-{
-    return habitat_max;
-}
-
-bool Landscape::hasHistorical()
-{
-    return has_historical;
-}
-
-Map<uint32_t> &Landscape::getFineMap()
-{
-    return fine_map;
-}
-
-Map<uint32_t> &Landscape::getCoarseMap()
-{
-    return coarse_map;
-}
-
-const Map<uint32_t> &Landscape::getFineMap() const
-{
-    return fine_map;
-}
-
-const Map<uint32_t> &Landscape::getCoarseMap() const
-{
-    return coarse_map;
-}
-
-void Landscape::recalculateHabitatMax()
-{
-    habitat_max = 0;
-    if(is_historical && has_historical)
+    void Landscape::clearMap()
     {
-        if(habitat_max < historical_fine_max)
-        {
-            habitat_max = historical_fine_max;
-        }
-        if(habitat_max < historical_coarse_max)
-        {
-            habitat_max = historical_coarse_max;
-        }
+        current_map_time = 0;
+        check_set_dim = false;
+        is_historical = false;
     }
-    else
+
+    string Landscape::printVars()
     {
-        if(habitat_max < fine_max)
-        {
-            habitat_max = fine_max;
-        }
-        if(habitat_max < coarse_max)
-        {
-            habitat_max = coarse_max;
-        }
-        if(habitat_max < historical_fine_max)
-        {
-            habitat_max = historical_fine_max;
-        }
-        if(habitat_max < historical_coarse_max)
-        {
-            habitat_max = historical_coarse_max;
-        }
+        stringstream os;
+        os << "fine x limits: " << fine_x_min << " , " << fine_x_max << endl;
+        os << "fine y limits: " << fine_y_min << " , " << fine_y_max << endl;
+        os << "fine map offset: " << fine_x_offset << " , " << fine_y_offset << endl;
+        os << "coarse x limits: " << coarse_x_min << " , " << coarse_x_max << endl;
+        os << "coarse y limits: " << coarse_y_min << " , " << coarse_y_max << endl;
+        os << "x,y dims: " << x_dim << " , " << y_dim << endl;
+        return os.str();
     }
+
+    unsigned long Landscape::getHabitatMax()
+    {
+        return habitat_max;
+    }
+
+    bool Landscape::hasHistorical()
+    {
+        return has_historical;
+    }
+
+    Map<uint32_t> &Landscape::getFineMap()
+    {
+        return fine_map;
+    }
+
+    Map<uint32_t> &Landscape::getCoarseMap()
+    {
+        return coarse_map;
+    }
+
+    const Map<uint32_t> &Landscape::getFineMap() const
+    {
+        return fine_map;
+    }
+
+    const Map<uint32_t> &Landscape::getCoarseMap() const
+    {
+        return coarse_map;
+    }
+
+    void Landscape::recalculateHabitatMax()
+    {
+        habitat_max = 0;
+        if(is_historical && has_historical)
+        {
+            if(habitat_max < historical_fine_max)
+            {
+                habitat_max = historical_fine_max;
+            }
+            if(habitat_max < historical_coarse_max)
+            {
+                habitat_max = historical_coarse_max;
+            }
+        }
+        else
+        {
+            if(habitat_max < fine_max)
+            {
+                habitat_max = fine_max;
+            }
+            if(habitat_max < coarse_max)
+            {
+                habitat_max = coarse_max;
+            }
+            if(habitat_max < historical_fine_max)
+            {
+                habitat_max = historical_fine_max;
+            }
+            if(habitat_max < historical_coarse_max)
+            {
+                habitat_max = historical_coarse_max;
+            }
+        }
 #ifdef DEBUG
-    if(habitat_max > 10000)
-    {
-        stringstream ss;
-        writeLog(10, "habitat_max may be unreasonably large: " + to_string(habitat_max));
-        ss << "fine, coarse, pfine, pcoarse: " << fine_max << ", " << coarse_max;
-        ss << ", " << historical_fine_max << ", " << historical_coarse_max << endl;
-    }
+        if(habitat_max > 10000)
+        {
+            stringstream ss;
+            writeLog(10, "habitat_max may be unreasonably large: " + to_string(habitat_max));
+            ss << "fine, coarse, pfine, pcoarse: " << fine_max << ", " << coarse_max;
+            ss << ", " << historical_fine_max << ", " << historical_coarse_max << endl;
+        }
 #endif
-}
+    }
 
 }
