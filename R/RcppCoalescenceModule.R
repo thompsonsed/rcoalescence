@@ -536,15 +536,16 @@ TreeSimulation <- setRcppClass(
       checkOutputDatabaseExists()
       conn <-
         dbConnect(SQLite(), output_database)
+      community_reference_vector <- as.vector(community_reference)
       species_locations <-
         dbGetQuery(
           conn,
-          paste(
-            "SELECT species_id, x, y
+          paste0(
+            "SELECT community_reference, species_id, x, y
               FROM SPECIES_LOCATIONS WHERE
-              community_reference==",
-            community_reference,
-            sep = ""
+              community_reference IN (",
+            paste0("'", community_reference_vector, "'", collapse=", "), 
+            ")"
           )
         )
       dbDisconnect(conn)
@@ -560,14 +561,15 @@ TreeSimulation <- setRcppClass(
       checkOutputDatabaseExists()
       conn <-
         dbConnect(SQLite(), output_database)
+      community_reference_vector <- as.vector(community_reference)
       species_locations <-
         dbGetQuery(
           conn,
-          paste(
-            "SELECT species_id, no_individuals FROM SPECIES_ABUNDANCES WHERE
-              community_reference==",
-            community_reference,
-            sep = ""
+          paste0(
+            "SELECT community_reference, species_id, no_individuals FROM SPECIES_ABUNDANCES WHERE
+            community_reference IN (",
+            paste0("'", community_reference_vector, "'", collapse=", "), 
+            ")"
           )
         )
       dbDisconnect(conn)
@@ -588,7 +590,7 @@ TreeSimulation <- setRcppClass(
       if (is.na(community_reference)) {
         community_reference <- 1
       }
-      community_reference_vector <- as.vector(communit)
+      community_reference_vector <- as.vector(community_reference)
       checkOutputDatabaseExists()
       conn <-
         dbConnect(SQLite(), sim$output_database)
@@ -596,7 +598,7 @@ TreeSimulation <- setRcppClass(
         dbGetQuery(
           conn,
           paste0(
-            "SELECT COUNT(DISTINCT(species_id)), community_reference FROM SPECIES_ABUNDANCES WHERE
+            "SELECT community_reference, COUNT(DISTINCT(species_id)) FROM SPECIES_ABUNDANCES WHERE
               no_individuals > 0 AND ",
             "community_reference IN (",
             paste0("'", community_reference_vector, "'", collapse=", "), 
