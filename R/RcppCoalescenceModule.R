@@ -551,7 +551,7 @@ TreeSimulation <- setRcppClass(
         )
       dbDisconnect(conn)
       if(length(community_reference_vector) == 1){
-        return(species_locations %>% dplyr::select(-community_reference))
+        return(species_locations %>% dplyr::select(-c("community_reference")))
       }
       return(species_locations)
     },
@@ -578,7 +578,7 @@ TreeSimulation <- setRcppClass(
         )
       dbDisconnect(conn)
       if(length(community_reference_vector) == 1){
-        return(species_locations %>% dplyr::select(species_id, no_individuals))
+        return(species_locations %>% dplyr::select("species_id", "no_individuals"))
       }
       return(species_locations)
     },
