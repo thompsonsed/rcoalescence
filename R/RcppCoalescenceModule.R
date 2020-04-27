@@ -549,6 +549,9 @@ TreeSimulation <- setRcppClass(
           )
         )
       dbDisconnect(conn)
+      if(length(community_reference_vector) == 1){
+        return(species_locations %>% select(-community_reference))
+      }
       return(species_locations)
     },
 
@@ -573,6 +576,9 @@ TreeSimulation <- setRcppClass(
           )
         )
       dbDisconnect(conn)
+      if(length(community_reference_vector) == 1){
+        return(species_locations %>% select(species_id, no_individuals))
+      }
       return(species_locations)
     },
 
@@ -593,7 +599,7 @@ TreeSimulation <- setRcppClass(
       community_reference_vector <- as.vector(community_reference)
       checkOutputDatabaseExists()
       conn <-
-        dbConnect(SQLite(), sim$output_database)
+        dbConnect(SQLite(), output_database)
       species_locations <-
         dbGetQuery(
           conn,
@@ -607,6 +613,9 @@ TreeSimulation <- setRcppClass(
         )
       dbDisconnect(conn)
       names(species_locations) <- c("community_reference", "species_richness")
+      if(length(community_reference_vector) == 1){
+        return(species_locations$species_richness[1])
+      }
       return(species_locations)
     }
   )
