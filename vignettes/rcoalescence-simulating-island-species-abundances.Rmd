@@ -21,6 +21,7 @@ suppressPackageStartupMessages({
   library(magrittr)
   library(tiff)
   library(viridis)
+  library(kableExtra)
 })
 output_dir <- "output"
 if (dir.exists(output_dir)) {
@@ -58,7 +59,7 @@ known_species_richness <- 20
 knitr::kable(island_dispersal,
   caption = "Matrix of dispersal rates from row indices to column indices (i.e. the rate of dispersing from B to A is 0.22 (2 dp)",
   label = "island_dispersal"
-)
+) %>% kable_styling()
 ```
 
 ```{r message=FALSE, warning=FALSE, collapse=TRUE}
@@ -118,9 +119,9 @@ dispersal_probabilities <- island_dispersal %>%
 We also define the number of individuals on each island accordingly.
 
 ```{r echo=FALSE}
-knitr::kable(island_density_df,
+knitr::kable(island_density_df %>% rename("number of individuals"=no_individuals),
   caption = "Number of individuals on each island"
-)
+) %>% kable_styling()
 ```
 
 
@@ -180,7 +181,12 @@ best_community_reference <- sim$getCommunityReferences() %>%
     head(1),
   by = "community_reference"
   )
-knitr::kable(species_island_A %>% head(10))
+knitr::kable(species_island_A %>% 
+               head(10) %>% 
+               rename("community reference"=community_reference,
+                      "mean sampled species richness"=mean_total_species,
+                      "difference from actual"=distance_from_known)) %>% 
+  kable_styling()
 ```
 
 The community that most closely approximates the known sample is that with community reference `r best_community_reference$community_reference`, which corresponds to a speciation rate of `r scales::scientific(best_community_reference$speciation_rate)`. It produces a mean species richness of `r best_community_reference$mean_total_species`. We can now use this reference simulation to calculate the dynamics for the rest of the community. 
@@ -208,7 +214,8 @@ knitr::kable(island_species_abundances %>%
                select(island, species_richness, no_individuals) %>% 
                rename("species richness" = species_richness,
                       "number of individuals" = no_individuals),
-             label="Number of individuals and species richness for each island.")
+             label="Number of individuals and species richness for each island.") %>% 
+  kable_styling()
 ```
 
 So our model predicts that there will be `r island_species_abundances$species_richness[1]` species on island A, `r island_species_abundances$species_richness[2]` on island B, `r island_species_abundances$species_richness[3]` on island C and `r island_species_abundances$species_richness[4]` on island D. This was based on a model that produced almost exactly the same number of species in a 100 individual sample from island A as found in the "real" data (i.e. 20 species). Species richness scales slightly with the number of individuals. However, island D is particularly disconnected from all other islands and therefore has much lower species richness, as species cannot immigrate from other parts of the archipelago. Consequently, it has roughly the same number of species as island C, which is a quarter of the size.
