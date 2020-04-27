@@ -140,15 +140,13 @@ sim$setSimulationParameters(
   output_directory = output_dir,
   dispersal_file = dispersal_file,
   fine_map_file = density_file,
-  uses_logging = TRUE
+  uses_logging = FALSE
 )
 ```
 
 We can now run the simulation.
 
 ```{r}
-# Turn off logging
-sim$setLoggingMode(FALSE)
 sim$runSimulation()
 ```
 
