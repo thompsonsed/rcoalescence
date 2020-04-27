@@ -22,7 +22,12 @@ RoxygenNote: 7.1.0
 Suggests: 
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    tidyverse,
+    kableExtra,
+    viridis,
+    magrittr,
+    tiff
 Collate:
     'RcppCoalescenceModule.R'
     'RcppExports.R'
