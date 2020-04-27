@@ -28,6 +28,7 @@ Suggests:
     viridis,
     magrittr,
     reshape2,
+    tidyr,
     tiff
 Collate:
     'RcppCoalescenceModule.R'

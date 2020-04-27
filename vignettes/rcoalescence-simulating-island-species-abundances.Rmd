@@ -14,13 +14,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, warning=FALSE}
+```{r setup, warning=FALSE, echo=FALSE}
 suppressPackageStartupMessages({
   library(rcoalescence)
   library(dplyr)
-  library(ggplot)
+  library(ggplot2)
   library(magrittr)
   library(tiff)
+  library(tidyr)
   library(viridis)
   library(kableExtra)
 })

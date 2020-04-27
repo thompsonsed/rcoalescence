@@ -20,7 +20,8 @@ knitr::opts_chunk$set(
 suppressPackageStartupMessages({
   library(rcoalescence)
   library(dplyr)
-  library(ggplot)
+  library(ggplot2)
+  library(tidyr)
   library(tiff)
   library(reshape2)
   library(viridis)
