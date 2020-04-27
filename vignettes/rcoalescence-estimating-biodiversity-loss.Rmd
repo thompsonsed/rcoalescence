@@ -19,7 +19,8 @@ knitr::opts_chunk$set(
 ```{r setup, echo=FALSE}
 suppressPackageStartupMessages({
   library(rcoalescence)
-  library(tidyverse)
+  library(dplyr)
+  library(ggplot)
   library(tiff)
   library(reshape2)
   library(viridis)
