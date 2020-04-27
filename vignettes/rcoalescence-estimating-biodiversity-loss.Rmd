@@ -171,6 +171,7 @@ By default, only the raw coalescence tree is stored. By using the `applySpeciati
 This step takes some time here. Note that for most large simulations (particularly with a more realistic speciation rate than chosen here), the `runSimulation` step is typically much longer than the `applySpeciationRates` step - here the opposite is true.
 
 ```{r}
+# This command can take some time
 sim$applySpeciationRates(
   speciation_rates = c(min_speciation_rate),
   times_list = times_list,
@@ -181,7 +182,6 @@ sim$applySpeciationRates(
 By outputting the simulation results to a database file, we can store the results and access them later. This also allows us to utilise a number of in-built functions for automatically extracting biodiversity metrics from the database.
 
 ```{r}
-# This command can take some time
 sim$output()
 ```
 
@@ -230,14 +230,14 @@ knitr::kable(species_richness)
 
 ### View species richness over time
 
-By adjusting the time variable to be in number of generations from present, instead of number of generations prior to the end point, we get a more meaningful interpretation of species richness over time. We can see that species richness declines after the habitat is lost (which occurs at $t=0$ on the below graph), losing approximately 30% of species within a few generations. Our simulation has `r round(mean_richness_before)` species on average for the current landscape shape, and `r round(mean_richness_after)` species on average for the future landscape shape. Note that in this scenario, the high speciation rate means that the relaxation to the new equilibrium state occurs very quickly. For lower speciation rates, this process is likely to occur much more slowly. It is also interesting that the proportional species loss is actually higher than the proportional habitat loss, indicating the biodiversity value of larger areas of poorer quality habitat.
+By adjusting the time variable to be in number of generations from present, instead of number of generations prior to the end point, we get a more meaningful interpretation of species richness over time. We can see that species richness declines after the habitat is lost (which occurs at $t=0$ on the below graph), losing approximately 33% of species within a few generations. Our simulation has `r round(mean_richness_before)` species on average for the current landscape shape, and `r round(mean_richness_after)` species on average for the future landscape shape. Note that in this scenario, the high speciation rate means that the relaxation to the new equilibrium state occurs very quickly. For lower speciation rates, this process is likely to occur much more slowly. It is also interesting that the proportional species loss is actually higher than the proportional habitat loss, indicating the biodiversity value of larger areas of poorer quality habitat.
 
-```{r}
+```{r, fig.fullwidth=TRUE, fig.width=6, fig.cap="Simulated species richness in the landscape as a function of time."}
 species_richness %>% ggplot() +
   geom_line(aes(x = 100 - time, y = species_richness)) +
   theme_classic() +
-  scale_x_continuous("Time from present") +
-  scale_y_continuous("Species richness", limits = c(0, NA)) +
+  scale_x_continuous("Time from present (generations)") +
+  scale_y_continuous("Total species richness", limits = c(0, NA)) +
   geom_vline(aes(xintercept = 0), colour = "darkred", linetype = "dashed")
 ```
 
@@ -337,8 +337,13 @@ species_density_10km %>%
   theme(aspect.ratio = 1.0) +
   facet_grid(. ~ loss_gain)
 ```
+
 # Conclusions
 
-From this modelling demonstration, we can conclude that we should expect to lose approximately 30% of the species shortly following the habitat loss. The species are mostly lost in the deforested areas and biodiversity in the remaining landscape remains high. However, the process outlined here represents the first step in a modelling study. The next steps would generally be an exploration of parameter space; how do our conclusions change when parameters such as speciation rate and dispersal change? Furthermore, a deeper investigation into other biodiversity metrics, such as species area curves and beta diversity may be required if the scientist wishes to explore these patterns.
+From this modelling demonstration, we can conclude that we should expect to lose approximately 33% of the species shortly following the habitat loss. The species are mostly lost in the deforested areas and biodiversity in the remaining landscape remains high. However, the process outlined here represents the first step in a modelling study. The next steps would generally be an exploration of parameter space; how do our conclusions change when parameters such as speciation rate and dispersal change? Furthermore, a deeper investigation into other biodiversity metrics, such as species area curves and beta diversity may be required if the scientist wishes to explore these patterns. Speciation rates can be applied post-simulation (a topic not covered here), but for different dispersals, new simulations must be run. Often it is useful to parrellise these models on a high-performance computing cluster, particularly as simulation times quickly explodes as speciation rate drops and the size of the landscape increases.
+
+## Modifications to the scenario
+
+Using the same process outlined above, any other landscape scenarios can be modelled. For example, what if the a much larger area outside is lost, but a habitat corridor is kept? If the reverse is true (i.e. habitat is reclaimed), how quickly does biodiversity recover? By changing the map files and the times they apply to, these scenarios can be modelled in the same way.
 
 # Bibliography
