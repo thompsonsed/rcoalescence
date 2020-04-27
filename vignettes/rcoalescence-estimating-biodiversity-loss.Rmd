@@ -243,7 +243,7 @@ species_richness %>% ggplot() +
 
 ## Spatial distribution of species richness
 
-We can also investigate the impact of the habitat loss on localised species richness in different areas of the landscape. At first glance, it appears that, in this model, the effects of the habitat loss are not felt considerably outside of the deforested region, as species richness remains similar within cells. Generally, areas towards the centre of the high-density protected area have considerably higher species richness than the surrounding area.
+We can also investigate the impact of the habitat loss on localised species richness in different areas of the landscape. At first glance, it appears that the effects of the habitat loss in the model do not impact considerably outside of the deforested region, as species richness remains similar within cells. Generally, areas towards the centre of the high-density protected area have considerably higher species richness than the surrounding area.
 
 ```{r warning=FALSE, fig.fullwidth=TRUE, fig.width=6, fig.cap="Localised species richness in the current and future landscapes."}
 species_density %>% ggplot() +

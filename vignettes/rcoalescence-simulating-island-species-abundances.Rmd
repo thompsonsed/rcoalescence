@@ -1,0 +1,325 @@
+---
+title: "Simulating species abundance distributions on an archipelago"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simulating species abundance distributions on an archipelago}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, warning=FALSE}
+suppressPackageStartupMessages({
+  library(rcoalescence)
+  library(tidyverse)
+  library(magrittr)
+  library(tiff)
+  library(viridis)
+})
+output_dir <- "output"
+if (dir.exists(output_dir)) {
+  unlink(output_dir, recursive = TRUE)
+}
+```
+
+# Background
+
+In this vignette, we use neutral theory to simulate an archipelago of islands with different densities and connectivities. The goal is to determine what the expected distributions of species abundances would be within each island and for the whole landscape. We also want to determine how many species are found on each island and how many are endemic to that island. In our scenario, we have "real-world" estimates for the species richness sampled from one island - we use this to parameterise our model, and then scale the simulation up to the rest of the system. This represents the common scenario where biodiversity metrics are known for a small sample of the system and it is desirable to obtain estimates of the system-level biodiversity.
+
+For simplicity, we assume that the only unknown parameter is the speciation rate. All other values, including the density of individuals on each island and the dispersal rates between islands, are known.
+
+## Setting up the island system
+
+In our archipelago there are four islands, all connected to each other by varying rates. In particular, islands A, B and C are all relatively well-connected, but island D is very disconnected from all the others. We already have a matrix of dispersal probabilities and a matrix of island densities. We also have coordinates for each island (which is purely used for visualisation, as the model does not need these coordinates).
+
+```{r error=FALSE, warning=FALSE}
+images_folder <- file.path("images")
+islands_list <- c("A", "B", "C", "D")
+density_file <- file.path(images_folder, "island_density.tif")
+dispersal_file <- file.path(images_folder, "dispersal_probabilities.tif")
+island_density <- readTIFF(density_file, as.is = TRUE)
+island_dispersal <- readTIFF(dispersal_file) %>%
+  as_tibble() %>%
+  mutate("island" = islands_list)
+names(island_dispersal) <- c(islands_list, "island")
+island_dispersal <- island_dispersal %>% select(island, A, B, C, D)
+known_species_richness <- 20
+
+```
+
+
+```{r echo=FALSE, warning=FALSE}
+knitr::kable(island_dispersal,
+  caption = "Matrix of dispersal rates from row indices to column indices (i.e. the rate of dispersing from B to A is 0.22 (2 dp)",
+  label = "island_dispersal"
+)
+```
+
+```{r message=FALSE, warning=FALSE, collapse=TRUE}
+# Generate some coordinates for our islands
+island_coordinates <- data.frame(
+  island = c("A", "B", "C", "D"),
+  x = c(0.5, 1, 0.5, 1),
+  y = c(0.5, 0.45, 1.1, 1),
+  x_old=c(0, 1, 2, 3)
+)
+island_density_df <- t(island_density) %>%
+  as_tibble() %>%
+  mutate("island" = islands_list) %>%
+  rename(no_individuals = V1) %>%
+  select(island, no_individuals)
+# Read the dispersal probabilities and convert to a format convenient for plotting
+dispersal_probabilities <- island_dispersal %>%
+  pivot_longer(names_to = "destination", values_to = "probability", cols = c(A, B, C, D)) %>%
+  rename(source = island) %>%
+  full_join(island_coordinates, by = c(source = "island")) %>%
+  rename(x_source = x, y_source = y) %>%
+  full_join(island_coordinates, by = c(destination = "island")) %>%
+  rename(x_destination = x, y_destination = y) %>%
+  filter(!(x_source == x_destination & y_source == y_destination)) %>%
+  mutate(
+    angle = acos((x_destination - x_source) / ((x_destination - x_source)^2 +
+      (y_destination - y_source)^2)^0.5),
+    modifier_src = ifelse(source == "A", 0.3,
+      ifelse(source %in% c("B", "D"), 0.25, 0.14)
+    ),
+    modifier_dst = ifelse(destination == "A", 0.33,
+      ifelse(destination %in% c("B", "D"), 0.27, 0.14)
+    ),
+    x_destination_new = x_destination - modifier_dst * (x_destination - x_source),
+    y_destination_new = y_destination - modifier_dst * (y_destination - y_source),
+    x_source = x_source - modifier_src * (x_source - x_destination),
+    y_source = y_source - modifier_src * (y_source - y_destination),
+    angle_mod = mod(angle, pi),
+    x_mod = ifelse(y_source == y_destination, 0,
+      ifelse(x_source > x_destination, 0.01,
+        ifelse(x_source == x_destination &
+          y_source > y_destination, 0.02, -0.02)
+      )
+    ),
+    y_mod = ifelse(x_source == x_destination, 0,
+      ifelse(y_source < y_destination, 0.02, -0.02)
+    ),
+    x_destination_new = x_destination_new - x_mod,
+    y_destination_new = y_destination_new - y_mod,
+    x_source = x_source - x_mod,
+    y_source = y_source - y_mod
+  ) %>%
+  select(-x_destination, -y_destination) %>%
+  rename(x_destination = x_destination_new, y_destination = y_destination_new)
+```
+
+We also define the number of individuals on each island accordingly.
+
+```{r echo=FALSE}
+knitr::kable(island_density_df,
+  caption = "Number of individuals on each island"
+)
+```
+
+
+Our known species richness comes from a sample of 100 individuals, taken from island A. This value of `r known_species_richness` allows us to parameterise our island modelling.
+
+
+# Setting up the simulation
+
+Our simulation is set up using a `SpatialTreeSimulation` but providing a dispersal map instead of a dispersal kernel. The dispersal map corresponds to the matrix shown in the above table. 
+
+```{r warning=FALSE}
+sim <- SpatialTreeSimulation$new()
+sim$setSimulationParameters(
+  task = 1,
+  seed = 2,
+  min_speciation_rate = 0.000001,
+  output_directory = output_dir,
+  dispersal_file = dispersal_file,
+  fine_map_file = density_file,
+  uses_logging = TRUE
+)
+```
+
+We can now run the simulation.
+
+```{r}
+# Turn off logging
+sim$setLoggingMode(FALSE)
+sim$runSimulation()
+```
+
+And create the communities by applying a number of speciation rates. Save the output to the database
+
+```{r}
+sim$applySpeciationRates(speciation_rates = 10^seq(-6, -2, 0.2), use_spatial = TRUE)
+sim$output()
+```
+
+For each speciation rate calculate the species richness when sampling 100 individuals from island A. We repeat the sampling 100 times and calculate the mean species richness. Then we sort the values by their distance from our known species richness value in that sample (20 species).
+
+```{r}
+proportion_individuals <- 100 / 50000
+sample_species <- function(x, n_sample = 100, n_iter = 100) {
+  species_richness <- c()
+  for (i in 1:n_iter) {
+    species_richness <- c(species_richness, length(unique(sample(x, n_sample))))
+  }
+  return(species_richness)
+}
+species_island_A <- sim$getSpeciesLocations(sim$getCommunityReferences()$reference) %>%
+  filter(x == 0, y == 0) %>%
+  group_by(community_reference) %>%
+  summarise(mean_total_species = mean(sample_species(species_id))) %>%
+  mutate(distance_from_known = abs(mean_total_species - known_species_richness)) %>%
+  arrange(distance_from_known)
+best_community_reference <- sim$getCommunityReferences() %>%
+  rename(community_reference = reference) %>%
+  inner_join(species_island_A %>%
+    head(1),
+  by = "community_reference"
+  )
+knitr::kable(species_island_A %>% head(10))
+```
+
+The community that most closely approximates the known sample is that with community reference `r best_community_reference$community_reference`, which corresponds to a speciation rate of `r scales::scientific(best_community_reference$speciation_rate)`. It produces a mean species richness of `r best_community_reference$mean_total_species`. We can now use this reference simulation to calculate the dynamics for the rest of the community. 
+
+## Species richness
+
+We use `getSpeciesLocations` to extract the species identities at each point, then calculate the species richness for each island.
+
+```{r}
+ref <- best_community_reference$community_reference
+
+island_species_abundances <- sim$getSpeciesLocations(ref) %>%
+  group_by(x, y) %>%
+  summarise(species_richness = length(unique(species_id))) %>%
+  ungroup() %>%
+  mutate(island = factor(islands_list)) %>%
+  select(-x, -y) %>%
+  full_join(island_coordinates, by = "island") %>%
+  full_join(island_density_df %>% mutate(island=factor(island)), by="island")
+  
+```
+
+```{r echo=FALSE}
+knitr::kable(island_species_abundances %>%
+               select(island, species_richness, no_individuals) %>% 
+               rename("species richness" = species_richness,
+                      "number of individuals" = no_individuals),
+             label="Number of individuals and species richness for each island.")
+```
+
+So our model predicts that there will be `r island_species_abundances$species_richness[1]` species on island A, `r island_species_abundances$species_richness[2]` on island B, `r island_species_abundances$species_richness[3]` on island C and `r island_species_abundances$species_richness[4]` on island D. This was based on a model that produced almost exactly the same number of species in a 100 individual sample from island A as found in the "real" data (i.e. 20 species). Species richness scales slightly with the number of individuals. However, island D is particularly disconnected from all other islands and therefore has much lower species richness, as species cannot immigrate from other parts of the archipelago. Consequently, it has roughly the same number of species as island C, which is a quarter of the size.
+
+```{r echo=FALSE, warning=FALSE, fig.fullwidth=TRUE, fig.width=6, fig.cap="Species richness on each island. The weights of the arrows represent the dispersal rates between islands. The sizes of the islands represent the number of individuals on each island."}
+island_species_abundances %>%
+  ggplot() +
+  geom_segment(
+    data = dispersal_probabilities,
+    aes(
+      x = x_source, y = y_source, xend = x_destination, yend = y_destination,
+      alpha = probability
+    ), arrow = arrow(length = unit(0.3, "cm"), angle = 20), lineend = "butt"
+  ) +
+  theme(
+    axis.line = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_blank(),
+    legend.key = element_blank(),
+    aspect.ratio = 1.0
+  ) +
+  scale_colour_viridis("Species richness", option = "inferno", begin = 0.4, end = 0.9) +
+  scale_alpha_continuous(guide = FALSE) +
+  scale_size_area(max_size = 30, guide = FALSE) +
+  geom_point(aes(x = x, y = y, colour = species_richness, size = no_individuals)) +
+  geom_text(aes(x = x, y = y, label = island), colour = "black", size = 7, fontface = 2) +
+  scale_y_reverse(limits = c(1.2, 0.3)) +
+  scale_x_continuous(limits = c(0.3, 1.1))
+```
+
+
+
+### Island endemics
+
+We can also check how many species are endemic to each island by counting the number of islands that each species appears on. Those with just a single island will be endemic to that island.
+
+```{r}
+island_endemics <- sim$getSpeciesLocations(ref) %>% 
+  distinct(species_id, x, y) %>% 
+  group_by(species_id) %>% 
+  mutate(islands_counts = n()) %>% 
+  filter(islands_counts==1) %>% 
+  group_by(x, y) %>% 
+  summarise(total_endemics=length(unique(species_id))) %>% 
+  rename(x_old = x) %>% 
+  select(-y) %>% 
+  full_join(island_coordinates, by="x_old") %>% 
+  ungroup() %>% 
+  select(-x_old) %>% 
+  mutate(total_endemics=replace_na(total_endemics, 0))
+```
+
+```{r echo=FALSE}
+knitr::kable(island_endemics %>% 
+               select(island, total_endemics) %>% 
+               rename("number of endemics"= total_endemics), 
+             caption="Number of endemic species on each island.")
+```
+
+As expected, the largest island (A) has the most endemics. However, island B has much more than the other two, indicating how the dispersal limitations on island B cause lower species richness overall, but more unique species. Summing these values up means that of the `r sim$getSpeciesRichness(ref)` species in the system, `r sum(island_endemics$total_endemics)` are endemic to an island.
+
+```{r echo=FALSE, warning=FALSE, fig.fullwidth=TRUE, fig.width=6, fig.cap="Number of endemics on each island. The weights of the arrows represent the dispersal rates between islands. The sizes of the islands represent the number of individuals on each island."}
+
+# Plot the endemics for each island
+island_endemics %>%
+  full_join(island_density_df %>% 
+              mutate(island=factor(island)), by="island") %>% 
+  ggplot()+
+  geom_segment(data=dispersal_probabilities, 
+               aes(x=x_source, 
+                   y=y_source, 
+                   xend=x_destination, 
+                   yend=y_destination, 
+                   alpha=probability),
+               arrow=arrow(length=unit(0.3, "cm"),
+                           angle=20), 
+               lineend="butt")+
+  theme(axis.line=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        plot.background=element_blank(),
+        legend.key = element_blank(),
+        aspect.ratio=1.0) +
+  scale_colour_viridis("", option="viridis", begin=0.4, end=0.9)+
+  scale_alpha_continuous(guide=FALSE)+
+  scale_size_area(max_size=30, guide=FALSE)+
+  geom_point(aes(x=x, y=y, colour=total_endemics, size=no_individuals)) + 
+  geom_text(aes(x=x, y=y, label=island), colour="black", size=7, fontface=2)+
+  scale_y_reverse(limits=c(1.2, 0.3))+
+  scale_x_continuous(limits=c(0.3, 1.1))
+```
+
+# Conclusion
+
+We have used the modelling framework to estimate the number of species on each island, based on a known species richness within a sample. From this, we have also estimated the number of endemic species on each island, highlighting the importance of dispersal for increasing local species richness, but decreasing endemism. We estimated there to be `r sim$getSpeciesRichness(ref)` species in total within the system, upscaling from the 20 species in our given sample of 100 individuals.
+
+In a real scenario, the dispersal restrictions would likely not be known exactly, but could be estimated for some species based on distance, ocean currents or tracking data. Multiple simulations could then be run to explore the outcomes under a broader set of scenarios. 

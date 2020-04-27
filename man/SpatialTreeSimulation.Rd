@@ -29,7 +29,7 @@ density for the simulation. Additional maps are optional.
 )}}{Applies the provided speciation parameters to the simulation.}
 
 \item{\code{setDispersalParameters(
-  sigma,
+  sigma = 1,
   dispersal_method = "normal",
   tau = 1,
   m_prob = 0,
@@ -37,7 +37,7 @@ density for the simulation. Additional maps are optional.
   dispersal_relative_cost = 1,
   restrict_self = FALSE,
   landscape_type = "closed",
-  dispersal_file = "null",
+  dispersal_file = "none",
   reproduction_file = "null"
 )}}{Sets the dispersal parameters for the simulation}
 
