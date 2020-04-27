@@ -24,7 +24,7 @@ Suggests:
     knitr,
     rmarkdown,
     kableExtra,
-    ggplot,
+    ggplot2,
     viridis,
     magrittr,
     reshape2,
