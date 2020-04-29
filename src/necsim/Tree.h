@@ -484,7 +484,7 @@ namespace necsim
          * @param generationin the generation to make the lineage a tip at
          * @param data_added vector of lineages to add to the data object
          */
-        void convertTip(unsigned long i, double generationin, vector<TreeNode> &data_added);
+        void createNewTip(unsigned long i, double generationin, vector<TreeNode> &data_added);
 
         /**
          * @brief Finalises the simulation, and performs the correct tasks depending if the sim has been paused or finished.

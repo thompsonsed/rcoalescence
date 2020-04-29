@@ -71,7 +71,7 @@ namespace necsim
     {
         full_dispersal_map = false;
         // Open our file connection
-        if(dispersal_file == "none")
+        if((dispersal_file == "none") | dispersal_file.empty())
         {
             if(!NR)
             {

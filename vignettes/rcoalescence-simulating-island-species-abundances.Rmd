@@ -1,8 +1,8 @@
 ---
-title: "Simulating species abundance distributions on an archipelago"
+title: "Simulating biodiversity on an archipelago"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Simulating species abundance distributions on an archipelago}
+  %\VignetteIndexEntry{Simulating biodiversity on an archipelago}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -183,6 +183,9 @@ best_community_reference <- sim$getCommunityReferences() %>%
     head(1),
   by = "community_reference"
   )
+```
+
+```{r echo=FALSE}
 knitr::kable(species_island_A %>% 
                head(10) %>% 
                rename("community reference"=community_reference,
@@ -192,6 +195,36 @@ knitr::kable(species_island_A %>%
 ```
 
 The community that most closely approximates the known sample is that with community reference `r best_community_reference$community_reference`, which corresponds to a speciation rate of `r scales::scientific(best_community_reference$speciation_rate)`. It produces a mean species richness of `r best_community_reference$mean_total_species`. We can now use this reference simulation to calculate the dynamics for the rest of the community. 
+
+## Species abundance distributions
+
+We use `getSpeciesLocations` to extract the locations of all individuals and then calculate the species abundance distributions for each island. The shapes 
+
+```{r}
+island_sads <- sim$getSpeciesLocations(sim$getCommunityReferences()$reference) %>% 
+  group_by(x, species_id) %>% 
+  summarise(abundance=n()) %>% 
+  mutate(log_abundance = floor(log2(abundance))) %>% 
+  group_by(x, log_abundance) %>% 
+  summarise(number_species=n())
+```
+
+```{r echo=FALSE, warning=FALSE, fig.fullwidth=TRUE, fig.width=6, fig.cap="Species abundance distributions for each island."}
+island_sads %>% 
+  rename(x_old=x) %>% 
+  full_join(island_coordinates, by="x_old") %>%
+  ggplot() +
+  geom_line(aes(x=log_abundance, y=number_species, colour=island, linetype=island)) + 
+  scale_x_continuous(expression(paste("Abundance class (", log[2], ")")),
+    trans = scales::log2_trans(),
+    breaks = scales::trans_breaks("log2", function(x) 2^x, n = 6),
+    labels = scales::trans_format("log2", scales::math_format(.x))
+  ) +
+  scale_y_continuous("Number of species") +
+  scale_colour_brewer("Island", type="qual", palette=2)+
+  scale_linetype_discrete("Island")+
+  theme_classic()
+```
 
 ## Species richness
 

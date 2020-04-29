@@ -423,7 +423,8 @@ namespace necsim
             (*data)[chosen_reference].increaseGen();
             // Check if speciation happens
             if(calcSpeciation((*data)[chosen_reference].getSpecRate(),
-                              0.99999 * spec, (*data)[chosen_reference].getGenerationRate()))
+                              0.99999 * spec,
+                              (*data)[chosen_reference].getGenerationRate()))
             {
                 speciation(this_step.chosen);
             }
@@ -780,33 +781,39 @@ namespace necsim
 
     void Tree::makeTip(const unsigned long &tmp_active, const double &generationin, vector<TreeNode> &data_added)
     {
-        unsigned long reference = active[tmp_active].getReference();
-        if((*data)[reference].isTip())
+        auto cur_active = &active[tmp_active];
+        auto cur_data = &(*data)[cur_active->getReference()];
+        if(cur_data->isTip())
         {
-            convertTip(tmp_active, generationin, data_added);
+            createNewTip(tmp_active, generationin, data_added);
         }
         else
         {
-            (*data)[active[tmp_active].getReference()].setGeneration(generationin);
-            (*data)[active[tmp_active].getReference()].setTip(true);
+            cur_data->setGeneration(generationin);
+            cur_data->setTip(true);
+            cur_data->setPosition(cur_active->getXpos(),
+                                  cur_active->getYpos(),
+                                  cur_active->getXwrap(),
+                                  cur_active->getYwrap());
         }
     }
 
-    void Tree::convertTip(unsigned long i, double generationin, vector<TreeNode> &data_added)
+    void Tree::createNewTip(unsigned long i, double generationin, vector<TreeNode> &data_added)
     {
+        auto cur_active = &active[i];
         TreeNode tmp_tree_node;
         tmp_tree_node.setup(true,
-                            active[i].getXpos(),
-                            active[i].getYpos(),
-                            active[i].getXwrap(),
-                            active[i].getYwrap(),
+                            cur_active->getXpos(),
+                            cur_active->getYpos(),
+                            cur_active->getXwrap(),
+                            cur_active->getYwrap(),
                             generationin);
         // Now link the old tip to the new tip
         auto data_pos = enddata + data_added.size() + 1;
-        (*data)[active[i].getReference()].setParent(data_pos);
+        (*data)[cur_active->getReference()].setParent(data_pos);
         tmp_tree_node.setGenerationRate(0);
         tmp_tree_node.setSpec(NR->d01());
-        active[i].setReference(data_pos);
+        cur_active->setReference(data_pos);
         data_added.emplace_back(tmp_tree_node);
     }
 
@@ -1152,7 +1159,7 @@ namespace necsim
 
     void Tree::setupOutputDirectory()
     {
-        if(sql_output_database == "null" || ! fs::exists(fs::path(sql_output_database)))
+        if(sql_output_database == "null" || !fs::exists(fs::path(sql_output_database)))
         {
             sql_output_database = out_directory;
             string sqlfolder = out_directory;
@@ -1206,8 +1213,7 @@ namespace necsim
         ss1 << spec;
         to_execute = "INSERT INTO SIMULATION_PARAMETERS VALUES(" + to_string((long long) seed) + ","
                      + to_string((long long) job_type);
-        to_execute += ",'" + out_directory + "'," + ss1.str() + ","
-                      + to_string(0.0) + ",";
+        to_execute += ",'" + out_directory + "'," + ss1.str() + "," + to_string(0.0) + ",";
         to_execute += to_string(0.0) + "," + to_string((long double) deme) + ",";
         to_execute += to_string((long double) deme_sample) + "," + to_string((long long) maxtime) + ",";
         to_execute += to_string(0.0) + "," + to_string(0.0) + ",";
