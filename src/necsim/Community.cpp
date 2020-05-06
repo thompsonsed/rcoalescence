@@ -612,13 +612,20 @@ namespace necsim
         internalOption();
     }
 
-    void Community::internalOption()
+void Community::internalOption()
+{
+    if(database->inMemory())
     {
-        has_imported_data = true;
-        sql_connection_open = true;
-        database_set = true;
         in_mem = true;
     }
+    else
+    {
+        in_mem = false;
+    }
+    has_imported_data = true;
+    sql_connection_open = true;
+    database_set = true;
+}
 
     void Community::importData(string inputfile)
     {
