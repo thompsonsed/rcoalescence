@@ -19,7 +19,7 @@
 
 ### Setup and installation ###
 
-* First make sure the platform-specific requirements are installed (see below).
+* First make sure the platform-specific requirements are installed (**see below**).
 * Then the package can be installed directly from github using ``devtools::install_github("thompsonsed/rcoalescence")``
 
 
