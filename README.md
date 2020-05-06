@@ -19,7 +19,7 @@
 
 ### Setup and installation ###
 
-* First make sure the requirements are installed (see below).
+* First make sure the platform-specific requirements are installed (see below).
 * Then the package can be installed directly from github using ``devtools::install_github("thompsonsed/rcoalescence")``
 
 
@@ -43,7 +43,7 @@ We also suggest *dplyr*, *rmarkdown* and *knitr*. All these packages can be inst
 #### Installing on macOS ####
 
 - Ensure you have R > 3.4.0 installed, plus a compiler that supports C++14 or later (e.g. gcc or clang).
-- Install gdal >2.4.0. If you have homebrew installed, this can be done using ``brew install gdal``.
+- Install gdal >2.4.0. If you have homebrew installed, this can be done using ``brew install gdal``. Check out the [brew site](https://brew.sh/) for the command to install brew.
 - Make sure xcode is installed (``xcode-select --install``). Linux systems should come with gcc by default.
 - Install the necessary R package requirements (see above).
 - Run ``devtools::install_github("thompsonsed/rcoalescence")``.
