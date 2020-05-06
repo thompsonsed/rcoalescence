@@ -72,10 +72,17 @@ namespace necsim
         }
         openSQLiteDatabase(file_name, database);
         this->file_name = file_name;
+        // TODO remove this
+        cout << "Opening database at " << file_name << endl;
     }
 
     void SQLiteHandler::close()
     {
+        // TODO remove
+        if(database != nullptr)
+        {
+            cout << "Closing database..." << endl;
+        }
         sqlite3_close_v2(database);
         database = nullptr;
     }

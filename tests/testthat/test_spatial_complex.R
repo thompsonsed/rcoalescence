@@ -18,7 +18,7 @@ test_that("Biodiversity metrics correctly stored in output database", {
     fine_map_file = "sample/example_fine.tif",
     coarse_map_file = "sample/example_coarse.tif",
     sample_mask_file = "sample/example_mask.tif",
-    uses_logging = FALSE
+    uses_logging = TRUE # TODO change back
   )
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = c(0.5, 0.7),
