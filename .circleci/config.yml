@@ -6,7 +6,7 @@ version: 2.0
 jobs:
   build_local:
     docker:
-      - image: thompsonsed/rcoalescence-circleci-rbase_latest-0.0.1
+      - image: thompsonsed/rcoalescence-rbase3.6-xenial
 
     working_directory: ~/rcoalescence
 
@@ -30,9 +30,9 @@ jobs:
           path: test-reports
           destination: test-reports
 
-  build_bitbucket:
+  build_github:
     docker:
-      - image: thompsonsed/rcoalescence-circleci-rbase_latest-0.0.1
+      - image: thompsonsed/rcoalescence-rbase3.6-xenial
 
     working_directory: ~
 
@@ -62,5 +62,5 @@ workflows:
   build_and_test:
     jobs:
       - build_local
-      - build_bitbucket
+      - build_github
 
