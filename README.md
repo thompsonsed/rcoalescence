@@ -30,8 +30,9 @@ The installation method differs depending on your operating system. However, som
 - *devtools*
 - *Rcpp*
 - *RSQLite*
+- *dplyr*
 
-We also suggest *dplyr*, *rmarkdown* and *knitr*. All these packages can be installed using ``install.packages(c("devtools", "Rcpp", "RSQLite", "tidyverse", "rmarkdown", "knitr"))``.
+We also suggest a number of other packages contained within the **tidyverse**. All required packages can be installed using ``install.packages(c("devtools", "Rcpp", "RSQLite", "tidyverse", "rmarkdown", "knitr"))``.
 
 #### Installing on Linux ####
 
