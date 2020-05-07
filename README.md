@@ -19,41 +19,29 @@
 
 ### Setup and installation ###
 
-* First make sure the platform-specific requirements are installed (**see below**).
-* Then the package can be installed directly from github using ``devtools::install_github("thompsonsed/rcoalescence")``
+#### Installing on Windows ####
+
+- Make sure that you have installed R > 3.6.0 with [Rtools version 3.5 or later](https://cran.r-project.org/bin/windows/Rtools/index.html). 
+- Install the necessary R package requirements using ``install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))``.
+- Run ``devtools::install_github("thompsonsed/rcoalescence")``. This will also download gdal (if it can't be found already).
 
 
-### Prerequisites ###
+#### Installing on macOS ####
 
-The installation method differs depending on your operating system. However, some R packages are required on all operating systems. These are:
-
-- *devtools*
-- *Rcpp*
-- *RSQLite*
-- *dplyr*
-
-We also suggest a number of other packages contained within the **tidyverse**. All required packages can be installed using ``install.packages(c("devtools", "Rcpp", "RSQLite", "tidyverse", "rmarkdown", "knitr"))``.
+- Ensure you have R > 3.4.0 installed.
+- Install gdal >2.4.0. If you have homebrew installed, this can be done using ``brew install gdal``. Check out the [brew site](https://brew.sh/) for the command to install brew.
+- Make sure xcode is installed (``xcode-select --install``).
+- Install the necessary R package requirements using ``install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))``.
+- Run ``devtools::install_github("thompsonsed/rcoalescence")``.
 
 #### Installing on Linux ####
 
 - Ensure you have R > 3.4.0 installed, plus a compiler that supports C++14 or later (e.g. gcc or clang).
 - Install gdal >2.4.0 from your distribution's repositories (e.g. ``sudo apt-get install gdal-dev`` for Ubuntu), or build from source.
-- Install the necessary R package requirements (see above).
+- Install the necessary R package requirements using ``install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))``.
 - Run ``devtools::install_github("thompsonsed/rcoalescence")``.
 
-#### Installing on macOS ####
-
-- Ensure you have R > 3.4.0 installed, plus a compiler that supports C++14 or later (e.g. gcc or clang).
-- Install gdal >2.4.0. If you have homebrew installed, this can be done using ``brew install gdal``. Check out the [brew site](https://brew.sh/) for the command to install brew.
-- Make sure xcode is installed (``xcode-select --install``). Linux systems should come with gcc by default.
-- Install the necessary R package requirements (see above).
-- Run ``devtools::install_github("thompsonsed/rcoalescence")``.
-
-#### Installing on Windows ####
-
-- Make sure that you have installed R > 3.6.0 with [Rtools version 3.5 or later](https://cran.r-project.org/bin/windows/Rtools/index.html). 
-- Install the necessary R package requirements (see above).
-- Run ``devtools::install_github("thompsonsed/rcoalescence")``. This will also download gdal (if it can't be found already).
+We also suggest a number of other packages contained within the **tidyverse** collection. All required packages can be installed using ``install.packages(c("devtools", "Rcpp", "RSQLite", "tidyverse", "rmarkdown", "knitr"))``.
 
 ### Usage ###
 
