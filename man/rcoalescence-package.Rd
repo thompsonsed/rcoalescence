@@ -17,29 +17,55 @@ See \link[=NeutralTreeSimulation]{here} for a full description.
 }
 \section{Installation}{
 
-There are several dependencies required before installation of this package will be successful.
 
-\subsection{Dependencies}{
+
+\subsection*{Installing on Windows}
+
+\begin{itemize}
+\item Make sure that you have installed R > 3.6.0 with  
+\href{https://cran.r-project.org/bin/windows/Rtools/index.html}{Rtools version 3.5 or later} 
+(available at \url{https://cran.r-project.org/bin/windows/Rtools/index.html}). 
+\item Install the necessary R package requirements using \texttt{install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))}.
+\item Run \texttt{devtools::install\_github("thompsonsed/rcoalescence")}. This will also download gdal (if it can't be found already).
+\end{itemize}
+
+
+\subsection*{Installing on macOS}
+
+\begin{itemize}
+	\item Ensure you have R > 3.4.0 installed.
+	\item Install gdal >2.4.0. If you have homebrew installed, this can be done using ``brew install gdal``.
+	 Check out the [brew site](https://brew.sh/) for the command to install brew.
+	\item Make sure xcode is installed ( run \texttt{xcode-select --install} from the terminal, which is necessary for compiling the package.
+	\item Install the necessary R package requirements using \texttt{install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))}.
+	\item Run \texttt{devtools::install\_github("thompsonsed/rcoalescence")}.
+\end{itemize}
+
+\subsection*{Installing on Linux}
+\begin{itemize}
+	\item Ensure you have R > 3.4.0 installed, plus a compiler that supports C++14 or later (e.g. gcc or clang).
+	\item Install gdal >2.4.0 from your distribution's repositories (e.g. \texttt{sudo apt-get install gdal-dev} for Ubuntu), or build from source.
+ \item Install the necessary R package requirements using \texttt{install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))}.
+ \item Run \texttt{devtools::install\_github("thompsonsed/rcoalescence")}.
+\end{itemize}
+                                                                                                        
+We also suggest a number of other packages contained within the \textit{tidyverse} collection. 
+All required packages can be installed using \texttt{install.packages(c("devtools", "Rcpp", "RSQLite", "tidyverse", "rmarkdown", "knitr"))}.
+
+\subsection{Development dependencies}{
 
 \itemize{
     \item R package development prerequisites, which may require additional installation steps,
-    depending on your platform
+    depending on your platform.
     \href{https://support.rstudio.com/hc/en-us/articles/200486498}{(see here)}.
     \item A C++ compiler that is detectable by R.
     \item The devtools package.
-    \item Gdal library for C++, available \href{http://www.gdal.org/}{here}. Installed automatically for windows.
-    \item Sqlite3 library for C++, available \href{https://www.sqlite.org/index.html}{here}.
+    \item Gdal library for C++, available \href{http://www.gdal.org/}{here}. Included in rcoalescence for windows.
+    \item Sqlite3 library for C++, available \href{https://www.sqlite.org/index.html}{here} (comes with most systems by default).
 
     \item Several R packages are dependencies, including Rcpp. These should be installed
     automatically.
 }
-}
-
-\subsection{Install method}{
-
-First, make sure devtools and the C++ library dependencies are installed. Then run,
-\code{library(devtools)} and \code{install_github("thompsonsed/rcoalescence")}
-
 }
 }
 
