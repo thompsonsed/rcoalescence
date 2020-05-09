@@ -33,4 +33,5 @@ Suggests:
 Collate:
     'RcppCoalescenceModule.R'
     'RcppExports.R'
+    'rcoalescence.R'
 VignetteBuilder: knitr
