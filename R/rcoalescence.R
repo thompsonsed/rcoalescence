@@ -105,8 +105,8 @@
 #' \subsection{Still facing issues}{
 #'
 #' Try downloading the package from github manually and use \code{install_local()}.
-#' If you have autotools installed, run \code{autoreconf} and \code{autoconf} from the before
-#' attempting package
+#' If you have autotools installed, run \code{autoreconf} and \code{autoconf} from the command line before
+#' attempting package installation.
 #' }
 #'
 #' @section Starting a simulation:
