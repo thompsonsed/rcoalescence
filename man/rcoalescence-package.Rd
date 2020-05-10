@@ -60,7 +60,7 @@ All required packages can be installed using \code{install.packages(c("devtools"
 
 \itemize{
     \item R package development prerequisites, which may require additional installation steps,
-    depending on your platform.
+    depending on your platform
     \href{https://support.rstudio.com/hc/en-us/articles/200486498}{(see here)}.
     \item A C++ compiler that is detectable by R.
     \item The devtools package.
