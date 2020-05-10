@@ -196,7 +196,8 @@ simulation$setSimulationParameters(
   deme_sample = 0.01, # the proportion of individuals sampled
   fine_map_file = file.path(getMapDir(), "example_fine.tif"), # the path to the fine resolution map
   coarse_map_file = file.path(getMapDir(), "example_coarse.tif"), # the path to the coarse map
-  sample_mask_file = file.path(getMapDir(), "example_mask.tif") # the path to the sample mask
+  sample_mask_file = file.path(getMapDir(), "example_mask.tif"), # the path to the sample mask
+  partial_setup=TRUE # Don't fully import files yet, as we will be adding more
 )
 # Add a historical map
 simulation$addHistoricalMap(
