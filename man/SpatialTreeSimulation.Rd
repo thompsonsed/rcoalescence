@@ -37,8 +37,7 @@ density for the simulation. Additional maps are optional.
   dispersal_relative_cost = 1,
   restrict_self = FALSE,
   landscape_type = "closed",
-  dispersal_file = "none",
-  reproduction_file = "null"
+  dispersal_map_file = "none"
 )}}{Sets the dispersal parameters for the simulation}
 
 \item{\code{setHistoricalMapParameters(
@@ -69,7 +68,9 @@ density for the simulation. Additional maps are optional.
   coarse_map_scale = 1,
   deme = 1,
   deme_sample = 1,
-  uses_spatial_sampling = FALSE
+  uses_spatial_sampling = FALSE,
+  reproduction_map_file = "none",
+  death_map_file = "none"
 )}}{Sets the map parameters for the simulation}
 
 \item{\code{setSimulationParameters(
@@ -127,8 +128,9 @@ These include dispersal parameters and maps files
 \item \emph{dispersal_relative_cost}: the relative cost of moving through non-forest
 \item \emph{restrict_self}: if true, prevents individuals from dispersing from their own cell
 \item \emph{landscape_type}: type of landscape from "closed", "infinite" and "tiled"
-\item \emph{dispersal_file}: a map of dispersal probabilities
-\item \emph{reproduction_file}: a map of reproduction probabilies
+\item \emph{dispersal_map_file}: a map of dispersal probabilities between pairs of cells in the landscape
+\item \emph{reproduction_map_file}: a map of relative reproduction rates
+\item *death_map_file: a map of relative death rates
 \item \emph{fine_map_file}: fine resolution density map
 \item \emph{coarse_map_file}: coarse resolution density map
 \item \emph{sample_mask_file}: spatial sampling mask

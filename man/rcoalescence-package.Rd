@@ -19,38 +19,42 @@ See \link[=NeutralTreeSimulation]{here} for a full description.
 
 
 
-\subsection*{Installing on Windows}
+\subsection{Installing on Windows}{
 
-\begin{itemize}
+\itemize{
 \item Make sure that you have installed R > 3.6.0 with  
 \href{https://cran.r-project.org/bin/windows/Rtools/index.html}{Rtools version 3.5 or later} 
-(available at \url{https://cran.r-project.org/bin/windows/Rtools/index.html}). 
-\item Install the necessary R package requirements using \texttt{install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))}.
-\item Run \texttt{devtools::install\_github("thompsonsed/rcoalescence")}. This will also download gdal (if it can't be found already).
-\end{itemize}
+(available at \url{https://cran.r-project.org/bin/windows/Rtools/index.html}).
+\item Install the necessary R package requirements using \code{install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))}.
+\item Run \code{devtools::install\_github("thompsonsed/rcoalescence")}. This will also download gdal (if it can't be found already).
+}
+}
 
 
-\subsection*{Installing on macOS}
+\subsection{Installing on macOS}{
 
-\begin{itemize}
+\itemize{
 	\item Ensure you have R > 3.4.0 installed.
 	\item Install gdal >2.4.0. If you have homebrew installed, this can be done using ``brew install gdal``.
 	 Check out the [brew site](https://brew.sh/) for the command to install brew.
-	\item Make sure xcode is installed ( run \texttt{xcode-select --install} from the terminal, which is necessary for compiling the package.
-	\item Install the necessary R package requirements using \texttt{install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))}.
-	\item Run \texttt{devtools::install\_github("thompsonsed/rcoalescence")}.
-\end{itemize}
+	\item Make sure xcode is installed ( run \code{xcode-select --install} from the terminal, which is necessary for compiling the package.
+	\item Install the necessary R package requirements using \code{install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))}.
+	\item Run \code{devtools::install\_github("thompsonsed/rcoalescence")}.
+}
+}
 
-\subsection*{Installing on Linux}
-\begin{itemize}
+\subsection{Installing on Linux}{
+
+\itemize{
 	\item Ensure you have R > 3.4.0 installed, plus a compiler that supports C++14 or later (e.g. gcc or clang).
-	\item Install gdal >2.4.0 from your distribution's repositories (e.g. \texttt{sudo apt-get install gdal-dev} for Ubuntu), or build from source.
- \item Install the necessary R package requirements using \texttt{install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))}.
- \item Run \texttt{devtools::install\_github("thompsonsed/rcoalescence")}.
-\end{itemize}
+	\item Install gdal >2.4.0 from your distribution's repositories (e.g. \code{sudo apt-get install gdal-dev} for Ubuntu), or build from source.
+ \item Install the necessary R package requirements using \code{install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))}.
+ \item Run \code{devtools::install\_github("thompsonsed/rcoalescence")}.
+}
+}
                                                                                                         
-We also suggest a number of other packages contained within the \textit{tidyverse} collection. 
-All required packages can be installed using \texttt{install.packages(c("devtools", "Rcpp", "RSQLite", "tidyverse", "rmarkdown", "knitr"))}.
+We also suggest a number of other packages contained within the \emph{tidyverse} collection. 
+All required packages can be installed using \code{install.packages(c("devtools", "Rcpp", "RSQLite", "tidyverse", "rmarkdown", "knitr"))}.
 
 \subsection{Development dependencies}{
 
@@ -106,8 +110,8 @@ it manually to using PKG_LIBS=/dir/ during installation.
 \subsection{Still facing issues}{
 
 Try downloading the package from github manually and use \code{install_local()}.
-If you have autotools installed, run \code{autoreconf} and \code{autoconf} from the before
-attempting package
+If you have autotools installed, run \code{autoreconf} and \code{autoconf} from the command line before
+attempting package installation.
 }
 }
 
