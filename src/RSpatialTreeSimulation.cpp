@@ -99,7 +99,9 @@ void RSpatialTreeSimulation::setMapParameters(const string &fine_map_file_in,
                                               const unsigned long &coarse_map_scale_in,
                                               const unsigned long &deme_in,
                                               const double &deme_sample_in,
-                                              bool uses_spatial_sampling_in)
+                                              bool uses_spatial_sampling_in,
+                                              const string &reproduction_map_file_in,
+                                              const string &death_map_file_in)
 {
     sim_parameters->setMapParameters(fine_map_file_in,
                                      coarse_map_file_in,
@@ -122,6 +124,8 @@ void RSpatialTreeSimulation::setMapParameters(const string &fine_map_file_in,
                                      deme_in,
                                      deme_sample_in,
                                      uses_spatial_sampling_in);
+    sim_parameters->setDemographicParameters(reproduction_map_file_in, 
+                                             death_map_file_in);
 }
 
 void RSpatialTreeSimulation::setup()

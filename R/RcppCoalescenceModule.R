@@ -575,8 +575,8 @@ SpatialTreeSimulation <- setRcppClass(
                                 deme = 1,
                                 deme_sample = 1.0,
                                 uses_spatial_sampling = FALSE,
-                                reproduction_map_file = "null",
-                                death_map_file = "null") {
+                                reproduction_map_file = "none",
+                                death_map_file = "none") {
       "Sets the map parameters for the simulation"
       if (sample_mask_file == "null") {
         sample_x_size <- fine_map_x_size
@@ -703,8 +703,8 @@ SpatialTreeSimulation <- setRcppClass(
                                        restrict_self = FALSE,
                                        landscape_type = "closed",
                                        dispersal_map_file = "none",
-                                       reproduction_map_file = "null",
-                                       death_map_file = "null",
+                                       reproduction_map_file = "none",
+                                       death_map_file = "none",
                                        fine_map_file = "null",
                                        coarse_map_file = "none",
                                        sample_mask_file = "null",
@@ -976,6 +976,7 @@ ProtractedSpatialTreeSimulation <- setRcppClass(
                                        landscape_type = "closed",
                                        dispersal_map_file = "none",
                                        reproduction_map_file = "none",
+                                       death_map_file = "none",
                                        fine_map_file = "null",
                                        coarse_map_file = "none",
                                        sample_mask_file = "null",
@@ -1027,8 +1028,7 @@ ProtractedSpatialTreeSimulation <- setRcppClass(
         dispersal_relative_cost,
         restrict_self,
         landscape_type,
-        dispersal_map_file,
-        reproduction_map_file
+        dispersal_map_file
       )
       setMapParameters(
         fine_map_file,
@@ -1051,7 +1051,9 @@ ProtractedSpatialTreeSimulation <- setRcppClass(
         coarse_map_scale,
         deme,
         deme_sample,
-        uses_spatial_sampling
+        uses_spatial_sampling,
+        reproduction_map_file,
+        death_map_file
       )
       setHistoricalMapParameters(
         historical_fine_map,

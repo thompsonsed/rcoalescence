@@ -52,13 +52,11 @@ namespace rcoalescence
          * @param restrict_self_in if true, prevents dispersal from the same cell
          * @param landscape_type_in the landscape type (infinite, tiled or closed)
          * @param dispersal_file_in a map of dispersal probabilities
-         * @param reproduction_file_in a map of reproduction probabilities
          */
         void setDispersalParameters(const double &sigma_in, const string &dispersal_method_in, const double &tau_in,
                                     const double &m_prob_in, const double &cutoff_in,
                                     const double &dispersal_relative_cost_in, bool restrict_self_in,
-                                    const string &landscape_type_in, const string &dispersal_file_in,
-                                    const string &reproduction_file_in);
+                                    const string &landscape_type_in, const string &dispersal_file_in);
 
         /**
          * @brief Sets the historical map parameters for the simulation.
@@ -103,6 +101,8 @@ namespace rcoalescence
          * @param deme_in the number of individuals per cell
          * @param deme_sample_in the proportion of individuals to sample from each cell
          * @param uses_spatial_sampling_in if the sample mask denotes differing spatial sampling proportions
+         * @param reproduction_map_file_in the path to the map file of relative reproduction rates
+         * @param death_map_file_in the path to the map file of relative death rates
          */
         void setMapParameters(const string &fine_map_file_in, const string &coarse_map_file_in,
                               const string &sample_mask_file_in, const unsigned long &grid_x_size_in,
@@ -114,7 +114,9 @@ namespace rcoalescence
                               const unsigned long &coarse_map_y_size_in, const unsigned long &coarse_map_x_offset_in,
                               const unsigned long &coarse_map_y_offset_in, const unsigned long &coarse_map_scale_in,
                               const unsigned long &deme_in, const double &deme_sample_in,
-                              bool uses_spatial_sampling_in);
+                              bool uses_spatial_sampling_in,
+                              const string &reproduction_map_file_in,
+                              const string &death_map_file_in);
 
         /**
          * @brief Calls SpatialTree::setup() to act as a wrapper accessible by R without extra classes.

@@ -319,13 +319,11 @@ namespace necsim
          * @param restrict_self_in if true, prevents dispersal from the same cell
          * @param landscape_type_in the landscape type (infinite, tiled or closed)
          * @param dispersal_file_in a map of dispersal probabilities
-         * @param reproduction_file_in a map of reproduction probabilities
          */
         void setDispersalParameters(const string &dispersal_method_in, const double &sigma_in, const double &tau_in,
                                     const double &m_prob_in, const double &cutoff_in,
                                     const double &dispersal_relative_cost_in, bool restrict_self_in,
-                                    const string &landscape_type_in, const string &dispersal_file_in,
-                                    const string &reproduction_file_in)
+                                    const string &landscape_type_in, const string &dispersal_file_in)
         {
             dispersal_method = dispersal_method_in;
             sigma = sigma_in;
@@ -336,7 +334,19 @@ namespace necsim
             restrict_self = restrict_self_in;
             landscape_type = landscape_type_in;
             dispersal_file = dispersal_file_in;
-            death_file = reproduction_file_in;
+
+        }
+
+        /**
+         * @brief Sets the parameters controlling demographic rates
+         *
+         * @param reproduction_file_in a map of relative reproduction rates
+         * @param death_file_in a map of relative death (i.e. turnover) rates
+         */
+        void setDemographicParameters(const string &reproduction_file_in, const string &death_file_in)
+        {
+            reproduction_file = reproduction_file_in;
+            death_file = death_file_in;
         }
 
         /**
