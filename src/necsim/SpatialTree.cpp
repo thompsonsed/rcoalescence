@@ -99,28 +99,21 @@ namespace necsim
 
     void SpatialTree::setParameters()
     {
-        if(!has_imported_vars)
+        Tree::setParameters();
+        // Set the variables equal to the value from the Mapvars object.
+        fine_map_input = sim_parameters->fine_map_file;
+        coarse_map_input = sim_parameters->coarse_map_file;
+        // historical map information
+        historical_fine_map_input = sim_parameters->historical_fine_map_file;
+        historical_coarse_map_input = sim_parameters->historical_coarse_map_file;
+        desired_specnum = sim_parameters->desired_specnum;
+        if(sim_parameters->landscape_type == "none")
         {
-            Tree::setParameters();
-            // Set the variables equal to the value from the Mapvars object.
-            fine_map_input = sim_parameters->fine_map_file;
-            coarse_map_input = sim_parameters->coarse_map_file;
-            // historical map information
-            historical_fine_map_input = sim_parameters->historical_fine_map_file;
-            historical_coarse_map_input = sim_parameters->historical_coarse_map_file;
-            desired_specnum = sim_parameters->desired_specnum;
-            if(sim_parameters->landscape_type == "none")
-            {
-                sim_parameters->landscape_type = "closed";
-            }
-            if(sim_parameters->dispersal_method == "none")
-            {
-                sim_parameters->dispersal_method = "normal";
-            }
+            sim_parameters->landscape_type = "closed";
         }
-        else
+        if(sim_parameters->dispersal_method == "none")
         {
-            throw FatalException("ERROR_MAIN_001: Variables already imported.");
+            sim_parameters->dispersal_method = "normal";
         }
     }
 

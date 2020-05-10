@@ -136,7 +136,7 @@ namespace necsim
         }
         else
         {
-            throw FatalException("ERROR_MAIN_001: Variables already imported.");
+            throw FatalException("Setup has already been started: variables already imported.");
         }
     }
 
