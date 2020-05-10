@@ -35,7 +35,8 @@ the protracted speciation parameters and map files defining spatial density.
   deme = 1,
   deme_sample = 1,
   min_speciation_gen = NA,
-  max_speciation_gen = NA
+  max_speciation_gen = NA,
+  partial_setup = FALSE
 )}}{Sets all protracted simulation parameters}
 }}
 
@@ -65,6 +66,7 @@ which are defined in setSimulationParameters()
 \item \emph{deme}: the number of individuals per cell
 \item \emph{deme_sample}: the global sampling proportion
 \item \emph{min_speciation_rate}: the minimum speciation rate for the simulation
+\item \emph{partial_setup}: if true, doesn't complete setup right away as additional steps must be performed. The user must call \code{setup()} manually.`
 }
 }
 
@@ -82,7 +84,7 @@ These include dispersal parameters and maps files
 \item \emph{landscape_type}: type of landscape from "closed", "infinite" and "tiled"
 \item \emph{dispersal_map_file}: a map of dispersal probabilities between pairs of cells in the landscape
 \item \emph{reproduction_map_file}: a map of relative reproduction rates
-\item *death_map_file: a map of relative death rates
+\item \emph{death_map_file}: a map of relative death rates
 \item \emph{fine_map_file}: fine resolution density map
 \item \emph{coarse_map_file}: coarse resolution density map
 \item \emph{sample_mask_file}: spatial sampling mask

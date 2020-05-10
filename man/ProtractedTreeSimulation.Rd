@@ -31,7 +31,8 @@ required, but the protracted speciation parameters should be specified.
   times_list = c(0),
   uses_logging = NA,
   deme = 1,
-  deme_sample = 1
+  deme_sample = 1,
+  partial_setup = FALSE
 )}}{Sets simulation parameters}
 }}
 
@@ -61,6 +62,7 @@ which are defined in setSimulationParameters()
 \item \emph{deme}: the number of individuals per cell
 \item \emph{deme_sample}: the global sampling proportion
 \item \emph{min_speciation_rate}: the minimum speciation rate for the simulation
+\item \emph{partial_setup}: if true, doesn't complete setup right away as additional steps must be performed. The user must call \code{setup()} manually.`
 }
 }
 
