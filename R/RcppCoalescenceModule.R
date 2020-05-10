@@ -201,7 +201,7 @@ TreeSimulation <- setRcppClass(
           max_size <- length(i)
         }
       }
-      if (anyNA(metacommunity_option) & !is.vector(metacommunity_option)) {
+      if (anyNA(metacommunity_option)) {
         metacommunity_option <- rep("simulated", max_size)
       }
       if (!anyNA(metacommunity_option) | !anyNA(metacommunity_size) |
