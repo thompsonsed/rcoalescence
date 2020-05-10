@@ -30,8 +30,7 @@ void RSpatialTreeSimulation::setDispersalParameters(const double &sigma_in,
                                                     const double &dispersal_relative_cost_in,
                                                     bool restrict_self_in,
                                                     const string &landscape_type_in,
-                                                    const string &dispersal_file_in,
-                                                    const string &reproduction_file_in)
+                                                    const string &dispersal_file_in)
 {
     sim_parameters->setDispersalParameters(dispersal_method_in,
                                            sigma_in,
@@ -41,8 +40,7 @@ void RSpatialTreeSimulation::setDispersalParameters(const double &sigma_in,
                                            dispersal_relative_cost_in,
                                            restrict_self_in,
                                            landscape_type_in,
-                                           dispersal_file_in,
-                                           reproduction_file_in);
+                                           dispersal_file_in);
 }
 
 void RSpatialTreeSimulation::setHistoricalMapParameters(const string &historical_fine_file_map_in,

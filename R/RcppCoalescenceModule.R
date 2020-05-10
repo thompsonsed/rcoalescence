@@ -46,8 +46,9 @@
 #' * *dispersal_relative_cost*: the relative cost of moving through non-forest
 #' * *restrict_self*: if true, prevents individuals from dispersing from their own cell
 #' * *landscape_type*: type of landscape from "closed", "infinite" and "tiled"
-#' * *dispersal_file*: a map of dispersal probabilities
-#' * *reproduction_file*: a map of reproduction probabilies
+#' * *dispersal_map_file*: a map of dispersal probabilities between pairs of cells in the landscape
+#' * *reproduction_map_file*: a map of relative reproduction rates
+#' * *death_map_file: a map of relative death rates
 #' * *fine_map_file*: fine resolution density map
 #' * *coarse_map_file*: coarse resolution density map
 #' * *sample_mask_file*: spatial sampling mask
@@ -434,12 +435,12 @@ TreeSimulation <- setRcppClass(
             "SELECT community_reference, species_id, x, y
               FROM SPECIES_LOCATIONS WHERE
               community_reference IN (",
-            paste0("'", community_reference_vector, "'", collapse=", "), 
+            paste0("'", community_reference_vector, "'", collapse = ", "),
             ")"
           )
         )
       dbDisconnect(conn)
-      if(length(community_reference_vector) == 1){
+      if (length(community_reference_vector) == 1) {
         return(species_locations %>% dplyr::select(-c("community_reference")))
       }
       return(species_locations)
@@ -461,12 +462,12 @@ TreeSimulation <- setRcppClass(
           paste0(
             "SELECT community_reference, species_id, no_individuals FROM SPECIES_ABUNDANCES WHERE
             community_reference IN (",
-            paste0("'", community_reference_vector, "'", collapse=", "), 
+            paste0("'", community_reference_vector, "'", collapse = ", "),
             ")"
           )
         )
       dbDisconnect(conn)
-      if(length(community_reference_vector) == 1){
+      if (length(community_reference_vector) == 1) {
         return(species_locations %>% dplyr::select("species_id", "no_individuals"))
       }
       return(species_locations)
@@ -497,13 +498,13 @@ TreeSimulation <- setRcppClass(
             "SELECT community_reference, COUNT(DISTINCT(species_id)) FROM SPECIES_ABUNDANCES WHERE
               no_individuals > 0 AND ",
             "community_reference IN (",
-            paste0("'", community_reference_vector, "'", collapse=", "), 
+            paste0("'", community_reference_vector, "'", collapse = ", "),
             ") GROUP BY community_reference"
           )
         )
       dbDisconnect(conn)
       names(species_locations) <- c("community_reference", "species_richness")
-      if(length(community_reference_vector) == 1){
+      if (length(community_reference_vector) == 1) {
         return(species_locations$species_richness[1])
       }
       return(species_locations)
@@ -529,17 +530,15 @@ SpatialTreeSimulation <- setRcppClass(
   fields = list(output_database = "character"),
   contains = c("TreeSimulation"),
   methods = list(
-    setDispersalParameters = function(sigma=1,
+    setDispersalParameters = function(sigma = 1,
                                       dispersal_method = "normal",
                                       tau = 1.0,
                                       m_prob = 0.0,
                                       cutoff = 0,
-                                      dispersal_relative_cost =
-                                        1.0,
+                                      dispersal_relative_cost = 1.0,
                                       restrict_self = FALSE,
                                       landscape_type = "closed",
-                                      dispersal_file = "none",
-                                      reproduction_file = "null") {
+                                      dispersal_map_file = "none") {
       "Sets the dispersal parameters for the simulation"
       ._setDispersalParameters(
         sigma,
@@ -550,8 +549,7 @@ SpatialTreeSimulation <- setRcppClass(
         dispersal_relative_cost,
         restrict_self,
         landscape_type,
-        dispersal_file,
-        reproduction_file
+        dispersal_map_file
       )
     },
 
@@ -576,7 +574,9 @@ SpatialTreeSimulation <- setRcppClass(
                                 coarse_map_scale = 1,
                                 deme = 1,
                                 deme_sample = 1.0,
-                                uses_spatial_sampling = FALSE) {
+                                uses_spatial_sampling = FALSE,
+                                reproduction_map_file = "null",
+                                death_map_file = "null") {
       "Sets the map parameters for the simulation"
       if (sample_mask_file == "null") {
         sample_x_size <- fine_map_x_size
@@ -613,7 +613,9 @@ SpatialTreeSimulation <- setRcppClass(
         coarse_map_scale,
         deme,
         deme_sample,
-        uses_spatial_sampling
+        uses_spatial_sampling,
+        reproduction_map_file,
+        death_map_file
       )
     },
 
@@ -686,7 +688,7 @@ SpatialTreeSimulation <- setRcppClass(
     setSimulationParameters = function(task,
                                        seed,
                                        min_speciation_rate,
-                                       sigma=1,
+                                       sigma = 1,
                                        output_directory = "output",
                                        max_time = 3600,
                                        desired_specnum = 1,
@@ -700,8 +702,9 @@ SpatialTreeSimulation <- setRcppClass(
                                          1.0,
                                        restrict_self = FALSE,
                                        landscape_type = "closed",
-                                       dispersal_file = "none",
-                                       reproduction_file = "none",
+                                       dispersal_map_file = "none",
+                                       reproduction_map_file = "null",
+                                       death_map_file = "null",
                                        fine_map_file = "null",
                                        coarse_map_file = "none",
                                        sample_mask_file = "null",
@@ -753,8 +756,7 @@ SpatialTreeSimulation <- setRcppClass(
         dispersal_relative_cost,
         restrict_self,
         landscape_type,
-        dispersal_file,
-        reproduction_file
+        dispersal_map_file
       )
       setMapParameters(
         fine_map_file,
@@ -777,7 +779,9 @@ SpatialTreeSimulation <- setRcppClass(
         coarse_map_scale,
         deme,
         deme_sample,
-        uses_spatial_sampling
+        uses_spatial_sampling,
+        reproduction_map_file,
+        death_map_file
       )
       setHistoricalMapParameters(
         historical_fine_map,
@@ -943,7 +947,7 @@ ProtractedTreeSimulation <- setRcppClass(
 #' @inheritSection NeutralTreeSimulation Protracted speciation parameters
 #' @inheritSection NeutralTreeSimulation Post-simulation parameters
 #' @example inst/extdata/examples_spatial_protracted.R
-ProtractedSpatialTreeSimulation <-setRcppClass(
+ProtractedSpatialTreeSimulation <- setRcppClass(
   "ProtractedSpatialTreeSimulation",
   "ProtractedSpatialTreeSimulation",
   module = "coalescenceModule",
@@ -957,7 +961,7 @@ ProtractedSpatialTreeSimulation <-setRcppClass(
     setSimulationParameters = function(task,
                                        seed,
                                        min_speciation_rate,
-                                       sigma=1,
+                                       sigma = 1,
                                        output_directory = "output",
                                        max_time = 3600,
                                        desired_specnum = 1,
@@ -970,8 +974,8 @@ ProtractedSpatialTreeSimulation <-setRcppClass(
                                        dispersal_relative_cost = 1.0,
                                        restrict_self = FALSE,
                                        landscape_type = "closed",
-                                       dispersal_file = "none",
-                                       reproduction_file = "none",
+                                       dispersal_map_file = "none",
+                                       reproduction_map_file = "none",
                                        fine_map_file = "null",
                                        coarse_map_file = "none",
                                        sample_mask_file = "null",
@@ -1023,8 +1027,8 @@ ProtractedSpatialTreeSimulation <-setRcppClass(
         dispersal_relative_cost,
         restrict_self,
         landscape_type,
-        dispersal_file,
-        reproduction_file
+        dispersal_map_file,
+        reproduction_map_file
       )
       setMapParameters(
         fine_map_file,

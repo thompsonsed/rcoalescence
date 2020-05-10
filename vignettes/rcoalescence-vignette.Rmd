@@ -47,3 +47,257 @@ The simulation can now be run using `runSimulation()`. If this function returns 
 ```{r}
 simulation$runSimulation()
 ```
+
+
+
+
+# Feature examples and explanations
+
+Here we provide explanations for some of the features of pycoalescence in detail, with example code for running the simulations. Note that throughout 
+the coded examples, setting of parameters often assumes a default value, unless otherwise specified (for example, \ttcomp{spatial} is assumed to be \ttcomp{True}, unless given as \ttcomp{False}). Maps are specified as either paths to the relevant file, a \ttcomp{"null"} map (with a value of one at every location), or \ttcomp{"none"}, meaning no map of that type is required.
+
+## Non-spatial/spatially implicit models
+
+In the simplest form of neutral theory \citep{Hubbell2001}, the replacement for an individual that has died is selected at random from all possible locations. Such models were particularly used at the beginnings of neutral theory due to the relatively straightforward implementation compared with spatially explicit models to test dynamics of species coexistence and community assembly \citep{Graves2005, Volkov2003, Clark2003, Alonso2006}. \ttcomp{R} packages such as \ttcomp{untb} \citep{Hankin2007} and \ttcomp{ecolottery} \citep{Munoz2018} provide non-spatial and spatially implicit options for individual-based simulations of neutral dynamics in addition to the implementation here. We provide equivalent functionality to existing packages here so that simulations of many variants of neutral theory can be run using the same pipeline, with only very minor changes to parameters. A non-spatial simulation of 100 individuals, with speciation rate, \(\nu=0.1\) is shown below. The simulation can be made spatially implicit by adding immigration from a metacommunity (see examples in the later section "Immigration from a metacommunity" for using this feature).
+
+
+```{r}
+sim <- TreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, deme=100, output_directory = "output")
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1))
+sim$output()
+```
+
+## Spatially explicit models
+
+For spatially explicit simulations, the file locations for any necessary maps are required as input parameters. For map files, specifying "null" indicates a map with the value of one everywhere; if the map defines density, then this means one individual in every cell; if the map defines reproduction or death rates, then this means all cells have identical rates; if the map defines sampling, then this means all individuals in every cell are sampled. If no map file of a specific kind is required (e.g. for scenarios which do not need a map of dispersal rates), then specifying "none" switches off that feature. The user can provide two resolutions of density map -- "fine" and "coarse" maps -- which correspond to different spatial scales: the fine map provides high resolution density for a smaller area and the coarse map provides lower resolution density for a much larger area. Individuals are sampled from within the "fine" map (or from a subset of the "fine" map, if a sample map is used), and the "coarse" landscape acts as a source of biodiversity. Splitting the density into two resolutions of map allows for very large landscapes to be simulated without equally large increases in RAM usage.
+
+## Dispersal
+As described in the main text, two forms of dispersal are possible in these packages: using a dispersal kernel to describe distributions of dispersal distances, or using a dispersal matrix to describe dispersal probabilities between every cell in the landscape.
+
+By default, the model runs with a normal dispersal kernel, so supplying \texttt{sigma} parameter is all that is required. The code required for this is:
+ 
+
+\begin{lstlisting}[ language=R, linewidth=\textwidth, style=mystyleR]
+sim <- SpatialTreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, output_directory = "output", fine_map_file = "null", fine_map_x_size = 10, fine_map_y_size = 10, sigma=2)
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1))
+sim$output()
+\end{lstlisting}
+
+A dispersal matrix, stored as a map, is the alternative method of simulating dispersal within the simulation. Fig. \ref{fig:islands_diagram} indicates the process of transforming a landscape of connected islands into a matrix of dispersal probabilities. Dispersal probabilities are given as relative dispersal rates and transformed internally to a cumulative probability distribution across each row. A uniform random number from 0 to 1 is generated to pick the destination cell, which corresponds to one cell selected from the cumulative probability distribution. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.35]{islands_diagram.pdf}
+	\caption{a) Schematic of a system of four islands (\textbf{A}, \textbf{B}, \textbf{C} and \textbf{D}) with defined dispersal rates between each pair \(u_i, v_i, w_i, x_i, y_i\)and \(z_i, i \in {1, 2}\).  The dispersal probabilities are not necessarily equal in opposite directions, i.e. \(w_1 \ne w_2\). The probability of selection from within the same island is given by \(a, b, c\) and \(d\). b) Transformation of the island structure into a matrix of dispersal probabilities.}
+	\label{fig:islands_diagram}
+	
+\end{figure}
+
+A dispersal map is used as shown below.
+
+\begin{lstlisting}[ language=python, linewidth=\textwidth, style=mystyle]
+sim = Simulation()
+sim.set_simulation_parameters(seed=1, task=1, output_directory="output", min_speciation_rate=0.1)
+sim.set_map_files(sample_file="null", fine_file="fine_density.tif", dispersal_file="dispersal_map.tif")
+sim.run()
+\end{lstlisting}
+
+For R this is,
+
+\begin{lstlisting}[ language=R, linewidth=\textwidth, style=mystyleR]
+sim <- SpatialTreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, output_directory = "output", fine_map_file = "fine_density.tif", dispersal_file = "dispersal_map.tif")
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1))
+sim$output()
+\end{lstlisting}
+
+\subsection*{Spatially varying density}
+Frequently, the pattern of habitat is not contiguous and does not necessarily contain the same density of individuals everywhere. Incorporating density maps into the model allows for simulations on landscapes that vary in the number of individuals per cell. In a neutral model, individuals of all species are assumed to compete for the same space, so the density of a cell is given as the total number of individuals of all species existing in that location. 
+
+Our implementation of density can use two resolutions of density map: the fine density map represents high-resolution spatial density of individuals in the immediate area of interest; the coarse density represents lower-resolution density across a much larger area. Under this system, very large spatial scales can be simulated without unreasonable RAM usage.  For example, a 1000x1000 fine map with a resolution of 10m by 10m could be used with a 1000x1000 coarse map with a resolution of 100m by 100m. The fine map would cover an area of \(100km^2\) while the coarse map would cover \(10^4km^2\). The rationale behind this is that, assuming the area covered by the fine map encompasses the sample region of interest and a large surrounding area, the finer details of spatial structure at distant locations is not important and so can be contained in a lower resolution coarse map. The spatial location of individuals is always recorded at the full resolution for the coalescence process, with the distinction between the fine and coarse files applying just to the density within each cell.
+
+\begin{figure}
+	\includegraphics[]{grid_example.pdf}
+	\caption[Example of dual-resolution landscape structuring.]{Example of dual-resolution landscape structuring. Individuals are sampled from within the sample region (indicated by the blue square). The fine density map provides a high resolution of the spatial distribution of individual densities across a smaller area (indicated by the red square). The coarse density map provides a lower resolution of the spatial distribution of individual densities across a larger area (indicated by the purple square).}
+	\label{fig:grid_example}
+\end{figure}
+
+A \ttcomp{deme} parameter can also be set to globally scale the number of individuals per cell. The user can then parameterize for mean density using \ttcomp{deme} without re-generating the fine and coarse map files. The final number of individuals at each \(x,y\) location, \(n_{x,y}\), is given as \(n_{x, y} = m_{x, y} \cdot d\) where \(m_{x,y}\) is the density map value and \(d\) is the global \ttcomp{deme} parameter. As an example, we use a fine and coarse map, \ttcomp{deme}=10, \(\nu = 0.1\) and \(\sigma = 2\).
+
+
+\begin{lstlisting}[ language=python, linewidth=\textwidth, style=mystyle]
+sim = Simulation()
+sim.set_simulation_parameters(seed=1, task=1, output_directory="output", min_speciation_rate=0.1, deme=10, sigma=2)
+sim.set_map_files(sample_file="null", fine_file="fine_density.tif", coarse_file="coarse_density.tif")
+sim.run()
+\end{lstlisting}
+
+Equivalently, in R,
+
+\begin{lstlisting}[ language=R, linewidth=\textwidth, style=mystyleR]
+sim <- SpatialTreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, deme=10, output_directory = "output", fine_map_file = "fine_density.tif", coarse_file = "coarse_density.tif", sigma=2)
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1))
+sim$output()
+\end{lstlisting}
+
+\subsection*{Temporally varying density}
+Historical density maps are used to represent changing habitat structure over time. As well as specifying the map files, the user specifies the time, in generations prior to the simulation start, and (optionally) rate of the change. The rate variable allows for a graduated change between map files, rather than a stepwise increase in density. A rate of 0.0 (the default) means the change between the current and historical maps occurs stepwise at the specified generation. A rate of 1.0 represents a consistent, linearly increasing contribution of the historical map, with the historical map being assumed completely by the specified generation. A rate of 0.5 represents half the difference occurs gradually over time and the remaining half occurs stepwise.
+
+As an example, we expand on the previous example to use three sets of maps, one at the present day, one at 10 generations before the present and one at 100 generations.
+\begin{lstlisting}[ language=python, linewidth=\textwidth, style=mystyle]
+sim = Simulation()
+sim.set_simulation_parameters(seed=1, task=1, output_directory="output", min_speciation_rate=0.1, deme=10, sigma=2)
+sim.set_map_files(sample_file="null", fine_file="fine_density.tif", coarse_file="coarse_density.tif")
+sim.add_historical_map(fine_file="historical_fine1.tif", coarse_file="historical_coarse1.tif", time=10, rate=1.0)
+sim.add_historical_map(fine_file="historical_fine2.tif", coarse_file="historical_coarse2.tif", time=100, rate=0.5)
+sim.run()
+\end{lstlisting}
+
+And in R,
+
+\begin{lstlisting}[ language=R, linewidth=\textwidth, style=mystyleR]
+sim <- SpatialTreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, deme=10, output_directory = "output", fine_map_file = "fine_density.tif", coarse_file = "coarse_density.tif", sigma=2)
+sim$addHistoricalMap(historical_fine_map ="historical_fine1.tif", historical_coarse_map = "historical_coarse1.tif", gen_since_historical=10)
+sim$addHistoricalMap(historical_fine_map ="historical_fine2.tif", historical_coarse_map = "historical_coarse2.tif", gen_since_historical=100)
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1))
+sim$output()
+\end{lstlisting}
+
+\subsection*{Infinite landscapes}
+
+In many scenarios it may be desirable to use an infinite landscape. Here, three variations of such a landscape are provided. The default infinite landscape assumes everywhere outside the supplied maps has a density equal to the deme size of the simulation. The alternatives are for where the fine or coarse maps are tiled infinitely in all directions, repeating the spatial structuring of habitat. All three options, described as "infinite", "tiled\_fine" or "tiled\_coarse" trace lineages' positions in the same way. An example of the first option is given below.
+
+\begin{lstlisting}[ language=python, linewidth=\textwidth, style=mystyle]
+sim = Simulation()
+sim.set_simulation_parameters(seed=1, task=1, output_directory="output", min_speciation_rate=0.1, deme=10, sigma=2, landscape_type="infinite")
+sim.set_map("null", x_size=100, y_size=100)
+sim.run()
+\end{lstlisting}
+
+And in R as
+
+\begin{lstlisting}[ language=R, linewidth=\textwidth, style=mystyleR]
+sim <- SpatialTreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, deme=10, output_directory = "output", fine_map_file = "null", fine_map_x_size = 100, fine_map_y_size = 100, sigma = 2, landscape_type = "infinite")
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1))
+sim$output()
+\end{lstlisting}
+
+Each individuals' \(x,y\) location is stored in reference to a "grid", the dimensions of which are set either from the fine resolution density map, or manually by the user. When an individual is contained within the grid, it is stored in a list of all other individuals at that location, meaning fast calculations for coalescence events when it is necessary to choose an individual randomly from those in the cell. When the location falls outside of the grid, its position is stored as if the landscape wraps from the top to bottom and left to right, so that \(x, y\) always falls on the grid. In addition, the parameters describing how many times the wrapping occurs in each dimension, \(x_{wrap}, y_{wrap}\), are used to store the exact position in space. A coalescence event at location \(x, y, x_{wrap}, y_{wrap}\) is calculated by first determining all individuals that have the same \(x, y\), then by counting those that also match \(x_{wrap}\) and \(y_{wrap}\). Note that the exact position of every individual is still held in space, but this method of wrapping is much more computationally efficient in terms of RAM; the only requirements are for storing the grid, plus some small overhead for wrapped lineages. As such, infinite landscapes can be modeled with a finite amount of memory. 
+
+\subsection*{Spatially varying sampling effort}
+Often the areas of interest represent a selection of locations across a landscape. Simulating every individual when the landscape is very large will often lead to extremely long compute times and in many cases is simply not possible with current hardware. Fortunately, coalescence methods allow for only those individuals contained within the areas of interest to be simulated. Here this is achieved through a sample map where the values represent the relative sampling effort for each cell. The sample map should be entirely contained within the fine map.
+
+Similarly to the \ttcomp{deme} variable for density, the global sample rate can be modified through the \ttcomp{sample\_size} parameter. The total number of individuals sampled at each \(x, y\) location, \(\bar{n}_{x, y}\), is given as \(\bar{n}_{x, y} = m_{x, y}\cdot d \cdot s_{x,y} \cdot \hat{s} \) where \(m_{x,y}\) is the density of individuals, \(d\) is the global \ttcomp{deme} parameter, \(s_{x,y}\) is the sample map value and \(\hat{s}\) is the global sample rate, \ttcomp{sample\_size}. An example is given below, sampling half of the 10 individuals within each cell.
+
+\begin{lstlisting}[ language=python, linewidth=\textwidth, style=mystyle]
+sim = Simulation()
+sim.set_simulation_parameters(seed=1, task=1, output_directory="output", min_speciation_rate=0.1, deme=10, sigma=2, landscape_type="closed", sample_size=0.5)
+sim.set_map_files("sample.tif", "fine_map.tif")
+sim.run()
+\end{lstlisting}
+
+\begin{lstlisting}[ language=R, linewidth=\textwidth, style=mystyleR]
+sim <- SpatialTreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, deme=10, output_directory = "output", sample_mask_file = "sample.tif", fine_map_file = "fine_density.tif", coarse_file = "coarse_density.tif", sigma=2)
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1))
+sim$output()
+\end{lstlisting}
+
+\subsection*{Spatially varying reproduction and death rates}
+
+The reproduction and death rates in a standard simulation are assumed to be equal per capita for each individual in the landscape. If this is not the case, map files can be provided to indicate spatially varying demographic rates. Both reproduction and death are still neutral to species' identity, as all individuals (and therefore species) within each cell will be affected equally. 
+
+The reproduction rate can be conceptualized as the number of propagules generated by adults within a particular cell. The coalescence-based implementation of this process here uses rejection sampling of cells based on the relative reproductive potential compared to the maximum reproductive rate across the landscape. For example, if the maximum reproductive rate is 10, a cell with a value of 1 will be rejected 90\% of the time as a potential parent. This is equivalent to a forwards-time interpretation whereby the parent in the more reproductive cell propagates ten times the number of offspring. In the special case that a dispersal map is provided instead of relying on a dispersal kernel, the reproductive rates can be incorporated into the dispersal map itself for efficiency. Doing so removes the requirement to rejection-sample (which is computationally expensive) and instead the probability distribution for every possible dispersal event is pre-calculated providing a direct method of choosing the parent.
+
+The death rate of a cell in a zero-sum neutral model is equivalent to both the maturation and turnover rate. Similar to reproduction rates, death rates are implemented through rejection sampling the individual chosen to be "un-born" (the backwards-time equivalent to a death event) based on the maximal death rate across a landscape. 
+
+Both reproduction rates and death rates can be added in combination with a fine map file in the manner shown below. The dimensions of the death and reproduction map should match the dimensions of the fine map.
+
+\begin{lstlisting}[ language=python, linewidth=\textwidth, style=mystyle]
+sim = Simulation()
+sim.set_simulation_parameters(seed=1, task=1, output_directory="output", min_speciation_rate=0.1, deme=10, sigma=2)
+sim.set_map_files("sample_file.tif", "fine_file.tif")
+sim.add_reproduction_map("reproduction_file.tif")
+sim.add_death_map("death_file.tif")
+sim.run()
+\end{lstlisting}
+
+And for R as,
+
+\begin{lstlisting}[ language=R, linewidth=\textwidth, style=mystyleR]
+sim <- SpatialTreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, deme=10, output_directory = "output", sample_mask_file = "sample.tif", fine_map_file = "fine_density.tif", sigma=2, reproduction_file = "reproduction_file.tif", death_file = "death_file.tif")
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1))
+sim$output()
+\end{lstlisting}
+
+\subsection*{Protracted speciation}
+Point speciation, the method used by default here, does not perfectly represent speciation in nature. A more realistic portrayal is protracted speciation whereby speciation events do not occur instantaneously, instead requiring some number of generations to pass before incipients are regarded as distinct species. Protracted speciation provides a possible solution to many of the issues with neutral theory for producing more realistic biological patterns \citep{Rosindell2010, Gascuel2016} and its inclusion here is thus a necessary feature. 
+
+In the coalescence model, protracted speciation is equivalent to restricting speciation from occurring before a lineage is at least of some minimum age \(g_{min}\). At the other end of the scale, lineages which are millions of generations apart would presumably be separate species, providing an upper limit for the lifetime of a lineage \(g_{max}\). As such, we provide a method for supplying a maximum number of generations a species can exist within the protracted speciation parameters. Any lineages which are older than \(g_{max}\), which should typically be some very large number, immediately speciate. This feature is a novel idea providing a more general implementation of the speciation process and also can provide performance improvements by reducing the total number of generations that must be simulated. As \(g_{min} \to 0\) and \(g_{max} \to \infty\), the dynamics would be equivalent to the classic point mutation speciation mode used in the earlier neutral models. Conversely, if \(g_{min} > 0\) and \(g_{max} \to \infty\), the implementation becomes equivalent to the protracted speciation mode used in \citet{Rosindell2010} and \citet{Rosindell2011a}. Finally, if \(g_{min} = g_{max}\), then all speciation occurs at a single lineage age.
+
+Below is the process of running a simulation with protracted speciation, and then applying alternative protracted speciation parameters post-simulation. Note that any minimum and maximum protracted speciation parameters applied post-simulation must be less than the initial minimum and maximum protracted speciation parameters, respectively, used during simulation. Our example uses an initial minimum lineage existence of 10 generations with a maximum of 1000. Post-simulation, we then apply a minimum of 5 generations with a maximum of 800.
+
+\begin{lstlisting}[ language=python, linewidth=\textwidth, style=mystyle]
+sim = Simulation()
+sim.set_simulation_parameters(seed=1, task=1, output_directory="output", min_speciation_rate=0.1, deme=10, sigma=2, min_speciation_gen=10.0, max_speciation_gen=1000.0)
+sim.set_map_files("sample_file.tif", "fine_file.tif")
+sim.run()
+c = CoalescenceTree(sim)
+c.set_speciation_parameters(speciation_rates=[0.1, 0.2])
+c.add_protracted_parameters(min_speciation_gen=5.0, max_speciation_gen=800.0)
+c.apply()
+\end{lstlisting}
+
+And in R as,
+
+\begin{lstlisting}[ language=R, linewidth=\textwidth, style=mystyleR]
+sim <- ProtractedSpatialTreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, deme=10, output_directory = "output", sample_mask_file = "sample.tif", fine_map_file = "fine_density.tif", sigma=2, min_speciation_gen = 10.0, max_speciation_gen = 1000.0)
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1, 0.2), min_speciation_gens = c(5.0), max_speciation_gens = c(800.0))
+sim$output()
+\end{lstlisting}
+
+\subsection*{Immigration from a metacommunity}
+Both point mutation and protracted speciation represent the process of generating of a new species. In some situations, such as a mainland/island scenario, it may be desirable to instead use immigration from a larger metacommunity. In such cases, the probability that two immigration events generate different species is less than one. We implement this by replacing all speciation events with immigration from a metacommunity after a simulation has been completed. Every speciation event in the coalescence tree is detected and the species is identified by randomly drawing an individual from the metacommunity, effectively an immigration event. 
+
+% Currently immigration prevents local speciation from occurring
+
+Generation of the metacommunity itself can be performed in one of three ways. Firstly, a non-spatial simulation of a defined size and speciation rate creates the metacommunity. Alternatively, an equivalent analytical solution for sampling metacommunities has been provided using analytical methods from \cite{Vallade2003} and \cite{Alonso2004}. The default behavior is for a simulation to be run if there are fewer than 100000 individuals in the metacommunity, otherwise the analytical approximation is used. The final option is to provide a database from a completed simulation (or a user-generated database) which then acts as the metacommunity.
+
+Below we highlight how a metacommunity can be applied to a simulation that has previously been completed in the \ttcomp{sim} object.
+
+\begin{lstlisting}[ language=python, linewidth=\textwidth, style=mystyle]
+sim = Simulation()
+sim.set_simulation_parameters(seed=1, task=1, output_directory="output", min_speciation_rate=0.1, deme=10, sigma=2)
+sim.set_map_files("sample_file.tif", "fine_file.tif")
+sim.run()
+c = CoalescenceTree(sim)
+c.set_speciation_parameters(speciation_rates=[0.1, 0.2])
+c.add_metacommunity_parameters(metacommunity_size=10000, metacommunity_speciation_rate=0.2)
+c.apply()
+\end{lstlisting}
+
+And the same for R, 
+
+\begin{lstlisting}[ language=R, linewidth=\textwidth, style=mystyleR]
+sim <- SpatialTreeSimulation()
+sim$setSimulationParameters(task = 1, seed=1, min_speciation_rate = 0.1, deme=10, output_directory = "output", sample_mask_file = "sample.tif", fine_map_file = "fine_density.tif", sigma=2, min_speciation_gen = 10.0, max_speciation_gen = 1000.0)
+sim$runSimulation()
+sim$applySpeciationRates(speciation_rates = c(0.1, 0.2), metacommunity_size = 10000, metacommunity_speciation_rate = 0.2)
+sim$output()
+\end{lstlisting}
