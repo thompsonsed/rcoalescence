@@ -285,7 +285,8 @@ test_that("More complex spatial example using protracted speciation",
               uses_logging = FALSE,
               min_speciation_gen = 10,
               max_speciation_gen = 1000000,
-              times_list = c(0.0, 1.0, 10.0, 20.0)
+              times_list = c(0.0, 1.0, 10.0, 20.0),
+              partial_setup=TRUE
             )
             tmp$addHistoricalMap(
               historical_fine_map = "sample/example_historical_fine.tif",
@@ -534,47 +535,38 @@ test_that("More complex spatial example using protracted speciation",
                   "max_speciation_gen"), class = "data.frame", row.names = c(NA, -32L))
             expect_equal(TRUE,
                          all.equal(community_references, tmp$getCommunityReferences()))
-            # for(i in 1:32){
-            #   expect_equal(76, tmp$getSpeciesRichness(i))
-            # }
-            # expect_equal(76, tmp$getSpeciesRichness(1))
-            # expect_equal(76, tmp$getSpeciesRichness(2))
-            # expect_equal(76, tmp$getSpeciesRichness(3))
-            # expect_equal(76, tmp$getSpeciesRichness(4))
-            # expect_equal(76, tmp$getSpeciesRichness(5))
-            # expect_equal(76, tmp$getSpeciesRichness(6))
-            # expect_equal(76, tmp$getSpeciesRichness(7))
-            # expect_equal(76, tmp$getSpeciesRichness(8))
-            for(i in 1:8){
-              expect_equal(76, tmp$getSpeciesRichness(i))
-            }
+            expect_equal(76, tmp$getSpeciesRichness(1))
+            expect_equal(76, tmp$getSpeciesRichness(2))
+            expect_equal(6, tmp$getSpeciesRichness(3))
+            expect_equal(6, tmp$getSpeciesRichness(4))
+            expect_equal(76, tmp$getSpeciesRichness(5))
+            expect_equal(76, tmp$getSpeciesRichness(6))
+            expect_equal(6, tmp$getSpeciesRichness(7))
+            expect_equal(6, tmp$getSpeciesRichness(8))
             expect_equal(75, tmp$getSpeciesRichness(9))
-            for(i in 10:12){
-              expect_equal(76, tmp$getSpeciesRichness(i))
-            }
-            # for(i in 13:14){
+            expect_equal(76, tmp$getSpeciesRichness(10))
+            expect_equal(6, tmp$getSpeciesRichness(11))
+            expect_equal(6, tmp$getSpeciesRichness(12))
             expect_equal(75, tmp$getSpeciesRichness(13))
             expect_equal(76, tmp$getSpeciesRichness(14))
-            # }
-            for(i in 15:16){
-              expect_equal(76, tmp$getSpeciesRichness(i))
-            }
-            expect_equal(70, tmp$getSpeciesRichness(17))
-            expect_equal(75, tmp$getSpeciesRichness(18))
-            expect_equal(74, tmp$getSpeciesRichness(19))
-            expect_equal(75, tmp$getSpeciesRichness(20))
-            expect_equal(72, tmp$getSpeciesRichness(21))
+            expect_equal(6, tmp$getSpeciesRichness(15))
+            expect_equal(6, tmp$getSpeciesRichness(16))
+            expect_equal(72, tmp$getSpeciesRichness(17))
+            expect_equal(74, tmp$getSpeciesRichness(18))
+            expect_equal(6, tmp$getSpeciesRichness(19))
+            expect_equal(6, tmp$getSpeciesRichness(20))
+            expect_equal(74, tmp$getSpeciesRichness(21))
             expect_equal(75, tmp$getSpeciesRichness(22))
-            expect_equal(75, tmp$getSpeciesRichness(23))
-            expect_equal(75, tmp$getSpeciesRichness(24))
-            expect_equal(70, tmp$getSpeciesRichness(25))
-            expect_equal(75, tmp$getSpeciesRichness(26))
-            expect_equal(74, tmp$getSpeciesRichness(27))
-            expect_equal(75, tmp$getSpeciesRichness(28))
-            expect_equal(72, tmp$getSpeciesRichness(29))
+            expect_equal(6, tmp$getSpeciesRichness(23))
+            expect_equal(6, tmp$getSpeciesRichness(24))
+            expect_equal(72, tmp$getSpeciesRichness(25))
+            expect_equal(74, tmp$getSpeciesRichness(26))
+            expect_equal(6, tmp$getSpeciesRichness(27))
+            expect_equal(6, tmp$getSpeciesRichness(28))
+            expect_equal(74, tmp$getSpeciesRichness(29))
             expect_equal(75, tmp$getSpeciesRichness(30))
-            expect_equal(75, tmp$getSpeciesRichness(31))
-            expect_equal(75, tmp$getSpeciesRichness(32))
+            expect_equal(6, tmp$getSpeciesRichness(31))
+            expect_equal(6, tmp$getSpeciesRichness(32))
             
           })
 

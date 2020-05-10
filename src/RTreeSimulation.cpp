@@ -28,6 +28,11 @@ RTreeSimulation::~RTreeSimulation()
     metacommunity.closeSQLConnection();
 }
 
+bool RTreeSimulation::checkHasSetup()
+{
+    return has_imported_vars;
+}
+
 void RTreeSimulation::setKeyParameters(const long long &job_type,
                                        const long long &seed_in,
                                        const string &output_directory_in,
@@ -293,6 +298,10 @@ void RTreeSimulation::setup()
 
 bool RTreeSimulation::runSimulation()
 {
+    if(!checkHasSetup())
+    {
+        setup();
+    }
     return Tree::runSimulation();
 }
 

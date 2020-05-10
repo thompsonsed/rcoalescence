@@ -61,7 +61,13 @@ namespace rcoalescence
         RTreeSimulation();
 
         ~RTreeSimulation() override;
-
+        
+        /**
+         * @brief Checks if the simulation parameters have already been set (i.e. the simulation has already been setup).
+         * @return true if the simulation has been setup
+         */
+        bool checkHasSetup();
+        
         /**
          * @brief Sets the main simulation parameters in the sim_parameters object.
          * @param job_type the job reference number, used for file referencing

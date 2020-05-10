@@ -35,6 +35,7 @@
 #' * *deme*: the number of individuals per cell
 #' * *deme_sample*: the global sampling proportion
 #' * *min_speciation_rate*: the minimum speciation rate for the simulation
+#' * *partial_setup*: if true, doesn't complete setup right away as additional steps must be performed. The user must call `setup()` manually.`
 #'
 #' @section Spatial parameters:
 #' These include dispersal parameters and maps files
@@ -48,7 +49,7 @@
 #' * *landscape_type*: type of landscape from "closed", "infinite" and "tiled"
 #' * *dispersal_map_file*: a map of dispersal probabilities between pairs of cells in the landscape
 #' * *reproduction_map_file*: a map of relative reproduction rates
-#' * *death_map_file: a map of relative death rates
+#' * *death_map_file*: a map of relative death rates
 #' * *fine_map_file*: fine resolution density map
 #' * *coarse_map_file*: coarse resolution density map
 #' * *sample_mask_file*: spatial sampling mask
@@ -194,6 +195,15 @@ TreeSimulation <- setRcppClass(
                                             NA,
                                           metacommunity_external_reference =
                                             NA) {
+      max_size <- 0
+      for (i in c(metacommunity_option, metacommunity_size, metacommunity_speciation_rate, metacommunity_external_reference)) {
+        if (!anyNA(i) & is.vector(i) & length(i) > max_size) {
+          max_size <- length(i)
+        }
+      }
+      if (anyNA(metacommunity_option) & !is.vector(metacommunity_option)) {
+        metacommunity_option <- rep("simulated", max_size)
+      }
       if (!anyNA(metacommunity_option) | !anyNA(metacommunity_size) |
         !anyNA(metacommunity_speciation_rate) |
         !anyNA(metacommunity_external_reference)) {
@@ -279,7 +289,8 @@ TreeSimulation <- setRcppClass(
                                        uses_logging = NA,
                                        deme = 1,
                                        deme_sample =
-                                         1.0) {
+                                         1.0,
+                                       partial_setup = FALSE) {
       "Sets simulation parameters"
       setInitialSimulationParameters(
         task,
@@ -293,7 +304,9 @@ TreeSimulation <- setRcppClass(
         deme,
         deme_sample
       )
-      setup()
+      if (!partial_setup) {
+        setup()
+      }
     },
 
 
@@ -642,12 +655,22 @@ SpatialTreeSimulation <- setRcppClass(
                                 gen_since_historical = 1,
                                 habitat_change_rate = 0.0) {
       "Adds a historical map to the list of historical maps to use."
+      for (f in c(historical_fine_map, historical_coarse_map)) {
+        if (f != "null" & f != "none" & !file.exists(f)) {
+          stop(paste("File does not exist at", f))
+        }
+      }
       ._addHistoricalMap(
         historical_fine_map,
         historical_coarse_map,
         gen_since_historical,
         habitat_change_rate
       )
+      if (checkHasSetup()) {
+        stop("C++ object has already been setup. Use setSimulationParameters with partial_setup=TRUE or use
+             separate calls (e.g. setInitialSimulationParameters, setDispersalParameters, setMapParameters, addHistoricalMap) 
+             before calling setup() manually.")
+      }
     },
 
     applySpeciationRates = function(speciation_rates = NA,
@@ -735,7 +758,8 @@ SpatialTreeSimulation <- setRcppClass(
                                        gen_since_historical =
                                          100000000,
                                        habitat_change_rate =
-                                         0.0) {
+                                         0.0,
+                                       partial_setup = FALSE) {
       "Sets all simulation parameters"
       setInitialSimulationParameters(
         task,
@@ -789,7 +813,9 @@ SpatialTreeSimulation <- setRcppClass(
         gen_since_historical,
         habitat_change_rate
       )
-      setup()
+      if (!partial_setup) {
+        setup()
+      }
     }
   )
 )
@@ -827,7 +853,8 @@ ProtractedTreeSimulation <- setRcppClass(
                                        min_speciation_gen =
                                          NA,
                                        max_speciation_gen =
-                                         NA) {
+                                         NA,
+                                       partial_setup = FALSE) {
       "Sets all protracted simulation parameters"
       setInitialSimulationParameters(
         task,
@@ -848,7 +875,9 @@ ProtractedTreeSimulation <- setRcppClass(
           max_speciation_gen
         )
       }
-      setup()
+      if (!partial_setup) {
+        setup()
+      }
     },
 
     applySpeciationRates = function(speciation_rates,
@@ -912,7 +941,8 @@ ProtractedTreeSimulation <- setRcppClass(
                                        max_speciation_gen = 0.0,
                                        deme = 1,
                                        deme_sample =
-                                         1.0) {
+                                         1.0,
+                                       partial_setup = FALSE) {
       "Sets all simulation parameters"
       setInitialSimulationParameters(
         task,
@@ -930,7 +960,9 @@ ProtractedTreeSimulation <- setRcppClass(
         TRUE, min_speciation_gen,
         max_speciation_gen
       )
-      setup()
+      if (!partial_setup) {
+        setup()
+      }
     }
   )
 )
@@ -1003,7 +1035,8 @@ ProtractedSpatialTreeSimulation <- setRcppClass(
                                        gen_since_historical = 100000000,
                                        habitat_change_rate = 0.0,
                                        min_speciation_gen = 0.0,
-                                       max_speciation_gen = 0.0) {
+                                       max_speciation_gen = 0.0,
+                                       partial_setup = FALSE) {
       "Sets all simulation parameters"
       setInitialSimulationParameters(
         task,
@@ -1061,7 +1094,9 @@ ProtractedSpatialTreeSimulation <- setRcppClass(
         gen_since_historical,
         habitat_change_rate
       )
-      setup()
+      if (!partial_setup) {
+        setup()
+      }
     },
 
     applySpeciationRates = function(speciation_rates,

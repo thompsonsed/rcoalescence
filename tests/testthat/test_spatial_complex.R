@@ -103,7 +103,8 @@ test_that("Simulation with a single historical maps works as intended.", {
     coarse_map_file = "sample/example_coarse.tif",
     sample_mask_file = "sample/example_mask.tif",
     uses_logging = FALSE,
-    landscape_type = "closed"
+    landscape_type = "closed",
+    partial_setup = TRUE
   )
   tmp$addHistoricalMap(
     historical_fine_map = "sample/example_historical_fine.tif",
@@ -119,7 +120,7 @@ test_that("Simulation with a single historical maps works as intended.", {
   # habitat_change_rate=1.0)
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = c(0.1))
-  expect_equal(1118, tmp$getSpeciesRichness())
+  expect_equal(1111, tmp$getSpeciesRichness())
 })
 #
 test_that("Simulation with multiple historical maps works as intended.", {
@@ -135,7 +136,8 @@ test_that("Simulation with multiple historical maps works as intended.", {
     fine_map_file = "sample/example_fine.tif",
     coarse_map_file = "sample/example_coarse.tif",
     sample_mask_file = "sample/example_mask.tif",
-    uses_logging = FALSE
+    uses_logging = FALSE,
+    partial_setup=TRUE
   )
   tmp$addHistoricalMap(
     historical_fine_map = "sample/example_historical_fine.tif",
@@ -157,7 +159,7 @@ test_that("Simulation with multiple historical maps works as intended.", {
   )
   expect_equal(TRUE, tmp$runSimulation())
   tmp$applySpeciationRates(speciation_rates = c(0.5))
-  expect_equal(1157, tmp$getSpeciesRichness())
+  expect_equal(1161, tmp$getSpeciesRichness())
 })
 #
 test_that("Simulation with multiple sampling times.", {

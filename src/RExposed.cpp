@@ -39,6 +39,7 @@ RCPP_MODULE(coalescenceModule)
     using namespace Rcpp;
     class_<RTreeSimulation>("TreeSimulation", "Simulates non-spatial neutral models.")
             .constructor("initialises the tree")
+            .method("checkHasSetup", &RTreeSimulation::checkHasSetup, "Checks that the simulation has been setup")
             .method("._setKeyParameters", &RTreeSimulation::setKeyParameters,
                     "Sets the main simulation parameters for house-keeping purposes.")
             .method("._setMinSpeciationRate", &RTreeSimulation::setMinSpeciationRate,
