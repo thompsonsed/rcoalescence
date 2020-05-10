@@ -29,7 +29,10 @@ Suggests:
     magrittr,
     reshape2,
     tidyr,
-    tiff
+    tiff,
+    ggpubr,
+    gridExtra,
+    scales
 Collate:
     'RcppCoalescenceModule.R'
     'RcppExports.R'
