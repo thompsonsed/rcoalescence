@@ -35,9 +35,9 @@ if (!dir.exists(figure_directory)) {
 
 # Background
 
-The goal of this vignette is to demonstrate the workflow for simulating a habitat loss scenario using rcoalescence and estimating biodiversity losses in different areas of the landscape. It is an extended version of the vignette found within the `rcoalescence` package itself.
+The goal of this vignette is to demonstrate the workflow for simulating a habitat loss scenario using rcoalescence and estimating biodiversity losses in different areas of the landscape.
 
-We are interested in simulating the effect of habitat loss for a taxon. In our scenario, there is currently an area of land consisting of a protected national park and mixed forest and farmland in the surrounding area. We estimate that the protected national park supports approximately 10 individuals of our taxon per square kilometer of complete forest and 0- 5 individuals per square kilometer in the surrounding area, depending on the forest coverage.
+We are interested in simulating the effect of habitat loss for a taxon. In our scenario, there is currently an area of land consisting of a protected national park and mixed forest and farmland in the surrounding area. We estimate that the protected national park supports approximately 5 individuals of our taxon per square kilometer of complete forest and 0-3 individuals per square kilometer in the surrounding area, depending on the forest coverage.
 
 We wish to model the scenario where a significant portion of the land is completed deforested, resulting in 0 individuals per square kilometer in the given area. 
 
@@ -106,9 +106,9 @@ These variables define some important simulation parameters. It is often useful 
 
 
 ```{r}
-# Sample every 5 generations over 110 generations
-times_list <- seq(0, 110, 5)
-min_speciation_rate <- 0.0001
+# Sample every 20 generations over 100 generations
+times_list <- seq(0, 110, 20)
+min_speciation_rate <- 0.01
 sigma <- 1
 # 100 generations between the map types
 # Set to 99.9 so that the map changes by the just before the 100th generation
@@ -117,15 +117,15 @@ time_difference_between_maps <- 99.9
 
 ## Create the simulation objects
 
-We start by creating the new spatial simulation and defining the house-keeping variables. The `seed` defines the simulation's random number generation seed (for reproducing simulations) and the `task` and `output` variables control the location and name of the output database file. We also provide two key simulation parameters - the minimum speciation rate and the list of times for which we want to store the state of the simulation. A useful parameter is `uses_logging=TRUE`, which enables printing of extra information. We recommend using this parameter when first attempting a new simulation so that problems can be more easily debugged. The `times_list` defines the set of time points from which we will sample the simulation. For this exercise, we sample every 5 generations, starting 10 generations before the "present" and continuing 100 generations into the "future". 
+We start by creating the new spatial simulation and defining the house-keeping variables. The `seed` defines the simulation's random number generation seed (for reproducing simulations) and the `task` and `output` variables control the location and name of the output database file. We also provide two key simulation parameters - the minimum speciation rate and the list of times for which we want to store the state of the simulation. A useful parameter is `uses_logging=TRUE`, which enables printing of extra information. We recommend using this parameter when first attempting a new simulation so that problems can be more easily debugged. The `times_list` defines the set of time points from which we will sample the simulation. For this exercise, we sample every 10 generations, starting at the "present" and continuing 100 generations into the "future". 
 
-We create our new `SpatialTreeSimulation` object and set the simulation parameters. We then perform the simulation and apply speciation rates. We also extract the species locations, species richness and species abundances for the simulation. We repeat the above process ten times with different random number seeds.
+We create our new `SpatialTreeSimulation` object and set the simulation parameters. We then perform the simulation and apply speciation rates. We also extract the species locations, species richness and species abundances for the simulation. We repeat the above process five times with different random number seeds.
 
 ```{r warning=FALSE}
 species_locations <- NULL
 species_abundances <- NULL
 species_richness <- NULL
-for (seed in seq(1, 10))
+for (seed in seq(1, 5))
 {
   print(paste("Running simulation number", seed))
   output_path <- file.path(output_dir, paste0("data_1_", seed, ".db"))
@@ -141,7 +141,7 @@ for (seed in seq(1, 10))
       times_list = times_list,
       uses_logging = FALSE,
       fine_map_file = source_file_post,
-      deme = 10,
+      deme = 5,
       historical_fine_map = source_file,
       gen_since_historical = time_difference_between_maps,
       habitat_change_rate = 0.0,
