@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "All as expected, ready to go"
+
+exit 0
