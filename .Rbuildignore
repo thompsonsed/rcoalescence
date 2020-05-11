@@ -4,7 +4,10 @@
 ^.*\.idea.*$
 ^.*/cmake-build.*$
 ^.*\.o$
+^.*\.a$
 ^.aclocal.m4
 .circleci/*
 .azure/*
 azure-pipelines.yml
+configure.ac
+
