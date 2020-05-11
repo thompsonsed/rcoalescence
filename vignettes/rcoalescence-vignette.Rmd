@@ -21,7 +21,6 @@ knitr::opts_chunk$set(
 suppressPackageStartupMessages({
   library(Rcpp)
   library(rcoalescence)
-  library(reticulate)
 })
 output_dir <- "output"
 if (!dir.exists(output_dir)) {
