@@ -9,5 +9,3 @@
 .circleci/*
 .azure/*
 azure-pipelines.yml
-configure.ac
-
