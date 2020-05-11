@@ -42,7 +42,7 @@ namespace fs = boost::filesystem;
 //#define ERROR_PRIVILEGE_NOT_HELD 1314L
 #endif
 
-#include <ghc/filesystem.hpp>
+#include "ghc/filesystem.hpp"
 
 namespace fs = ghc::filesystem;
 
@@ -50,9 +50,9 @@ namespace fs = ghc::filesystem;
 
 #else // Support for C++ 17
 
-#ifdef __APPLE__
+#ifdef __APPLE__ // macOS has problems with filesystem
 
-#include <ghc/filesystem.hpp>
+#include "ghc/filesystem.hpp"
 
 namespace fs = ghc::filesystem;
 #else

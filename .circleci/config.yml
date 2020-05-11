@@ -29,7 +29,6 @@ jobs:
       - run:
           name: run R CHECK
           command: |
-            cd ../
             R -e "devtools::check()"
             
       - store_artifacts:
