@@ -29,6 +29,7 @@ jobs:
       - run:
           name: run R CHECK
           command: |
+	    R -e "devtools::install_dev_deps()"
             R -e "devtools::check()"
             
       - store_artifacts:
