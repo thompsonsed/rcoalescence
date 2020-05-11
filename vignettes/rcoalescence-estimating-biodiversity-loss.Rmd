@@ -1,5 +1,6 @@
 ---
 title: "Estimating biodiversity loss from habitat loss using rcoalescence"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Estimating biodiversity loss from habitat loss using rcoalescence}

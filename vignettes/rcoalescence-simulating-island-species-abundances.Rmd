@@ -1,10 +1,12 @@
 ---
 title: "Simulating biodiversity on an archipelago"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Simulating biodiversity on an archipelago}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib  
 ---
 
 ```{r, include = FALSE}
