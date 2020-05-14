@@ -6,6 +6,7 @@ dnl Switch to a C++ compiler, and check if it works.
 m4_include(inst/extdata/m4/boost.m4)
 # find R home and set correct compiler + flags
 : ${R_HOME=`R RHOME`}
+
 if test -z "${R_HOME}"; then
   AC_MSG_ERROR([cannot determine R_HOME. Make sure you use R CMD INSTALL!])
 fi
