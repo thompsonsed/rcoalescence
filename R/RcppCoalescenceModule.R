@@ -375,7 +375,7 @@ TreeSimulation <- setRcppClass(
         dbConnect(SQLite(), output_database)
       species_locations <- dbGetQuery(
         conn,
-        "SELECT seed, job_type, output_dir, speciation_rate ,sigma, tau,deme,sample_size,
+        "SELECT seed, task, output_dir, speciation_rate ,sigma, tau,deme,sample_size,
           max_time,dispersal_relative_cost,min_num_species,habitat_change_rate,
           gen_since_historical,time_config_file,coarse_map_file,coarse_map_x,coarse_map_y,
           coarse_map_x_offset,coarse_map_y_offset,coarse_map_scale,fine_map_file,fine_map_x,

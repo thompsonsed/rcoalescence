@@ -136,7 +136,7 @@ test_that("Simulations correctly detect map sizes", {
       ),
       .Names = c(
         "seed",
-        "job_type",
+        "task",
         "output_dir",
         "speciation_rate",
         "sigma",
