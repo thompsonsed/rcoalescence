@@ -29,7 +29,7 @@
 #### Installing on macOS ####
 
 - Ensure you have R > 3.4.0 installed.
-- Install gdal >2.4.0. If you have homebrew installed, this can be done using ``brew install gdal``. Check out the [brew site](https://brew.sh/) for the command to install brew.
+- Install gdal >2.4.0. If you have homebrew installed, this can be done using ``brew install gdal2``. Check out the [brew site](https://brew.sh/) for the command to install brew.
 - Make sure xcode is installed (``xcode-select --install``).
 - Install the necessary R package requirements using ``install.packages(c("devtools", "Rcpp", "RSQLite", "dplyr"))``.
 - Run ``devtools::install_github("thompsonsed/rcoalescence")``.
