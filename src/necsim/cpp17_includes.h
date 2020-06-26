@@ -56,9 +56,20 @@ namespace fs = ghc::filesystem;
 
 namespace fs = ghc::filesystem;
 #else
+#ifdef __has_include
+#if __has_include( < filesystem> )
 #include <filesystem>
-
 namespace fs = std::filesystem;
+#else
+#include "ghc/filesystem.hpp"
+
+namespace fs = ghc::filesystem;
+#endif // __has include(<filesystem>)
+#include "ghc/filesystem.hpp"
+
+namespace fs = ghc::filesystem;
+#endif // __has_include defined
+
 
 #endif // __APPLE__
 #endif // __cplusplus < 201703L

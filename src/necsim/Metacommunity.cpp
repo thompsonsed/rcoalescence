@@ -26,7 +26,7 @@
 namespace na = neutral_analytical;
 namespace necsim
 {
-    Metacommunity::Metacommunity() : seed(0), job_type(0), parameters_checked(false),
+    Metacommunity::Metacommunity() : seed(0), task(0), parameters_checked(false),
                                      species_abundances_handler(make_unique<SimulatedSpeciesAbundancesHandler>()),
                                      random(make_shared<RNGController>()), metacommunity_tree(make_unique<Tree>())
     {
@@ -60,14 +60,33 @@ namespace necsim
                 throw FatalException("Cannot read simulation metacommunity parameters as database is null pointer.");
             }
             // Now do the same for times
-            string sql_call = "SELECT seed, job_type from SIMULATION_PARAMETERS";
-            auto stmt = database->prepare(sql_call);
-            database->step();
-            seed = sqlite3_column_int64(stmt->stmt, 0);
-            random->setSeed(seed);
-            job_type = sqlite3_column_int64(stmt->stmt, 1);
-            database->finalise();
-            parameters_checked = true;
+
+            exception err;
+
+            for(auto &i: vector<string>{"task", "job_type"})
+            {
+                try
+                {
+                    string sql_call = "SELECT seed, " + i + " from SIMULATION_PARAMETERS";
+                    auto stmt = database->prepare(sql_call);
+                    database->step();
+                    seed = sqlite3_column_int64(stmt->stmt, 0);
+                    random->setSeed(seed);
+                    task = sqlite3_column_int64(stmt->stmt, 1);
+                    database->finalise();
+                    parameters_checked = true;
+                    break;
+                }
+                catch(exception &e)
+                {
+                    err = e;
+                }
+            }
+            if(!parameters_checked)
+            {
+                throw err;
+            }
+
         }
     }
 
@@ -108,7 +127,9 @@ namespace necsim
             seed = 1073741823;
         }
         temp_parameters->setMetacommunityParameters(current_metacommunity_parameters->metacommunity_size,
-                                                    current_metacommunity_parameters->speciation_rate, seed, job_type);
+                                                    current_metacommunity_parameters->speciation_rate,
+                                                    seed,
+                                                    task);
         // Dispose of any previous Tree object and create a new one
         metacommunity_tree = make_unique<Tree>();
         metacommunity_tree->internalSetup(temp_parameters);
@@ -122,8 +143,10 @@ namespace necsim
         // species_abundances now contains the number of individuals per species
         // Make it cumulative to increase the speed of indexing using binary search.
         species_abundances_handler = make_unique<SimulatedSpeciesAbundancesHandler>();
-        species_abundances_handler->setup(random, current_metacommunity_parameters->metacommunity_size,
-                                          current_metacommunity_parameters->speciation_rate, nodes->size());
+        species_abundances_handler->setup(random,
+                                          current_metacommunity_parameters->metacommunity_size,
+                                          current_metacommunity_parameters->speciation_rate,
+                                          nodes->size());
         auto tmp_species_abundances = metacommunity_tree->getSpeciesAbundances();
         if(tmp_species_abundances->empty())
         {
@@ -179,8 +202,10 @@ namespace necsim
     {
         species_abundances_handler.reset();
         species_abundances_handler = make_unique<AnalyticalSpeciesAbundancesHandler>();
-        species_abundances_handler->setup(random, current_metacommunity_parameters->metacommunity_size,
-                                          current_metacommunity_parameters->speciation_rate, nodes->size());
+        species_abundances_handler->setup(random,
+                                          current_metacommunity_parameters->metacommunity_size,
+                                          current_metacommunity_parameters->speciation_rate,
+                                          nodes->size());
     }
 
     void Metacommunity::readSAD()
@@ -191,8 +216,10 @@ namespace necsim
                 current_metacommunity_parameters->external_reference);
         species_abundances_handler.reset();
         species_abundances_handler = make_unique<SimulatedSpeciesAbundancesHandler>();
-        species_abundances_handler->setup(random, current_metacommunity_parameters->metacommunity_size,
-                                          current_metacommunity_parameters->speciation_rate, nodes->size());
+        species_abundances_handler->setup(random,
+                                          current_metacommunity_parameters->metacommunity_size,
+                                          current_metacommunity_parameters->speciation_rate,
+                                          nodes->size());
         species_abundances_handler->setAbundanceList(sad);
     }
 

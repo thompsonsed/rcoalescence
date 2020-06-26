@@ -15,8 +15,6 @@
 
 #include "ActivityMap.h"
 
-
-
 namespace necsim
 {
     bool ActivityMap::isNull()
@@ -24,7 +22,9 @@ namespace necsim
         return null_map;
     }
 
-    void ActivityMap::import(string file_name, unsigned long size_x, unsigned long size_y,
+    void ActivityMap::import(string file_name,
+                             unsigned long size_x,
+                             unsigned long size_y,
                              shared_ptr<RNGController> random_in)
     {
         random = std::move(random_in);
@@ -65,8 +65,10 @@ namespace necsim
         }
     }
 
-    void ActivityMap::setOffsets(const unsigned long &x_offset, const unsigned long &y_offset,
-                                 const unsigned long &xdim, const unsigned long &ydim)
+    void ActivityMap::setOffsets(const unsigned long &x_offset,
+                                 const unsigned long &y_offset,
+                                 const unsigned long &xdim,
+                                 const unsigned long &ydim)
     {
         offset_x = x_offset;
         offset_y = y_offset;
@@ -74,13 +76,17 @@ namespace necsim
         y_dim = ydim;
     }
 
-    bool ActivityMap::rejectionSampleNull(const unsigned long &x, const unsigned long &y, const long &xwrap,
+    bool ActivityMap::rejectionSampleNull(const unsigned long &x,
+                                          const unsigned long &y,
+                                          const long &xwrap,
                                           const long &ywrap)
     {
         return true;
     }
 
-    bool ActivityMap::rejectionSample(const unsigned long &x, const unsigned long &y, const long &xwrap,
+    bool ActivityMap::rejectionSample(const unsigned long &x,
+                                      const unsigned long &y,
+                                      const long &xwrap,
                                       const long &ywrap)
     {
         return random->d01() <= getVal(x, y, xwrap, ywrap);

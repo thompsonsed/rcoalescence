@@ -80,10 +80,10 @@ namespace necsim
 
     void Tree::checkSims()
     {
-        checkSims(sim_parameters->output_directory, sim_parameters->seed, sim_parameters->job_type);
+        checkSims(sim_parameters->output_directory, sim_parameters->seed, sim_parameters->task);
     }
 
-    void Tree::checkSims(string output_dir, long seed_in, long job_type)
+    void Tree::checkSims(string output_dir, long seed_in, long task)
     {
 
         stringstream os;
@@ -91,8 +91,8 @@ namespace necsim
         ifstream out;
         string file_to_open;
         //	char file_to_open[100];
-        //	sprintf (file_to_open, "%s/Pause/Data_%i.csv",outdirect,int(job_type));
-        file_to_open = output_dir + string("/Pause/Dump_main_") + to_string((unsigned long long) job_type) + "_"
+        //	sprintf (file_to_open, "%s/Pause/Data_%i.csv",outdirect,int(task));
+        file_to_open = output_dir + string("/Pause/Dump_main_") + to_string((unsigned long long) task) + "_"
                        + to_string((unsigned long long) seed_in) + string(".csv");
         out.open(file_to_open);
         if(out.good())
@@ -104,7 +104,7 @@ namespace necsim
                 setResumeParameters(sim_parameters->output_directory,
                                     sim_parameters->output_directory,
                                     static_cast<unsigned long>(sim_parameters->seed),
-                                    static_cast<unsigned long>(sim_parameters->job_type),
+                                    static_cast<unsigned long>(sim_parameters->task),
                                     sim_parameters->max_time);
             }
             has_paused = true;
@@ -123,7 +123,7 @@ namespace necsim
         {
             out_directory = sim_parameters->output_directory;
 
-            job_type = sim_parameters->job_type;
+            task = sim_parameters->task;
             seed = sim_parameters->seed;
 
             deme = sim_parameters->deme;
@@ -170,7 +170,7 @@ namespace necsim
 
     long long Tree::getJobType()
     {
-        return job_type;
+        return task;
     }
 
     void Tree::setSeed(long long seed_in)
@@ -1169,12 +1169,12 @@ namespace necsim
                 {
                     fs::create_directory(fs::path(sqlfolder));
                 }
-                sql_output_database += string("/data_") + to_string(job_type) + "_" + to_string(seed) + ".db";
+                sql_output_database += string("/data_") + to_string(task) + "_" + to_string(seed) + ".db";
             }
             catch(FatalException &fe)
             {
                 writeWarning(fe.what());
-                sql_output_database = string("data_") + to_string(job_type) + "_" + to_string(seed) + ".db";
+                sql_output_database = string("data_") + to_string(task) + "_" + to_string(seed) + ".db";
             }
             fs::remove(fs::path(sql_output_database));
         }
@@ -1183,7 +1183,7 @@ namespace necsim
     void Tree::sqlCreateSimulationParameters()
     {
         // Now additionally store the simulation current_metacommunity_parameters (extremely useful data)
-        string to_execute = "CREATE TABLE SIMULATION_PARAMETERS (seed INT PRIMARY KEY not null, job_type INT NOT NULL,";
+        string to_execute = "CREATE TABLE SIMULATION_PARAMETERS (seed INT PRIMARY KEY not null, task INT NOT NULL,";
         to_execute += "output_dir TEXT NOT NULL, speciation_rate DOUBLE NOT NULL, sigma DOUBLE NOT NULL,tau DOUBLE NOT "
                       "NULL, deme DOUBLE NOT NULL, ";
         to_execute += "sample_size DOUBLE NOT NULL, max_time INT NOT NULL, dispersal_relative_cost DOUBLE NOT NULL, "
@@ -1212,7 +1212,7 @@ namespace necsim
         ss1 << setprecision(64);
         ss1 << spec;
         to_execute = "INSERT INTO SIMULATION_PARAMETERS VALUES(" + to_string((long long) seed) + ","
-                     + to_string((long long) job_type);
+                     + to_string((long long) task);
         to_execute += ",'" + out_directory + "'," + ss1.str() + "," + to_string(0.0) + ",";
         to_execute += to_string(0.0) + "," + to_string((long double) deme) + ",";
         to_execute += to_string((long double) deme_sample) + "," + to_string((long long) maxtime) + ",";
@@ -1270,7 +1270,7 @@ namespace necsim
                 pause_folder = out_directory;
             }
         }
-        string file_to_open = pause_folder + "Dump_main_" + to_string(job_type) + "_" + to_string(seed) + ".csv";
+        string file_to_open = pause_folder + "Dump_main_" + to_string(task) + "_" + to_string(seed) + ".csv";
         shared_ptr<ofstream> out = make_shared<ofstream>();
         out->open(file_to_open.c_str());
         *out << setprecision(64);
@@ -1301,7 +1301,7 @@ namespace necsim
             // Save that this simulation was not a protracted speciation sim
             *out << bIsProtracted << "\n";
             // Saving the initial data to one file.
-            *out << enddata << "\n" << seeded << "\n" << seed << "\n" << job_type << "\n" << times_file << "\n"
+            *out << enddata << "\n" << seeded << "\n" << seed << "\n" << task << "\n" << times_file << "\n"
                  << uses_temporal_sampling << "\n";
             *out << out_directory << "\n";
             *out << has_imported_vars << "\n" << start << "\n" << sim_start << "\n";
@@ -1364,7 +1364,7 @@ namespace necsim
     {
         shared_ptr<ifstream> in1 = make_shared<ifstream>();
         string file_to_open =
-                pause_sim_directory + string("/Pause/Dump_main_") + to_string(job_type) + "_" + to_string(seed)
+                pause_sim_directory + string("/Pause/Dump_main_") + to_string(task) + "_" + to_string(seed)
                 + string(".csv");
         in1->open(file_to_open);
         if(!*in1)
@@ -1379,7 +1379,7 @@ namespace necsim
     void Tree::setResumeParameters(string pausedir,
                                    string outdir,
                                    unsigned long seed,
-                                   unsigned long job_type,
+                                   unsigned long task,
                                    unsigned long new_max_time)
     {
         if(!has_imported_pause)
@@ -1387,7 +1387,7 @@ namespace necsim
             pause_sim_directory = move(pausedir);
             out_directory = move(outdir);
             this->seed = static_cast<long long int>(seed);
-            this->job_type = static_cast<long long int>(job_type);
+            this->task = static_cast<long long int>(task);
             maxtime = new_max_time;
             has_imported_pause = true;
         }
@@ -1420,7 +1420,7 @@ namespace necsim
                                          "Cannot be resumed by this program. Please report this bug");
                 }
             }
-            *in1 >> enddata >> seeded >> seed >> job_type;
+            *in1 >> enddata >> seeded >> seed >> task;
             in1->ignore(); // Ignore the endline character
             getline(*in1, times_file);
             *in1 >> uses_temporal_sampling;
@@ -1541,7 +1541,7 @@ namespace necsim
         writeLog(10, "Paused directory: " + pause_sim_directory);
         writeLog(10, "Output directory: " + out_directory);
         writeLog(10, "Seed: " + to_string(seed));
-        writeLog(10, "Task: " + to_string(job_type));
+        writeLog(10, "Task: " + to_string(task));
         writeLog(10, "Max time: " + to_string(maxtime));
 #endif // DEBUG
         os << "Resuming simulation..." << endl << "Loading data from temp file..." << flush;

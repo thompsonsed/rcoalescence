@@ -47,7 +47,9 @@ namespace necsim
         shared_ptr<RNGController> random;
 
         // Function pointer for our reproduction map checker
-        typedef bool (ActivityMap::*rep_ptr)(const unsigned long &x, const unsigned long &y, const long &xwrap,
+        typedef bool (ActivityMap::*rep_ptr)(const unsigned long &x,
+                                             const unsigned long &y,
+                                             const long &xwrap,
                                              const long &ywrap);
 
         // once setup will contain the end check function to use for this simulation.
@@ -89,7 +91,9 @@ namespace necsim
          * @param xdim the x dimension of the sample grid
          * @param ydim the y dimension of the sample grid
          */
-        void setOffsets(const unsigned long &x_offset, const unsigned long &y_offset, const unsigned long &xdim,
+        void setOffsets(const unsigned long &x_offset,
+                        const unsigned long &y_offset,
+                        const unsigned long &xdim,
                         const unsigned long &ydim);
 
         /**

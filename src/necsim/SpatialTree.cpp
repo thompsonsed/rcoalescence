@@ -1185,7 +1185,7 @@ namespace necsim
         ss2 << setprecision(64);
         ss2 << sim_parameters->m_prob;
         to_execute = "INSERT INTO SIMULATION_PARAMETERS VALUES(" + to_string((long long) seed) + ","
-                     + to_string((long long) job_type);
+                     + to_string((long long) task);
         to_execute +=
                 ",'" + out_directory + "'," + ss1.str() + "," + to_string((long double) sim_parameters->sigma) + ",";
         to_execute += to_string((long double) sim_parameters->tau) + "," + to_string((long double) sim_parameters->deme)

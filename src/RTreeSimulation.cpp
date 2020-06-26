@@ -33,14 +33,14 @@ bool RTreeSimulation::checkHasSetup()
     return has_imported_vars;
 }
 
-void RTreeSimulation::setKeyParameters(const long long &job_type,
+void RTreeSimulation::setKeyParameters(const long long &task,
                                        const long long &seed_in,
                                        const string &output_directory_in,
                                        const unsigned long &max_time_in,
                                        const unsigned long &desired_specnum_in,
                                        vector<double> times_list)
 {
-    sim_parameters->setKeyParameters(job_type, seed_in, output_directory_in, max_time_in, desired_specnum_in, "null");
+    sim_parameters->setKeyParameters(task, seed_in, output_directory_in, max_time_in, desired_specnum_in, "null");
     if(!times_list.empty())
     {
         for(auto &times: times_list)
@@ -122,7 +122,7 @@ long long RTreeSimulation::getSeed()
 
 long long RTreeSimulation::getJobType()
 {
-    return job_type;
+    return task;
 }
 
 void RTreeSimulation::apply(shared_ptr<SpecSimParameters> specSimParameters)

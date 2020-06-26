@@ -37,9 +37,9 @@ namespace necsim
     class Metacommunity : public virtual Community
     {
     protected:
-        // Simulation seed and job_type (read from the output database or set to 1)
+        // Simulation seed and task (read from the output database or set to 1)
         unsigned long seed;
-        unsigned long job_type;
+        unsigned long task;
         bool parameters_checked;
         unique_ptr<SpeciesAbundancesHandler> species_abundances_handler;
         shared_ptr<RNGController> random;
@@ -61,7 +61,7 @@ namespace necsim
         void setCommunityParameters(shared_ptr<MetacommunityParameters> metacommunity_parameters);
 
         /**
-         * @brief Gets the seed and the job_type from the SIMULATION_PARAMETERS database and stores them in the relevant
+         * @brief Gets the seed and the task from the SIMULATION_PARAMETERS database and stores them in the relevant
          * variables.
          *
          * @note Should only be called once, and will have no effect if called multiple times.

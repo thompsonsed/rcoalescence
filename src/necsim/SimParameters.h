@@ -73,7 +73,7 @@ namespace necsim
         string fine_map_file, coarse_map_file, output_directory;
         string historical_fine_map_file, historical_coarse_map_file, sample_mask_file;
         // for file naming purposes.
-        long long job_type{}, seed{};
+        long long task{}, seed{};
         // the variables for the grid containing the initial individuals.
         unsigned long grid_x_size{}, grid_y_size{};
         // The variables for the sample grid, which may or may not be the same as the main simulation grid
@@ -239,7 +239,7 @@ namespace necsim
             reproduction_file = configs.getSectionOptions("reproduction", "map", "none");
             output_directory = configs.getSectionOptions("main", "output_directory", "Default");
             seed = stol(configs.getSectionOptions("main", "seed", "0"));
-            job_type = stol(configs.getSectionOptions("main", "job_type", "0"));
+            task = stol(configs.getSectionOptions("main", "task", "0"));
             tau = stod(configs.getSectionOptions("main", "tau", "0.0"));
             sigma = stod(configs.getSectionOptions("main", "sigma", "0.0"));
             deme = stod(configs.getSectionOptions("main", "deme"));
@@ -273,17 +273,17 @@ namespace necsim
 
         /**
          * @brief Sets the main simulation parameters
-         * @param job_type the job type reference number, used for file referencing
+         * @param task the job type reference number, used for file referencing
          * @param seed the seed to set random number generation
          * @param output_directory the output directory
          * @param max_time the maximum time to simulate for
          * @param desired_specnum the desired number of species to aim towards (currently not functional)
          * @param times_file the file containing a list of temporal sampling points
          */
-        void setKeyParameters(const long long &job_type, const long long &seed, const string &output_directory,
+        void setKeyParameters(const long long &task, const long long &seed, const string &output_directory,
                               const unsigned long &max_time, unsigned long desired_specnum, const string &times_file)
         {
-            this->job_type = job_type;
+            this->task = task;
             this->seed = seed;
             this->output_directory = output_directory;
             this->max_time = max_time;
@@ -643,7 +643,7 @@ namespace necsim
             {
                 os << "Protracted variables: " << min_speciation_gen << ", " << max_speciation_gen << endl;
             }
-            os << "Job Type: " << job_type << endl;
+            os << "Job Type: " << task << endl;
             os << "Max time: " << max_time << endl;
             printSpatialVars();
             os << "Deme: " << deme << endl;
@@ -705,15 +705,15 @@ namespace necsim
          * @param metacommunity_size the number of individuals in the community
          * @param speciation_rate the speciation rate for the metacommunity
          * @param seed the seed for the simulation
-         * @param job_type the job referencing number
+         * @param task the job referencing number
          */
         void setMetacommunityParameters(const unsigned long &metacommunity_size, const long double &speciation_rate,
-                                        const unsigned long &seed, const unsigned long &job_type)
+                                        const unsigned long &seed, const unsigned long &task)
         {
             output_directory = "Default";
             // randomise the seed slightly so that we get a different starting number to the initial simulation
-            this->seed = static_cast<long long int>(elegantPairing(seed, job_type));
-            this->job_type = (long long int) job_type;
+            this->seed = static_cast<long long int>(elegantPairing(seed, task));
+            this->task = (long long int) task;
             deme = metacommunity_size;
             deme_sample = 1.0;
             spec = speciation_rate;
@@ -734,7 +734,7 @@ namespace necsim
         {
             os << m.fine_map_file << "\n" << m.coarse_map_file << "\n" << m.historical_fine_map_file << "\n";
             os << m.historical_coarse_map_file << "\n" << m.sample_mask_file << "\n";
-            os << m.seed << "\n" << m.job_type << "\n" << m.grid_x_size << "\n" << m.grid_y_size << "\n";
+            os << m.seed << "\n" << m.task << "\n" << m.grid_x_size << "\n" << m.grid_y_size << "\n";
             os << m.sample_x_size << "\n" << m.sample_y_size << "\n" << m.sample_x_offset << "\n" << m.sample_y_offset
                << "\n";
             os << m.fine_map_x_size << "\n" << m.fine_map_y_size << "\n";
@@ -770,7 +770,7 @@ namespace necsim
             getline(is, m.historical_fine_map_file);
             getline(is, m.historical_coarse_map_file);
             getline(is, m.sample_mask_file);
-            is >> m.seed >> m.job_type >> m.grid_x_size >> m.grid_y_size;
+            is >> m.seed >> m.task >> m.grid_x_size >> m.grid_y_size;
             is >> m.sample_x_size >> m.sample_y_size >> m.sample_x_offset >> m.sample_y_offset;
             is >> m.fine_map_x_size >> m.fine_map_y_size;
             is >> m.fine_map_x_offset >> m.fine_map_y_offset >> m.coarse_map_x_size >> m.coarse_map_y_size

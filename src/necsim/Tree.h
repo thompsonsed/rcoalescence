@@ -62,8 +62,8 @@ namespace necsim
         bool seeded;
         // random seed
         long long seed;
-        // for file naming - good to know which job_type in a series is being executed here
-        long long job_type;
+        // for file naming - good to know which task in a series is being executed here
+        long long task;
         // The map file containing the times that we want to expand the model and record all lineages again.
         // If this is null, uses_temporal_sampling will be false and the vector will be empty.
         string times_file;
@@ -131,7 +131,7 @@ namespace necsim
 
     public:
         Tree() : data(make_shared<vector<TreeNode>>()), enddata(0), sim_parameters(make_shared<SimParameters>()),
-                 NR(make_shared<RNGController>()), speciation_rates(), seeded(false), seed(-1), job_type(-1),
+                 NR(make_shared<RNGController>()), speciation_rates(), seeded(false), seed(-1), task(-1),
                  times_file("null"), reference_times(), uses_temporal_sampling(false), start(0), sim_start(0),
                  sim_end(0), now(0), sim_finish(0), out_finish(0), time_taken(0), active(), endactive(0),
                  startendactive(0), maxsimsize(0), community(data), steps(0), maxtime(0), generation(0.0), deme(0.0),
@@ -220,9 +220,9 @@ namespace necsim
          *
          * @param output_dir the output directory to check for
          * @param seed the seed for paused sims
-         * @param job_type the job_type for paused sims
+         * @param task the task for paused sims
          */
-        void checkSims(string output_dir, long seed, long job_type);
+        void checkSims(string output_dir, long seed, long task);
 
         /**
          * @brief Move the parameters from the sim_parameters object to their relevant parameters.
@@ -696,13 +696,13 @@ namespace necsim
          * @param pausedir the directory containing the pause folder for resuming the simulation
          * @param outdir the directory to write simulation output to
          * @param seed the simulation seed
-         * @param job_type the simulation job reference number
+         * @param task the simulation job reference number
          * @param new_max_time the maximum simulation time to run for in seconds (0 keeps old simulation max time)
          */
         void setResumeParameters(string pausedir,
                                  string outdir,
                                  unsigned long seed,
-                                 unsigned long job_type,
+                                 unsigned long task,
                                  unsigned long new_max_time);
 
         /**

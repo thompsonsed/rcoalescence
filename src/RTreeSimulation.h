@@ -70,14 +70,14 @@ namespace rcoalescence
         
         /**
          * @brief Sets the main simulation parameters in the sim_parameters object.
-         * @param job_type the job reference number, used for file referencing
+         * @param task the job reference number, used for file referencing
          * @param seed_in the seed to set random number generation
          * @param output_directory_in the output directory
          * @param max_time_in the maximum time to simulate for
          * @param desired_specnum_in the desired number of species to aim towards (currently not functional)
          * @param times_list the file containing a list of temporal sampling points
          */
-        void setKeyParameters(const long long &job_type,
+        void setKeyParameters(const long long &task,
                               const long long &seed_in,
                               const string &output_directory_in,
                               const unsigned long &max_time_in,
