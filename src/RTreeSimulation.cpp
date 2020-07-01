@@ -203,6 +203,7 @@ Rcpp::DataFrame RTreeSimulation::getSpeciesAbundances(const unsigned long &commu
     {
         species_ids[i] = x.first;
         no_individuals[i] = x.second;
+        i ++;
     }
     Rcpp::DataFrame out_df = Rcpp::DataFrame::create(Rcpp::Named("species_id") = species_ids,
                                                      Rcpp::Named("no_individuals") = no_individuals);
