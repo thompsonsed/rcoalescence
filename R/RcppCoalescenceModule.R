@@ -29,7 +29,6 @@
 #' * *seed*: the seed for setting random number generation
 #' * *output_directory*: the path to the folder for storing simulation files
 #' * *max_time*: the maximum number of seconds to simulate for before pausing
-#' * *desired_specnum*: the desired number of species to aim for
 #' * *times_list*: list of temporal sampling points
 #' * *uses_logging*: if true, all outputs are written to console
 #' * *deme*: the number of individuals per cell
@@ -135,7 +134,6 @@ TreeSimulation <- setRcppClass(
                                               output_directory =
                                                 "output",
                                               max_time = 3600,
-                                              desired_specnum = 1,
                                               times_list = c(0.0),
                                               uses_logging = NA,
                                               deme = 1,
@@ -149,7 +147,7 @@ TreeSimulation <- setRcppClass(
         seed,
         output_directory,
         max_time,
-        desired_specnum,
+        1,
         times_list
       )
       ._setDeme(deme, deme_sample)
@@ -284,7 +282,6 @@ TreeSimulation <- setRcppClass(
                                        output_directory =
                                          "output",
                                        max_time = 3600,
-                                       desired_specnum = 1,
                                        times_list = c(0.0),
                                        uses_logging = NA,
                                        deme = 1,
@@ -298,7 +295,6 @@ TreeSimulation <- setRcppClass(
         min_speciation_rate,
         output_directory,
         max_time,
-        desired_specnum,
         times_list,
         uses_logging,
         deme,
@@ -714,7 +710,6 @@ SpatialTreeSimulation <- setRcppClass(
                                        sigma = 1,
                                        output_directory = "output",
                                        max_time = 3600,
-                                       desired_specnum = 1,
                                        times_list = c(0.0),
                                        uses_logging = NA,
                                        dispersal_method = "normal",
@@ -767,7 +762,6 @@ SpatialTreeSimulation <- setRcppClass(
         min_speciation_rate,
         output_directory,
         max_time,
-        desired_specnum,
         times_list,
         uses_logging
       )
@@ -844,7 +838,6 @@ ProtractedTreeSimulation <- setRcppClass(
                                        output_directory =
                                          "output",
                                        max_time = 3600,
-                                       desired_specnum = 1,
                                        times_list = c(0.0),
                                        uses_logging = NA,
                                        deme = 1,
@@ -862,7 +855,6 @@ ProtractedTreeSimulation <- setRcppClass(
         min_speciation_rate,
         output_directory,
         max_time,
-        desired_specnum,
         times_list,
         uses_logging,
         deme,
@@ -934,7 +926,6 @@ ProtractedTreeSimulation <- setRcppClass(
                                        output_directory =
                                          "output",
                                        max_time = 3600,
-                                       desired_specnum = 1,
                                        times_list = c(0.0),
                                        uses_logging = NA,
                                        min_speciation_gen = 0.0,
@@ -950,7 +941,6 @@ ProtractedTreeSimulation <- setRcppClass(
         speciation_rate,
         output_directory,
         max_time,
-        desired_specnum,
         times_list,
         uses_logging,
         deme,
@@ -996,7 +986,6 @@ ProtractedSpatialTreeSimulation <- setRcppClass(
                                        sigma = 1,
                                        output_directory = "output",
                                        max_time = 3600,
-                                       desired_specnum = 1,
                                        times_list = c(0.0),
                                        uses_logging = NA,
                                        dispersal_method = "normal",
@@ -1044,7 +1033,6 @@ ProtractedSpatialTreeSimulation <- setRcppClass(
         min_speciation_rate,
         output_directory,
         max_time,
-        desired_specnum,
         times_list,
         uses_logging
       )
