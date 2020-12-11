@@ -6,7 +6,6 @@ test_that("Basic simulation with deme of 100 completes", {
     seed = 1,
     output_directory = "output",
     max_time = 200,
-    desired_specnum = 1,
     times_list = c(0.0),
     deme = 100,
     min_speciation_rate = 0.01,

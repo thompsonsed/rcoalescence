@@ -7,7 +7,6 @@ test_that("Basic simulation on a null landscape completes", {
     min_speciation_rate = 0.1,
     output_directory = "default",
     max_time =  10,
-    desired_specnum = 1,
     times_list = c(0.0)
   )
   tmp$setDispersalParameters(sigma = 2)
