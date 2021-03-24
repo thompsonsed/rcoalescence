@@ -53,7 +53,7 @@ RCPP_MODULE(coalescenceModule)
             .method("._addSpeciationRate", &RTreeSimulation::addSpeciationRate,
                     "Adds a speciaton rate for application post-simulation.")
 
-            .method("setup", &RTreeSimulation::setup, "Completes all set-up routines for the simulation, "
+            .method("setup", &RTreeSimulation::setupR, "Completes all set-up routines for the simulation, "
                                                       "including assigning memory and importing the required files.")
             .method("runSimulation", &RTreeSimulation::runSimulation,
                     "Performs the actual simulation, returning true if the simulation is complete.")
