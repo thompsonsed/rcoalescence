@@ -25,5 +25,6 @@ namespace rcoalescence
 /**
  * @brief Wrapper for spatial simulations.
  */
-  using RSpatialTreeSimulation = 
+  using RSpatialTreeSimulation = RGenericSpatialTreeSimulation<necsim::SpatialTree>;
 }
+#endif // RCOALESCENCE_R_SPATIAL_TREE_H
