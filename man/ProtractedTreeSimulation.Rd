@@ -27,7 +27,6 @@ required, but the protracted speciation parameters should be specified.
   min_speciation_rate,
   output_directory = "output",
   max_time = 3600,
-  desired_specnum = 1,
   times_list = c(0),
   uses_logging = NA,
   deme = 1,
@@ -56,7 +55,6 @@ which are defined in setSimulationParameters()
 \item \emph{seed}: the seed for setting random number generation
 \item \emph{output_directory}: the path to the folder for storing simulation files
 \item \emph{max_time}: the maximum number of seconds to simulate for before pausing
-\item \emph{desired_specnum}: the desired number of species to aim for
 \item \emph{times_list}: list of temporal sampling points
 \item \emph{uses_logging}: if true, all outputs are written to console
 \item \emph{deme}: the number of individuals per cell

@@ -160,7 +160,7 @@ namespace necsim
         bool protracted{};
         ProtractedSpeciationParameters minimum_protracted_parameters{};
         ProtractedSpeciationParameters applied_protracted_parameters{};
-        unsigned long max_species_id{}, max_fragment_id{}, max_locations_id{};
+        unsigned long max_species_id{}, max_fragment_id{}, max_locations_id{}, max_ages_id{};
         // Does not need to be stored during simulation pause
         shared_ptr<SpecSimParameters> spec_sim_parameters{};
     public:
@@ -183,7 +183,7 @@ namespace necsim
                                                              past_communities(), past_metacommunities(),
                                                              protracted(false), minimum_protracted_parameters(),
                                                              applied_protracted_parameters(), max_species_id(0),
-                                                             max_fragment_id(0), max_locations_id(0),
+                                                             max_fragment_id(0), max_locations_id(0), max_ages_id(0),
                                                              spec_sim_parameters(make_shared<SpecSimParameters>())
         {
 
@@ -462,9 +462,14 @@ namespace necsim
         /**
          * @brief Gets the maximum species locations ID from the database and stores it in the max_locations_id variable.
          * @note Does not check for SPECIES_LOCATIONS existence and will throw an error if it cannot access it
-
          */
         void getMaxSpeciesLocationsID();
+
+        /**
+         * @brief Gets the maximum species ages ID from the database and stores it in the max_locations_id variable.
+         * @note Does not check for SPECIES_AGES existence and will throw an error if it cannot access it
+         */
+        void getMaxSpeciesAgesID();
 
         /**
          * @brief Sets the protracted parameters for application of protracted speciation
@@ -565,9 +570,15 @@ namespace necsim
 
         /**
          * @brief Checks for the current CommunityParameters reference in the SPECIES_ABUNDANCES table.
-         * @return return true if the reference exists in the SPECIES_LOCATIONS table
+         * @return return true if the reference exists in the SPECIES_ABUNDANCES table
          */
         bool checkSpeciesAbundancesReference();
+
+        /**
+         * @brief Checks the current CommunityParameters reference in the SPECIES_AGES table.
+         * @return return true if the reference exists in the SPECIES_AGES table
+         */
+        bool checkSpeciesAgesReference();
 
         /**
          * @brief Record the full spatial data.
@@ -575,6 +586,13 @@ namespace necsim
          * This allows for more in-depth analysis to be performed if necessary.
          */
         void recordSpatial();
+
+
+        /**
+         * @brief Records the age of each species, based on the speciation event in the coalescence tree and the sample
+         * time.
+         */
+        void recordSpeciesAges();
 
         /**
          * @brief Calculates the limits of each fragment in the sample map and adds it to the vector of fragments.

@@ -23,7 +23,6 @@
 #include "double_comparison.h"
 #include "parameters.h"
 
-
 namespace necsim
 {
     /**
@@ -34,6 +33,7 @@ namespace necsim
     struct SpecSimParameters
     {
         bool use_spatial;
+        bool record_ages;
         bool bMultiRun;
         bool use_fragments;
         string filename;
@@ -45,9 +45,10 @@ namespace necsim
         vector<ProtractedSpeciationParameters> protracted_parameters;
         MetacommunitiesArray metacommunity_parameters;
 
-        SpecSimParameters() : use_spatial(false), bMultiRun(false), use_fragments(false), filename("none"),
-                              all_speciation_rates(), samplemask("none"), times_file("null"), all_times(),
-                              fragment_config_file("none"), protracted_parameters(), metacommunity_parameters()
+        SpecSimParameters() : use_spatial(false), record_ages(false), bMultiRun(false), use_fragments(false),
+                              filename("none"), all_speciation_rates(), samplemask("none"), times_file("null"),
+                              all_times(), fragment_config_file("none"), protracted_parameters(),
+                              metacommunity_parameters()
         {
 
         }
@@ -69,13 +70,19 @@ namespace necsim
          * @brief Sets the application arguments for the inputs.
          * @param file_in the database to apply speciation rates to
          * @param use_spatial_in if true, record full spatial data
+         * @param record_ages_in if true, records species ages
          * @param sample_file the sample file to select lineages from the map
          * @param use_fragments_in fragment file, or "T"/"F" for automatic detection/no detection
          */
-        void setup(string file_in, bool use_spatial_in, string sample_file, const string &use_fragments_in)
+        void setup(string file_in,
+                   bool use_spatial_in,
+                   bool record_ages_in,
+                   string sample_file,
+                   const string &use_fragments_in)
         {
             filename = std::move(file_in);
             use_spatial = use_spatial_in;
+            record_ages = record_ages_in;
             samplemask = std::move(sample_file);
             use_fragments = !(use_fragments_in == "F");
             fragment_config_file = use_fragments_in;
@@ -85,15 +92,21 @@ namespace necsim
          * @brief Sets the application arguments for the inputs.
          * @param file_in the database to apply speciation rates to
          * @param use_spatial_in if true, record full spatial data
+         * @param record_ages_in if true, records species ages
          * @param sample_file the sample file to select lineages from the map
          * @param times vector of times to apply
          * @param use_fragments_in fragment file, or "T"/"F" for automatic detection/no detection
          * @param speciation_rates the speciation rates to apply
          */
-        void setup(string file_in, bool use_spatial_in, string sample_file, const vector<double> &times,
-                   const string &use_fragments_in, vector<double> speciation_rates)
+        void setup(string file_in,
+                   bool use_spatial_in,
+                   bool record_ages_in,
+                   string sample_file,
+                   const vector<double> &times,
+                   const string &use_fragments_in,
+                   vector<double> speciation_rates)
         {
-            setup(file_in, use_spatial_in, sample_file, times, use_fragments_in);
+            setup(file_in, use_spatial_in, record_ages_in, sample_file, times, use_fragments_in);
             for(const auto &speciation_rate : speciation_rates)
             {
                 addSpeciationRate(speciation_rate);
@@ -104,14 +117,19 @@ namespace necsim
          * @brief Sets the application arguments for the inputs. Overloaded version without speciation rates.
          * @param file_in the database to apply speciation rates to
          * @param use_spatial_in if true, record full spatial data
+         * @param record_ages_in if true, records species ages
          * @param sample_file the sample file to select lineages from the map
          * @param times vector of times to apply
          * @param use_fragments_in fragment file, or "T"/"F" for automatic detection/no detection
          */
-        void setup(string file_in, bool use_spatial_in, string sample_file, const vector<double> &times,
+        void setup(string file_in,
+                   bool use_spatial_in,
+                   bool record_ages_in,
+                   string sample_file,
+                   const vector<double> &times,
                    const string &use_fragments_in)
         {
-            setup(file_in, use_spatial_in, sample_file, use_fragments_in);
+            setup(file_in, use_spatial_in, record_ages_in, sample_file, use_fragments_in);
             if(times.empty() && all_times.empty())
             {
                 times_file = "null";
@@ -136,7 +154,8 @@ namespace necsim
                                         const string &metacommunity_option_in,
                                         const unsigned long &metacommunity_reference_in)
         {
-            MetacommunityParameters tmp_meta_parameters = MetacommunityParameters(0, metacommunity_size_in,
+            MetacommunityParameters tmp_meta_parameters = MetacommunityParameters(0,
+                                                                                  metacommunity_size_in,
                                                                                   metacommunity_speciation_rate_in,
                                                                                   metacommunity_option_in,
                                                                                   metacommunity_reference_in);
@@ -182,6 +201,7 @@ namespace necsim
         void wipe()
         {
             use_spatial = false;
+            record_ages = false;
             bMultiRun = false;
             use_fragments = false;
             filename = "";

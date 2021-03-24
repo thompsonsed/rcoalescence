@@ -45,12 +45,12 @@ namespace necsim
             os << "Detected generation at t=0.0." << std::endl;
             writeLog(10, os);
 #endif // DEBUG
-            return doubleCompare(speciation_rate, speciation_rate_in, speciation_rate * 0.000001)
+            return doubleCompare(speciation_rate, speciation_rate_in, std::min(speciation_rate_in, speciation_rate) * 0.000001)
                    && fragment == fragment_in && metacommunity_reference == metacommunity_reference_in
                    && protracted_params == protracted_parameters;
         }
-        return doubleCompare(speciation_rate, speciation_rate_in, speciation_rate * 0.000001)
-               && doubleCompare(time, time_in, time * 0.0000000001) && fragment == fragment_in
+        return doubleCompare(speciation_rate, speciation_rate_in, std::min(speciation_rate, speciation_rate_in) * 0.000001)
+               && doubleCompare(time, time_in, std::min(time_in, time) * 0.0000000001) && fragment == fragment_in
                && metacommunity_reference == metacommunity_reference_in && protracted_params == protracted_parameters;
     }
 
@@ -58,7 +58,7 @@ namespace necsim
                                       unsigned long metacommunity_reference_in,
                                       const ProtractedSpeciationParameters &protracted_params)
     {
-        return doubleCompare(speciation_rate, speciation_rate_in, speciation_rate * 0.000001)
+        return doubleCompare(speciation_rate, speciation_rate_in, std::min(speciation_rate_in, speciation_rate) * 0.000001)
                && doubleCompare(time, time_in, 0.0000000001) && metacommunity_reference == metacommunity_reference_in
                && protracted_params == protracted_parameters;
     }

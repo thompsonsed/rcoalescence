@@ -42,7 +42,6 @@ which are defined in setSimulationParameters()
 \item \emph{seed}: the seed for setting random number generation
 \item \emph{output_directory}: the path to the folder for storing simulation files
 \item \emph{max_time}: the maximum number of seconds to simulate for before pausing
-\item \emph{desired_specnum}: the desired number of species to aim for
 \item \emph{times_list}: list of temporal sampling points
 \item \emph{uses_logging}: if true, all outputs are written to console
 \item \emph{deme}: the number of individuals per cell

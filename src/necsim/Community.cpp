@@ -428,7 +428,8 @@ namespace necsim
                         if(!error_printed)
                         {
                             std::stringstream ss;
-                            ss << "Potential parent ID error in " << i << " - incomplete simulation likely." << std::endl;
+                            ss << "Potential parent ID error in " << i << " - incomplete simulation likely."
+                               << std::endl;
                             writeCritical(ss.str());
                             writeLog(50, "Lineage information:");
                             this_node->logLineageInformation(50);
@@ -774,6 +775,24 @@ namespace necsim
         }
     }
 
+    void Community::getMaxSpeciesAgesID()
+    {
+        if(!sql_connection_open)
+        {
+            throw FatalException("Attempted to get from sql database without opening database connection.");
+        }
+        if(max_locations_id == 0)
+        {
+            // Now find out the max size of the lineage_indices, so we have a count to work from
+            string count_command = "SELECT MAX(ID) FROM SPECIES_AGES;";
+            auto stmt = database->prepare(count_command);
+            database->step();
+            max_ages_id = sqlite3_column_int64(stmt->stmt, 0) + 1;
+            // close the old statement
+            database->finalise();
+        }
+    }
+
     void Community::getMaxFragmentAbundancesID()
     {
         if(!sql_connection_open)
@@ -866,7 +885,8 @@ namespace necsim
                 {
                     std::stringstream os;
                     os << "Could not insert into database. Check destination file has not "
-                          "been moved or deleted and that an entry doesn't already exist with the same ID." << std::endl;
+                          "been moved or deleted and that an entry doesn't already exist with the same ID."
+                       << std::endl;
                     os << database->getErrorMsg(step);
                     stmt->clearAndReset();
                     throw FatalException(os.str());
@@ -947,7 +967,8 @@ namespace necsim
                 {
                     std::stringstream ss;
                     ss << "Could not insert into database. Check destination file has not "
-                          "been moved or deleted and that an entry doesn't already exist with the same ID." << std::endl;
+                          "been moved or deleted and that an entry doesn't already exist with the same ID."
+                       << std::endl;
                     ss << database->getErrorMsg(step) << std::endl;
                     stmt->clearAndReset();
                     throw FatalException(ss.str());
@@ -1012,6 +1033,23 @@ namespace necsim
         return tmp_val > 0;
     }
 
+    bool Community::checkSpeciesAgesReference()
+    {
+        if(!sql_connection_open)
+        {
+            throw FatalException("Attempted to get from sql database without opening database connection.");
+        }
+        // Now find out the max size of the lineage_indices, so we have a count to work from
+        string count_command = "SELECT COUNT(*) FROM SPECIES_AGES WHERE community_reference = ";
+        count_command += std::to_string(current_community_parameters->reference) + ";";
+        auto stmt = database->prepare(count_command);
+        database->step();
+        unsigned long tmp_val = sqlite3_column_int64(stmt->stmt, 0);
+        // close the old statement
+        database->finalise();
+        return tmp_val > 0;
+    }
+
     void Community::recordSpatial()
     {
         writeInfo("\tRecording species locations...\n");
@@ -1061,6 +1099,48 @@ namespace necsim
                     database->step();
                     stmt->clearAndReset();
                 }
+            }
+        }
+        // execute the command and close the connection to the database
+        database->endTransaction();
+        // Need to finalise the statement
+        database->finalise();
+    }
+
+    void Community::recordSpeciesAges()
+    {
+        writeInfo("\tRecording species ages...\n");
+        string table_command = "CREATE TABLE IF NOT EXISTS SPECIES_AGES (ID int PRIMARY KEY NOT NULL, species_id INT "
+                               "NOT NULL, age_generations DOUBLE not null, community_reference INT NOT NULL);";
+        database->execute(table_command);
+        getMaxSpeciesAgesID();
+        // Checks that the SPECIES_AGES table doesn't already have a reference in matching the current reference
+        if(current_community_parameters->updated)
+        {
+            if(checkSpeciesAgesReference())
+            {
+                return;
+            }
+        }
+        table_command = "INSERT INTO SPECIES_AGES (ID, species_id, age_generations, community_reference) "
+                        "VALUES (?,?,?,?);";
+
+        auto stmt = database->prepare(table_command);
+        database->beginTransaction();
+        // Make sure only the tips which we want to check are recorded
+        for(unsigned long i = 1; i < nodes->size(); i++)
+        {
+            TreeNode* this_node = &(*nodes)[i];
+            //			os << nodes[i].exists() << std::endl;
+            if(this_node->hasSpeciated() && this_node->exists() && this_node->getSpeciesID() != 0)
+            {
+                long double species_age = this_node->getGeneration() - current_community_parameters->time;
+                sqlite3_bind_int64(stmt->stmt, 1, max_ages_id++);
+                sqlite3_bind_int64(stmt->stmt, 2, this_node->getSpeciesID());
+                sqlite3_bind_double(stmt->stmt, 3, static_cast<double>(species_age));
+                sqlite3_bind_int64(stmt->stmt, 4, current_community_parameters->reference);
+                database->step();
+                stmt->clearAndReset();
             }
         }
         // execute the command and close the connection to the database
@@ -1339,7 +1419,8 @@ namespace necsim
             os << "\tApplying fragments... " << (i + 1) << "/" << fragments.size() << std::endl;
             os << "\t\t " << fragments[i].name << " at ";
             os << "(x west, x east): (" << fragments[i].x_west << ", " << fragments[i].x_east;
-            os << "), (y north, y south): (" << fragments[i].y_north << ", " << fragments[i].y_south << ")." << std::endl;
+            os << "), (y north, y south): (" << fragments[i].y_north << ", " << fragments[i].y_south << ")."
+               << std::endl;
 
             writeInfo(os.str());
             // Set the new samplemask to the fragment
@@ -1774,7 +1855,8 @@ namespace necsim
                 {
                     std::stringstream ss;
                     ss << "Could not insert into database. Check destination file has not "
-                          "been moved or deleted and that an entry doesn't already exist with the same ID." << std::endl;
+                          "been moved or deleted and that an entry doesn't already exist with the same ID."
+                       << std::endl;
                     ss << database->getErrorMsg(step);
                     stmt->clearAndReset();
                     throw FatalException(ss.str());
@@ -2022,6 +2104,10 @@ namespace necsim
                         if(spec_sim_parameters->use_spatial)
                         {
                             recordSpatial();
+                        }
+                        if(spec_sim_parameters->record_ages)
+                        {
+                            recordSpeciesAges();
                         }
                         if(spec_sim_parameters->use_fragments)
                         {
