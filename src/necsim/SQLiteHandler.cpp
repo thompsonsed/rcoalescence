@@ -8,8 +8,9 @@
  *
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
-
 #include "SQLiteHandler.h"
+
+using namespace std::chrono_literals;
 
 namespace necsim
 {
@@ -96,7 +97,7 @@ namespace necsim
     {
         if(&sqlite_handler != this)
         {
-            sqlite3_backup *backupdb = sqlite3_backup_init(database, "main", sqlite_handler.database, "main");
+            sqlite3_backup* backupdb = sqlite3_backup_init(database, "main", sqlite_handler.database, "main");
             int rc = sqlite3_backup_step(backupdb, -1);
             int counter = 0;
             while(counter < 10 && (rc == SQLITE_BUSY || rc == SQLITE_LOCKED))
@@ -109,16 +110,16 @@ namespace necsim
             {
                 std::stringstream ss;
                 ss << "Database backup cannot be completed to " << file_name << " from " << sqlite_handler.file_name;
-                ss << ". Check write access on output folder." << endl << getErrorMsg(rc);
+                ss << ". Check write access on output folder." << std::endl << getErrorMsg(rc);
                 throw FatalException(ss.str());
             }
             rc = sqlite3_backup_finish(backupdb);
-            //			os << "rc: " << rc << endl;
+            //			os << "rc: " << rc << std::endl;
             if(rc != SQLITE_DONE && rc != SQLITE_OK)
             {
                 std::stringstream ss;
                 ss << "Database backup cannot be finished to " << file_name << " from " << sqlite_handler.file_name;
-                ss << ". Check write access on output folder." << endl << getErrorMsg(rc);
+                ss << ". Check write access on output folder." << std::endl << getErrorMsg(rc);
                 throw FatalException(ss.str());
             }
         }
@@ -135,7 +136,7 @@ namespace necsim
         if(rc != SQLITE_OK && rc != SQLITE_DONE)
         {
             std::stringstream ss;
-            ss << "Could not prepare statement: " << command << endl << getErrorMsg(rc);
+            ss << "Could not prepare statement: " << command << std::endl << getErrorMsg(rc);
             throw FatalException(ss.str());
         }
         stmt->last_command = command;
@@ -158,7 +159,7 @@ namespace necsim
         if(rc != SQLITE_OK && rc != SQLITE_DONE && rc != SQLITE_ROW)
         {
             std::stringstream ss;
-            ss << "Could not step statement: " << stmt->last_command << endl;
+            ss << "Could not step statement: " << stmt->last_command << std::endl;
             ss << getErrorMsg(rc);
             throw FatalException(ss.str());
         }
@@ -181,7 +182,7 @@ namespace necsim
         if(rc != SQLITE_OK && rc != SQLITE_DONE)
         {
             std::stringstream ss;
-            ss << "Could not execute statement: " << command << endl;
+            ss << "Could not execute statement: " << command << std::endl;
             ss << getErrorMsg(rc);
             throw FatalException(ss.str());
         }
@@ -206,7 +207,6 @@ namespace necsim
     {
         return !file_name.empty();
     }
-
 
     bool SQLiteHandler::inMemory()
     {

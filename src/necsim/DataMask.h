@@ -18,7 +18,6 @@
 #include "SimParameters.h"
 #include "Map.h"
 
-
 namespace necsim
 {
     // Forward declaration of Landscape class
@@ -59,7 +58,15 @@ namespace necsim
          */
         DataMask();
 
+        DataMask(DataMask &&other) noexcept = default;
+
+        DataMask(const DataMask &other) = default;
+
         ~DataMask() = default;
+
+        DataMask &operator=(const DataMask &other);
+
+        DataMask &operator=(DataMask &&other) noexcept;
 
         /**
          * @brief Returns if the simulation is using the a null samplemask, and therefore does not need to store the full
@@ -88,8 +95,13 @@ namespace necsim
          * @param yoffset the y offset of the grid area from the sample map file
          * @param inputfile_in the path to the sample map file
          */
-        void importBooleanMask(unsigned long xdim, unsigned long ydim, unsigned long mask_xdim, unsigned long mask_ydim,
-                               unsigned long xoffset, unsigned long yoffset, string inputfile_in);
+        void importBooleanMask(unsigned long xdim,
+                               unsigned long ydim,
+                               unsigned long mask_xdim,
+                               unsigned long mask_ydim,
+                               unsigned long xoffset,
+                               unsigned long yoffset,
+                               string inputfile_in);
 
         /**
          * @brief Imports the boolean map object.

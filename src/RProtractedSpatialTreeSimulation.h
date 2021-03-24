@@ -25,7 +25,7 @@ namespace rcoalescence
                                              virtual public ProtractedSpatialTree
     {
     public:
-        RProtractedSpatialTreeSimulation()
+        RProtractedSpatialTreeSimulation() : RSpatialTreeSimulation(), ProtractedSpatialTree()
         {
             bIsProtracted = true;
         }

@@ -63,7 +63,7 @@ namespace necsim
      * @param level the level of logging severity
      * @param message the message to pass out as a stringstream
      */
-    void writeLog(const int &level, stringstream &message);
+    void writeLog(const int &level, std::stringstream &message);
 
 #endif // DEBUG
 }

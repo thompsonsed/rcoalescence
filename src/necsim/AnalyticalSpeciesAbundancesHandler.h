@@ -20,7 +20,8 @@
 #include "RNGController.h"
 
 namespace na = neutral_analytical;
-using namespace std;
+using std::shared_ptr;
+
 namespace necsim
 {
     class AnalyticalSpeciesAbundancesHandler : public virtual SpeciesAbundancesHandler
@@ -28,7 +29,7 @@ namespace necsim
     protected:
         unsigned long seen_no_individuals;
         // Store all previous species ids in a map of cumulative numbers of individuals for searching for ids
-        map<unsigned long, unsigned long> ind_to_species;
+        std::map<unsigned long, unsigned long> ind_to_species;
     public:
 
         /**

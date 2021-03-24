@@ -26,8 +26,12 @@
 #include "RNGController.h"
 #include "SpecSimParameters.h"
 #include "SpeciesAbundancesHandler.h"
+#include "SimulatedSpeciesAbundancesHandler.h"
 
-using namespace std;
+using std::unique_ptr;
+using std::make_shared;
+using std::shared_ptr;
+using std::make_unique;
 namespace necsim
 {
     /**
@@ -43,12 +47,49 @@ namespace necsim
         bool parameters_checked;
         unique_ptr<SpeciesAbundancesHandler> species_abundances_handler;
         shared_ptr<RNGController> random;
-        unique_ptr<Tree> metacommunity_tree;
+        Tree metacommunity_tree;
     public:
 
-        Metacommunity();
+        /**
+         * @brief Default constructor
+         */
+        Metacommunity() : seed(0), task(0), parameters_checked(false),
+                          species_abundances_handler(make_unique<SimulatedSpeciesAbundancesHandler>()),
+                          random(make_shared<RNGController>()), metacommunity_tree()
+        {
+        }
 
         ~Metacommunity() override = default;
+
+        Metacommunity(Metacommunity &&other) noexcept : Metacommunity()
+        {
+            *this = std::move(other);
+        }
+
+        Metacommunity(const Metacommunity &other) : Metacommunity()
+        {
+            *this = other;
+        };
+
+        Metacommunity &operator=(Metacommunity other) noexcept
+        {
+            other.swap(*this);
+            return *this;
+        }
+
+        void swap(Metacommunity &other) noexcept
+        {
+            if(this != &other)
+            {
+                Community::swap(other);
+                std::swap(seed, other.seed);
+                std::swap(task, other.task);
+                std::swap(parameters_checked, other.parameters_checked);
+                std::swap(species_abundances_handler, other.species_abundances_handler);
+                std::swap(random, other.random);
+                std::swap(metacommunity_tree, other.metacommunity_tree);
+            }
+        }
 
         /**
          * @brief Sets the parameters for the metacommunity
@@ -76,13 +117,20 @@ namespace necsim
          * @param tree_node pointer to the TreeNode object for this lineage
          * @param species_list the set of all species ids.
          */
-        void addSpecies(unsigned long &species_count, TreeNode* tree_node, set<unsigned long> &species_list) override;
+        void addSpecies(unsigned long &species_count, TreeNode* tree_node, std::set<unsigned long> &species_list) override;
 
         /**
          * @brief Creates the metacommunity in memory using a non-spatially_explicit neutral model, which is run using the
          * Tree class
          */
         void createMetacommunityNSENeutralModel();
+
+        /**
+         * @brief Applies the speciation parameters to the completed simulation, including running the spatially implicit
+         * for the metacommunity structure, but doesn't write the output
+         * @param sp speciation parameters to apply, including speciation rate, times and spatial sampling procedure.
+         */
+        void applyNoOutput(shared_ptr<SpecSimParameters> sp) override;
 
         /**
          * @brief Applies the speciation parameters to the completed simulation, including running the spatially implicit

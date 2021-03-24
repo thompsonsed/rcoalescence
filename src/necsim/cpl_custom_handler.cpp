@@ -10,33 +10,32 @@
 #include "cpl_custom_handler.h"
 #include "Logging.h"
 
-#ifdef with_gdal
 namespace necsim
 {
     void cplNecsimCustomErrorHandler(CPLErr eErrClass, int err_no, const char* msg)
     {
-        stringstream error_msg;
+        std::stringstream error_msg;
         if(!loggerIsSetup())
         {
 #ifndef use_rcoalescence
-            cerr << "Logging object has not been set before CPL error thrown: " << err_no << ". " << msg << endl;
+            std::cerr << "Logging object has not been set before CPL error thrown: " << err_no << ". " << msg << std::endl;
 #endif // use_rcoalescence
         }
         else
         {
             if(eErrClass == CE_Fatal)
             {
-                error_msg << "Critical gdal error: " << err_no << ". " << msg << endl;
+                error_msg << "Critical gdal error: " << err_no << ". " << msg << std::endl;
                 writeCritical(error_msg.str());
             }
             else if(eErrClass == CE_Failure)
             {
-                error_msg << "Gdal error: " << err_no << ". " << msg << endl;
+                error_msg << "Gdal error: " << err_no << ". " << msg << std::endl;
                 writeError(error_msg.str());
             }
             else if(eErrClass == CE_Warning)
             {
-                error_msg << "Gdal warning: " << err_no << ". " << msg << endl;
+                error_msg << "Gdal warning: " << err_no << ". " << msg << std::endl;
                 writeWarning(error_msg.str());
             }
 #ifdef DEBUG
@@ -48,4 +47,3 @@ namespace necsim
         }
     }
 }
-#endif //with_gdal

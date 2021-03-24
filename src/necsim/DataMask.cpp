@@ -1,4 +1,3 @@
-
 /**
  * @author Samuel Thompson
  * @file DataMask.cpp
@@ -10,6 +9,7 @@
 #include "DataMask.h"
 #include "Landscape.h"
 #include "Logging.h"
+
 namespace necsim
 {
     DataMask::DataMask() : inputfile(""), isNullSample(true), isGridOffset(false), x_offset(0), y_offset(0), x_dim(0),
@@ -17,6 +17,50 @@ namespace necsim
                            sample_mask_exact()
     {
         getProportionfptr = &DataMask::getBoolProportion;
+    }
+
+    DataMask &DataMask::operator=(const DataMask &other)
+    {
+        sample_mask = other.sample_mask;
+        sample_mask_exact = other.sample_mask_exact;
+        inputfile = other.inputfile;
+        // True if the sample mask is true everywhere
+        isNullSample = other.isNullSample;
+        // True if the grid is smaller than the sample mask
+        isGridOffset = other.isGridOffset;
+        x_offset = other.x_offset;
+        y_offset = other.y_offset;
+        // Stores the size of the grid which is stored as a full species lineage_indices
+        x_dim = other.x_dim;
+        y_dim = other.y_dim;
+        // Stores the size of the samplemask from which spatially sampling is read
+        mask_x_dim = other.mask_x_dim;
+        mask_y_dim = other.mask_y_dim;
+
+        getProportionfptr = &DataMask::getBoolProportion;
+        return *this;
+    }
+
+    DataMask &DataMask::operator=(DataMask &&other) noexcept
+    {
+        sample_mask = std::move(other.sample_mask);
+        sample_mask_exact = std::move(other.sample_mask_exact);
+        inputfile = std::move(other.inputfile);
+        // True if the sample mask is true everywhere
+        isNullSample = other.isNullSample;
+        // True if the grid is smaller than the sample mask
+        isGridOffset = other.isGridOffset;
+        x_offset = other.x_offset;
+        y_offset = other.y_offset;
+        // Stores the size of the grid which is stored as a full species lineage_indices
+        x_dim = other.x_dim;
+        y_dim = other.y_dim;
+        // Stores the size of the samplemask from which spatially sampling is read
+        mask_x_dim = other.mask_x_dim;
+        mask_y_dim = other.mask_y_dim;
+
+        getProportionfptr = &DataMask::getBoolProportion;
+        return *this;
     }
 
     bool DataMask::isNull()
@@ -27,13 +71,15 @@ namespace necsim
     void DataMask::setup(const shared_ptr<SimParameters> sim_parameters)
     {
 #ifdef DEBUG
-        if((sim_parameters->grid_x_size > sim_parameters->sample_x_size ||
-            sim_parameters->grid_y_size > sim_parameters->sample_y_size) && !isNullSample)
+        if((sim_parameters->grid_x_size > sim_parameters->sample_x_size
+            || sim_parameters->grid_y_size > sim_parameters->sample_y_size) && !isNullSample)
         {
-            writeLog(50, "Grid size: " + to_string(sim_parameters->grid_x_size) + ", " +
-                         to_string(sim_parameters->grid_y_size));
-            writeLog(50, "Sample mask size: " + to_string(sim_parameters->sample_x_size) + ", " +
-                         to_string(sim_parameters->sample_y_size));
+            writeLog(50,
+                     "Grid size: " + std::to_string(sim_parameters->grid_x_size) + ", "
+                     + std::to_string(sim_parameters->grid_y_size));
+            writeLog(50,
+                     "Sample mask size: " + std::to_string(sim_parameters->sample_x_size) + ", "
+                     + std::to_string(sim_parameters->sample_y_size));
             throw FatalException("Datamask dimensions do not make sense");
         }
 #endif // DEBUG
@@ -76,8 +122,12 @@ namespace necsim
         return isNullSample;
     }
 
-    void DataMask::importBooleanMask(unsigned long xdim, unsigned long ydim, unsigned long mask_xdim,
-                                     unsigned long mask_ydim, unsigned long xoffset, unsigned long yoffset,
+    void DataMask::importBooleanMask(unsigned long xdim,
+                                     unsigned long ydim,
+                                     unsigned long mask_xdim,
+                                     unsigned long mask_ydim,
+                                     unsigned long xoffset,
+                                     unsigned long yoffset,
                                      string inputfile_in)
     {
         shared_ptr<SimParameters> tmp_sim_parameters = make_shared<SimParameters>();
@@ -137,7 +187,7 @@ namespace necsim
             {
 #ifdef DEBUG
                 writeLog(10, "Using spatial sampling.");
-                writeLog(10, "Mask dimensions: " + to_string(mask_x_dim) + ", " + to_string(mask_y_dim));
+                writeLog(10, "Mask dimensions: " + std::to_string(mask_x_dim) + ", " + std::to_string(mask_y_dim));
 #endif // DEBUG
                 sample_mask_exact.setSize(mask_y_dim, mask_x_dim);
                 sample_mask_exact.import(inputfile);
@@ -174,16 +224,16 @@ namespace necsim
 #ifdef DEBUG
         if(xval < 0 || xval >= (long) mask_x_dim || yval < 0 || yval >= (long) mask_y_dim)
         {
-            stringstream ss;
-            ss << "Get value on samplemask requested for non index." << endl;
-            ss << "x, y: " << x << ", " << y << endl;
-            ss << "dimensions x,y: " << mask_x_dim << ", " << mask_y_dim << endl;
-            ss << "x, y wrap: " << xwrap << ", " << ywrap << endl;
-            ss << "xval, yval: " << xval << ", " << yval << endl;
-            ss << "offsets x, y: " << x_offset << ", " << y_offset << endl;
+            std::stringstream ss;
+            ss << "Get value on samplemask requested for non index." << std::endl;
+            ss << "x, y: " << x << ", " << y << std::endl;
+            ss << "dimensions x,y: " << mask_x_dim << ", " << mask_y_dim << std::endl;
+            ss << "x, y wrap: " << xwrap << ", " << ywrap << std::endl;
+            ss << "xval, yval: " << xval << ", " << yval << std::endl;
+            ss << "offsets x, y: " << x_offset << ", " << y_offset << std::endl;
             writeLog(50, ss);
             ss.str("Get value on samplemask requested for non index.");
-            throw out_of_range(ss.str());
+            throw std::out_of_range (ss.str());
         }
 #endif
         return sample_mask.getCopy(yval, xval);
@@ -212,7 +262,7 @@ namespace necsim
 #ifdef DEBUG
         if(isNullSample || sample_mask_exact.getCols() == 0)
         {
-            throw out_of_range("Cannot get the exact value from a samplemask if we are using a null mask, or the "
+            throw std::out_of_range ("Cannot get the exact value from a samplemask if we are using a null mask, or the "
                                "exact samplemask has not been properly imported.");
         }
 #endif // DEBUG

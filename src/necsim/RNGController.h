@@ -32,7 +32,7 @@
 #include "Xoroshiro256plus.h"
 #define PARAM_R 3.44428647676
 
-using namespace std;
+
 namespace random_numbers
 {
     /**
@@ -177,7 +177,7 @@ namespace random_numbers
             }
             else
             {
-                throw runtime_error("Trying to set the seed again: this can only be set once.");
+                throw std::runtime_error("Trying to set the seed again: this can only be set once.");
             }
         }
 
@@ -493,7 +493,7 @@ namespace random_numbers
                 }
             }
             // Then the value comes from the second uniform distribution
-            return uniformMinDistance(max(min_distance, 0.9 * cutoff));
+            return uniformMinDistance(std::max(min_distance, 0.9 * cutoff));
         }
 
         /**
@@ -511,7 +511,7 @@ namespace random_numbers
                 dispersalFunctionMinDistance = &RNGController::rayleighMinDist;
                 if(sigma < 0)
                 {
-                    throw invalid_argument("Cannot have negative sigma with normal dispersal");
+                    throw std::invalid_argument("Cannot have negative sigma with normal dispersal");
                 }
             }
             else if(dispersal_method == "fat-tail" || dispersal_method == "fat-tailed")
@@ -520,7 +520,7 @@ namespace random_numbers
                 dispersalFunctionMinDistance = &RNGController::fattailMinDistance;
                 if(tau < 0 || sigma < 0)
                 {
-                    throw invalid_argument("Cannot have negative sigma or tau with fat-tailed dispersal");
+                    throw std::invalid_argument("Cannot have negative sigma or tau with fat-tailed dispersal");
                 }
             }
             else if(dispersal_method == "norm-uniform")
@@ -529,7 +529,7 @@ namespace random_numbers
                 dispersalFunctionMinDistance = &RNGController::normUniformMinDistance;
                 if(sigma < 0)
                 {
-                    throw invalid_argument("Cannot have negative sigma with normal dispersal");
+                    throw std::invalid_argument("Cannot have negative sigma with normal dispersal");
                 }
             }
             else if(dispersal_method == "uniform-uniform")
@@ -546,13 +546,13 @@ namespace random_numbers
 
                 if(tau > -2 || sigma < 0)
                 {
-                    throw invalid_argument(
+                    throw std::invalid_argument(
                             "Cannot have sigma < 0 or tau > -2 with fat-tailed dispersal (old implementation).");
                 }
             }
             else
             {
-                throw runtime_error("Dispersal method not detected. Check implementation exists");
+                throw std::runtime_error("Dispersal method not detected. Check implementation exists");
             }
             m_prob = m_probin;
             cutoff = cutoffin;
@@ -569,7 +569,7 @@ namespace random_numbers
          */
         double dispersal()
         {
-            return min(double(LONG_MAX), (this->*dispersalFunction)());
+            return std::min(double(LONG_MAX), (this->*dispersalFunction)());
         }
 
         /**
@@ -582,7 +582,7 @@ namespace random_numbers
          */
         double dispersalMinDistance(const double &min_distance)
         {
-            return min(double(LONG_MAX), (this->*dispersalFunctionMinDistance)(min_distance));
+            return std::min(double(LONG_MAX), (this->*dispersalFunctionMinDistance)(min_distance));
         }
 
         /**
@@ -636,9 +636,9 @@ namespace random_numbers
          * @param r the NRrand object to output.
          * @return the output stream.
          */
-        friend ostream &operator<<(ostream &os, const RNGController &r)
+        friend std::ostream &operator<<(std::ostream &os, const RNGController &r)
         {
-            os << setprecision(64);
+            os << std::setprecision(64);
             os << r.seed << "," << r.seeded << ",";
             os << r.tau << "," << r.sigma << "," << r.m_prob << "," << r.cutoff << ",";
             os << static_cast<const Xoroshiro256plus &>(r);
@@ -652,7 +652,7 @@ namespace random_numbers
          * @param r the NRrand object to input to.
          * @return the input stream.
          */
-        friend istream &operator>>(istream &is, RNGController &r)
+        friend std::istream &operator>>(std::istream &is, RNGController &r)
         {
             char delim;
             is >> r.seed >> delim >> r.seeded >> delim >> r.tau >> delim >> r.sigma >> delim >> r.m_prob >> delim;

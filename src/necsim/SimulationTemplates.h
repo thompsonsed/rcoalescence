@@ -30,8 +30,8 @@ namespace necsim
     {
         if(com_args.size() != 3)
         {
-            stringstream ss;
-            ss << "Incorrect number of command-line arguments supplied. Should be 3, got " << com_args.size() << endl;
+            std::stringstream ss;
+            ss << "Incorrect number of command-line arguments supplied. Should be 3, got " << com_args.size() << std::endl;
             throw FatalException(ss.str());
         }
         else

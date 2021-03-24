@@ -128,7 +128,7 @@ void RSpatialTreeSimulation::setMapParameters(const string &fine_map_file_in,
                                              death_map_file_in);
 }
 
-void RSpatialTreeSimulation::setup()
+void RSpatialTreeSimulation::setupR()
 {
     if(!paths_fine.empty())
     {

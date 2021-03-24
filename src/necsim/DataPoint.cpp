@@ -121,7 +121,7 @@ namespace necsim
     {
         if(nwrap == 0)
         {
-            throw out_of_range("ERROR_DATA_001: Trying to decrease  nwrap less than 0.");
+            throw std::out_of_range("ERROR_DATA_001: Trying to decrease  nwrap less than 0.");
         }
         else
         {
@@ -130,7 +130,7 @@ namespace necsim
     }
 
 
-    ostream &operator<<(ostream &os, const DataPoint &d)
+    std::ostream &operator<<(std::ostream &os, const DataPoint &d)
     {
         os << d.x << "," << d.y << "," << d.xwrap << "," << d.ywrap << "," << d.next_lineage << "," << d.reference
            << "," << d.list_position << "," << d.nwrap << ",";
@@ -138,7 +138,7 @@ namespace necsim
         return os;
     }
 
-    istream &operator>>(istream &is, DataPoint &d)
+    std::istream &operator>>(std::istream &is, DataPoint &d)
     {
         char delim;
         is >> d.x >> delim >> d.y >> delim >> d.xwrap >> delim >> d.ywrap >> delim >> d.next_lineage >> delim
@@ -150,13 +150,13 @@ namespace necsim
 #ifdef DEBUG
     void DataPoint::logActive(const int &level)
     {
-        writeLog(50, "x, y, (x wrap, y wrap): " + to_string(x) + ", " + to_string(y) + ", (" +
-                     to_string(xwrap) + ", " + to_string(ywrap) + ")");
-        writeLog(50, "Lineage next: " + to_string(next_lineage));
-        writeLog(50, "Reference: " + to_string(reference));
-        writeLog(50, "List position: " + to_string(list_position));
-        writeLog(50, "Number in wrapped lineages: " + to_string(nwrap));
-        writeLog(50, "Minimum maximum: " + to_string(min_max));
+        writeLog(50, "x, y, (x wrap, y wrap): " + std::to_string(x) + ", " + std::to_string(y) + ", (" +
+                     std::to_string(xwrap) + ", " + std::to_string(ywrap) + ")");
+        writeLog(50, "Lineage next: " + std::to_string(next_lineage));
+        writeLog(50, "Reference: " + std::to_string(reference));
+        writeLog(50, "List position: " + std::to_string(list_position));
+        writeLog(50, "Number in wrapped lineages: " + std::to_string(nwrap));
+        writeLog(50, "Minimum maximum: " + std::to_string(min_max));
     }
 #endif // DEBUG
 }

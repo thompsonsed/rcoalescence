@@ -30,12 +30,12 @@ namespace necsim
     }
 
     void SpeciesAbundancesHandler::setAbundanceList(
-            const shared_ptr<map<unsigned long, unsigned long>> &abundance_list_in)
+            const shared_ptr<std::map<unsigned long, unsigned long>> &abundance_list_in)
     {
 
     }
 
-    void SpeciesAbundancesHandler::setAbundanceList(shared_ptr<vector<unsigned long>> abundance_list_in)
+    void SpeciesAbundancesHandler::setAbundanceList(shared_ptr<std::vector<unsigned long>> abundance_list_in)
     {
 
     }

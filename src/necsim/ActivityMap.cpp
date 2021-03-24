@@ -151,7 +151,7 @@ namespace necsim
         return *this;
     }
 
-    ostream &operator<<(ostream &os, ActivityMap &r)
+    std::ostream &operator<<(std::ostream &os, ActivityMap &r)
     {
         os << r.map_file << "\n";
         os << r.activity_map.getCols() << "\n";
@@ -163,7 +163,7 @@ namespace necsim
         return os;
     }
 
-    istream &operator>>(istream &is, ActivityMap &r)
+    std::istream &operator>>(std::istream &is, ActivityMap &r)
     {
         is.ignore();
         getline(is, r.map_file);

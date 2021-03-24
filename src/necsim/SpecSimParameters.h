@@ -23,7 +23,7 @@
 #include "double_comparison.h"
 #include "parameters.h"
 
-using namespace std;
+
 namespace necsim
 {
     /**
@@ -37,10 +37,10 @@ namespace necsim
         bool bMultiRun;
         bool use_fragments;
         string filename;
-        set<double> all_speciation_rates;
+        std::set<double> all_speciation_rates;
         string samplemask;
         string times_file;
-        set<double> all_times;
+        std::set<double> all_times;
         string fragment_config_file;
         vector<ProtractedSpeciationParameters> protracted_parameters;
         MetacommunitiesArray metacommunity_parameters;
@@ -146,10 +146,10 @@ namespace necsim
             }
             else
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Parameters already added for metacommunity with size " << metacommunity_size_in << ", ";
                 ss << "speciation rate " << metacommunity_speciation_rate_in << ", " << "using option ";
-                ss << metacommunity_option_in << " and reference " << metacommunity_reference_in << endl;
+                ss << metacommunity_option_in << " and reference " << metacommunity_reference_in << std::endl;
                 writeInfo(ss.str());
             }
         }
@@ -192,6 +192,14 @@ namespace necsim
             fragment_config_file = "";
             protracted_parameters.clear();
             metacommunity_parameters.clear();
+        }
+
+        /**
+         * @brief Wipes the protracted parameters
+         */
+        void wipeProtractedParameters()
+        {
+            protracted_parameters.clear();
         }
 
         /**

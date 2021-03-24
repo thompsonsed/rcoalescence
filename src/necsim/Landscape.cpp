@@ -25,8 +25,8 @@ namespace necsim
 #ifndef SIZE_LIMIT
         if(map_x > 1000000 || map_y > 1000000)
         {
-            throw runtime_error(
-                    "Extremely large map sizes set for " + map_file + ": " + to_string(map_x) + ", " + to_string(map_y)
+            throw std::runtime_error(
+                    "Extremely large map sizes set for " + map_file + ": " + std::to_string(map_x) + ", " + std::to_string(map_y)
                     + "\n");
         }
 #endif
@@ -64,7 +64,7 @@ namespace necsim
         {
             for(unsigned long j = 0; j < temp_matrix.getCols(); j++)
             {
-                map_in.get(i, j) = (uint32_t) (max(round((double) temp_matrix.get(i, j) * scalar), 0.0));
+                map_in.get(i, j) = (uint32_t) (std::max(round((double) temp_matrix.get(i, j) * scalar), 0.0));
                 if(map_in.get(i, j) > max_value)
                 {
                     max_value = map_in.get(i, j);
@@ -247,20 +247,20 @@ namespace necsim
         }
         dispersal_relative_cost = mapvars->dispersal_relative_cost;
 #ifdef DEBUG
-        stringstream os;
-        os << "\nfinex: " << fine_x_min << "," << fine_x_max << endl;
-        os << "finey: " << fine_y_min << "," << fine_y_max << endl;
-        os << "coarsex: " << coarse_x_min << "," << coarse_x_max << endl;
-        os << "coarsey: " << coarse_y_min << "," << coarse_y_max << endl;
+        std::stringstream os;
+        os << "\nfinex: " << fine_x_min << "," << fine_x_max << std::endl;
+        os << "finey: " << fine_y_min << "," << fine_y_max << std::endl;
+        os << "coarsex: " << coarse_x_min << "," << coarse_x_max << std::endl;
+        os << "coarsey: " << coarse_y_min << "," << coarse_y_max << std::endl;
         os << "offsets: "
            << "(" << fine_x_offset << "," << fine_y_offset << ")(" << coarse_x_offset << "," << coarse_y_offset << ")"
-           << endl;
-        os << "historical fine file: " << historical_fine_map << endl;
-        os << "historical coarse file: " << historical_coarse_map << endl;
+           << std::endl;
+        os << "historical fine file: " << historical_fine_map << std::endl;
+        os << "historical coarse file: " << historical_coarse_map << std::endl;
         writeInfo(os.str());
 #endif
-        //		os << "fine variables: " << finexmin << "," << fine_x_max << endl;
-        //		os << "coarse variabes: " << coarse_x_min << "," << coarse_x_max << endl;
+        //		os << "fine variables: " << finexmin << "," << fine_x_max << std::endl;
+        //		os << "coarse variabes: " << coarse_x_min << "," << coarse_x_max << std::endl;
         if(fine_x_min < coarse_x_min || fine_x_max > coarse_x_max || (fine_x_max - fine_x_min) < x_dim
            || (fine_y_max - fine_y_min) < y_dim)
         {
@@ -296,17 +296,17 @@ namespace necsim
             tmp_sample_map.close();
             if(x_offset < 0 || y_offset < 0)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Fine map upper-left coordinates: " << fine_map.getUpperLeftX() << ", "
                    << fine_map.getUpperLeftY();
-                ss << endl << "Sample map upper-left coordinates: " << tmp_sample_map.getUpperLeftX() << ", ";
-                ss << tmp_sample_map.getUpperLeftY() << endl;
+                ss << std::endl << "Sample map upper-left coordinates: " << tmp_sample_map.getUpperLeftX() << ", ";
+                ss << tmp_sample_map.getUpperLeftY() << std::endl;
                 writeInfo(ss.str());
                 ss.str("");
                 ss << "Offsets of " << mapvars->fine_map_file << " from " << mapvars->sample_mask_file
                    << " are negative (";
                 ss << x_offset << ", " << y_offset << "): ";
-                ss << "check map files are set correctly.\n" << endl;
+                ss << "check map files are set correctly.\n" << std::endl;
                 throw FatalException(ss.str());
             }
             mapvars->fine_map_x_offset = static_cast<unsigned long>(x_offset);
@@ -332,17 +332,17 @@ namespace necsim
             mapvars->coarse_map_scale = fine_map.roundedScale(coarse_map);
             if(x_offset < 0 || y_offset < 0)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Fine map upper-left coordinates: " << fine_map.getUpperLeftX() << ", "
                    << fine_map.getUpperLeftY();
-                ss << endl << "Coarse map upper-left coordinates: " << coarse_map.getUpperLeftX() << ", ";
+                ss << std::endl << "Coarse map upper-left coordinates: " << coarse_map.getUpperLeftX() << ", ";
                 ss << fine_map.getUpperLeftY();
                 writeInfo(ss.str());
                 ss.str("");
                 ss << "Offsets of " << mapvars->coarse_map_file << " from " << mapvars->fine_map_file
                    << " are negative (";
                 ss << x_offset << ", " << y_offset << "): ";
-                ss << "check map files are set correctly." << endl;
+                ss << "check map files are set correctly." << std::endl;
                 throw FatalException(ss.str());
             }
         }
@@ -353,15 +353,15 @@ namespace necsim
             mapvars->coarse_map_scale = 1.0;
         }
         scale = mapvars->coarse_map_scale;
-        stringstream ss;
-        ss << "Dimensions detected as: " << endl;
-        ss << "Fine map" << endl;
-        ss << "-dimensions: " << fine_map.getCols() << ", " << fine_map.getRows() << endl;
-        ss << "-offsets: " << mapvars->fine_map_x_offset << ", " << mapvars->fine_map_y_offset << endl;
-        ss << "Coarse map" << endl;
-        ss << "-dimensions: " << coarse_map.getCols() << ", " << coarse_map.getRows() << endl;
-        ss << "-offsets: " << mapvars->coarse_map_x_offset << ", " << mapvars->coarse_map_y_offset << endl;
-        ss << "-scale: " << mapvars->coarse_map_scale << endl;
+        std::stringstream ss;
+        ss << "Dimensions detected as: " << std::endl;
+        ss << "Fine map" << std::endl;
+        ss << "-dimensions: " << fine_map.getCols() << ", " << fine_map.getRows() << std::endl;
+        ss << "-offsets: " << mapvars->fine_map_x_offset << ", " << mapvars->fine_map_y_offset << std::endl;
+        ss << "Coarse map" << std::endl;
+        ss << "-dimensions: " << coarse_map.getCols() << ", " << coarse_map.getRows() << std::endl;
+        ss << "-offsets: " << mapvars->coarse_map_x_offset << ", " << mapvars->coarse_map_y_offset << std::endl;
+        ss << "-scale: " << mapvars->coarse_map_scale << std::endl;
         writeInfo(ss.str());
         calculateOffsetsFromParameters();
     }
@@ -398,8 +398,8 @@ namespace necsim
 
     void Landscape::validateMaps()
     {
-        stringstream os;
-        os << "\rValidating maps..." << flush;
+        std::stringstream os;
+        os << "\rValidating maps..." << std::flush;
 #ifdef historical_mode
         double dTotal = fine_map.getCols() + coarse_map.getCols();
         unsigned long iCounter = 0;
@@ -411,7 +411,7 @@ namespace necsim
                && coarse_map.getCols() == historical_coarse_map.getCols()
                && coarse_map.getRows() == historical_coarse_map.getRows())
             {
-                os << "\rValidating maps...map sizes okay" << flush;
+                os << "\rValidating maps...map sizes okay" << std::flush;
                 writeInfo(os.str());
             }
             else
@@ -428,9 +428,9 @@ namespace necsim
                     if(fine_map.get(i, j) > historical_fine_map.get(i, j))
                     {
 #ifdef DEBUG
-                        stringstream ss;
+                        std::stringstream ss;
                         ss << "fine map: " << fine_map.get(i, j) << " historical map: " << historical_fine_map.get(i, j);
-                        ss << " x,y: " << j << "," << i << endl;
+                        ss << " x,y: " << j << "," << i << std::endl;
                         writeLog(50, ss);
 #endif //DEBUG
                         throw FatalException("Landscape validation failed - fine map value larger "
@@ -441,7 +441,7 @@ namespace necsim
                 if(i % 1000 == 0)
                 {
                     os.str("");
-                    os << "\rValidating maps..." << dPercentComplete << "%                " << flush;
+                    os << "\rValidating maps..." << dPercentComplete << "%                " << std::flush;
                     writeInfo(os.str());
                 }
             }
@@ -449,7 +449,7 @@ namespace necsim
         }
 #ifdef historical_mode
         iCounter = fine_map.getCols();
-        stringstream ss;
+        std::stringstream ss;
         if(has_historical)
         {
 
@@ -473,7 +473,7 @@ namespace necsim
                 if(i % 1000 == 0)
                 {
                     os.str("");
-                    os << "\rValidating maps..." << dPercentComplete << "%                " << flush;
+                    os << "\rValidating maps..." << dPercentComplete << "%                " << std::flush;
                     writeInfo(os.str());
                 }
             }
@@ -481,7 +481,7 @@ namespace necsim
         }
 #endif // historical_mode
         os.str("");
-        os << "\rValidating maps complete                                       " << endl;
+        os << "\rValidating maps complete                                       " << std::endl;
         writeInfo(os.str());
     }
 
@@ -495,7 +495,7 @@ namespace necsim
                 // Only update the map if the maps have actually changed
                 if(mapvars->checkNeedsUpdate(generation))
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "\nUpdating historical maps at " << generation << "...\n";
                     writeInfo(ss.str());
                     fine_max = historical_fine_max;
@@ -595,7 +595,7 @@ namespace necsim
         //		// return 0 if the requested coordinate is completely outside the map
         if(xval < coarse_x_min || xval >= coarse_x_max || yval < coarse_y_min || yval >= coarse_y_max)
         {
-            return (unsigned long) max(deme, 1.0);
+            return (unsigned long) std::max(deme, 1.0);
         }
         return getValFinite(x, y, xwrap, ywrap, current_generation);
     }
@@ -640,11 +640,11 @@ namespace necsim
 #ifdef DEBUG
         if(newx >= fine_map.getCols() || newx < 0 || newy >= fine_map.getRows() || newy < 0)
         {
-            stringstream ss;
-            ss << "Fine map indexing out of range of fine map." << endl;
-            ss << "x, y: " << newx << ", " << newy << endl;
-            ss << "cols, rows: " << fine_map.getCols() << ", " << fine_map.getRows() << endl;
-            throw out_of_range(ss.str());
+            std::stringstream ss;
+            ss << "Fine map indexing out of range of fine map." << std::endl;
+            ss << "x, y: " << newx << ", " << newy << std::endl;
+            ss << "cols, rows: " << fine_map.getCols() << ", " << fine_map.getRows() << std::endl;
+            throw std::out_of_range (ss.str());
         }
 #endif
         return getValFine(newx, newy, current_generation);
@@ -704,8 +704,8 @@ namespace necsim
                 string ec =
                     "Returned value greater than historical value. Check file input. (or disable this error before "
                     "compilation.\n";
-                ec += "historical value: " + to_string((long long)historical_coarse_map.get(yval, xval)) +
-                      " returned value: " + to_string((long long)retval);
+                ec += "historical value: " + std::to_string((long long)historical_coarse_map.get(yval, xval)) +
+                      " returned value: " + std::to_string((long long)retval);
                 throw FatalException(ec);
             }
     // Note that debug mode will throw an exception if the returned value is less than the historical state
@@ -840,7 +840,7 @@ namespace necsim
                 xwrap = 0;
                 ywrap = 0;
                 samplemask.recalculateCoordinates(x, y, xwrap, ywrap);
-                toret += (unsigned long) (max(floor(
+                toret += (unsigned long) (std::max(floor(
                         dSample * (getVal(x, y, xwrap, ywrap, 0)) * samplemask.getExactValue(x, y, xwrap, ywrap)),
                                               0.0));
             }
@@ -950,7 +950,7 @@ namespace necsim
             {
                 throw FatalException(string(
                         "ERROR_MOVE_007: Dispersal attempted to non-forest. Check dispersal function. Forest cover: " +
-                        to_string((long long) getVal(newx, newy, newxwrap, newywrap, generation))));
+                        std::to_string((long long) getVal(newx, newy, newxwrap, newywrap, generation))));
             }
 #endif
             startx = newx;
@@ -960,7 +960,7 @@ namespace necsim
             disp_comp = false;
         }
         return ret;
-    };
+    }
 
     double Landscape::distanceToNearestHabitat(const long &start_x,
                                                const long &start_y,
@@ -988,7 +988,7 @@ namespace necsim
         {
             while(true)
             {
-                theta += 0.5 * M_PI / (2.0 * max(radius, 1.0));
+                theta += 0.5 * M_PI / (2.0 * std::max(radius, 1.0));
                 radius = theta / (2 * M_PI);
                 end_x = archimedesSpiralX(start_x, start_y, radius, theta);
                 end_y = archimedesSpiralY(start_x, start_y, radius, theta);
@@ -1007,11 +1007,11 @@ namespace necsim
                         }
                         else
                         {
-                            stringstream ss;
+                            std::stringstream ss;
                             ss << "Could not find a habitat cell for parent from (" << start_x << ", " << start_y;
                             ss << ") (" << start_x_wrap << ", " << start_y_wrap << ") - reached a radius of " << radius;
                             ss << ". Check that your map files always have a place for lineages to disperse from."
-                               << endl;
+                               << std::endl;
                             throw FatalException(ss.str());
                         }
                     }
@@ -1046,11 +1046,11 @@ namespace necsim
             max_x = coarse_x_max;
             max_y = coarse_y_max;
         }
-        stringstream ss;
+        std::stringstream ss;
         ss << "Looking for habitat cells within (" << min_x << ", " << max_x;
-        ss << "), (" << min_y << ", " << max_y << ")." << endl;
+        ss << "), (" << min_y << ", " << max_y << ")." << std::endl;
         writeInfo(ss.str());
-        vector<pair<long, long>> locations;
+        vector<std::pair<long, long>> locations;
         long start_x_reform = start_x + (x_dim * start_x_wrap);
         long start_y_reform = start_y + (y_dim * start_y_wrap);
         for(long y = min_y; y < max_y; y++)
@@ -1059,16 +1059,16 @@ namespace necsim
             {
                 if(checkMap(x, y, 0, 0, generation))
                 {
-                    pair<long, long> p(x, y);
+                    std::pair<long, long> p(x, y);
                     locations.emplace_back(p);
                 }
             }
         }
         if(locations.empty())
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Could not find any habitat cell on map with extremes (" << min_x << ", " << max_x;
-            ss << "), (" << min_y << ", " << max_y << ")." << endl;
+            ss << "), (" << min_y << ", " << max_y << ")." << std::endl;
             writeCritical(ss.str());
             return false;
         }
@@ -1103,13 +1103,13 @@ namespace necsim
 
     string Landscape::printVars()
     {
-        stringstream os;
-        os << "fine x limits: " << fine_x_min << " , " << fine_x_max << endl;
-        os << "fine y limits: " << fine_y_min << " , " << fine_y_max << endl;
-        os << "fine map offset: " << fine_x_offset << " , " << fine_y_offset << endl;
-        os << "coarse x limits: " << coarse_x_min << " , " << coarse_x_max << endl;
-        os << "coarse y limits: " << coarse_y_min << " , " << coarse_y_max << endl;
-        os << "x,y dims: " << x_dim << " , " << y_dim << endl;
+        std::stringstream os;
+        os << "fine x limits: " << fine_x_min << " , " << fine_x_max << std::endl;
+        os << "fine y limits: " << fine_y_min << " , " << fine_y_max << std::endl;
+        os << "fine map offset: " << fine_x_offset << " , " << fine_y_offset << std::endl;
+        os << "coarse x limits: " << coarse_x_min << " , " << coarse_x_max << std::endl;
+        os << "coarse y limits: " << coarse_y_min << " , " << coarse_y_max << std::endl;
+        os << "x,y dims: " << x_dim << " , " << y_dim << std::endl;
         return os.str();
     }
 
@@ -1179,10 +1179,10 @@ namespace necsim
 #ifdef DEBUG
         if(habitat_max > 10000)
         {
-            stringstream ss;
-            writeLog(10, "habitat_max may be unreasonably large: " + to_string(habitat_max));
+            std::stringstream ss;
+            writeLog(10, "habitat_max may be unreasonably large: " + std::to_string(habitat_max));
             ss << "fine, coarse, pfine, pcoarse: " << fine_max << ", " << coarse_max;
-            ss << ", " << historical_fine_max << ", " << historical_coarse_max << endl;
+            ss << ", " << historical_fine_max << ", " << historical_coarse_max << std::endl;
         }
 #endif
     }

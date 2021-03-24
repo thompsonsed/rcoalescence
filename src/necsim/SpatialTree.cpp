@@ -15,6 +15,7 @@
 #include "SpatialTree.h"
 
 #ifdef WIN_INSTALL
+#define NOMINMAX
 #include <windows.h>
 #include <io.h>
 #define dup2 _dup2
@@ -24,6 +25,8 @@
 
 namespace necsim
 {
+
+
     void SpatialTree::runFileChecks()
     {
         // Now check that our folders exist
@@ -35,8 +38,8 @@ namespace necsim
     void SpatialTree::checkFolders()
     {
 
-        stringstream os;
-        os << "Checking folder existance..." << flush;
+        std::stringstream os;
+        os << "Checking folder existance..." << std::flush;
         bool bFineMap, bCoarseMap, bFineMapHistorical, bCoarseMapHistorical, bSampleMask, bOutputFolder;
         try
         {
@@ -87,7 +90,7 @@ namespace necsim
         if(bFineMap && bCoarseMap && bFineMapHistorical && bCoarseMapHistorical && bOutputFolder && bSampleMask)
         {
             os << "\rChecking folder existance...done.                                                                "
-               << endl;
+               << std::endl;
             writeInfo(os.str());
             return;
         }
@@ -144,8 +147,8 @@ namespace necsim
             }
             catch(FatalException &fe)
             {
-                stringstream ss;
-                ss << "Problem setting up map files: " << fe.what() << endl;
+                std::stringstream ss;
+                ss << "Problem setting up map files: " << fe.what() << std::endl;
                 throw FatalException(ss.str());
             }
         }
@@ -224,22 +227,22 @@ namespace necsim
                 }
             }
         }
-        catch(exception &e)
+        catch(std::exception &e)
         {
             throw FatalException(e.what());
         }
         // Set active and data at the correct sizes.
         if(initcount == 0)
         {
-            throw runtime_error("Initial count is 0. No individuals to simulate. Exiting program.");
+            throw std::runtime_error("Initial count is 0. No individuals to simulate. Exiting program.");
         }
         else
         {
-            writeInfo("Initial count is " + to_string(initcount) + "\n");
+            writeInfo("Initial count is " + std::to_string(initcount) + "\n");
         }
         if(initcount > 10000000000)
         {
-            writeWarning("Initial count extremely large, RAM issues likely: " + to_string(initcount));
+            writeWarning("Initial count extremely large, RAM issues likely: " + std::to_string(initcount));
         }
         return initcount;
     }
@@ -291,8 +294,8 @@ namespace necsim
         active[0].setup(0, 0, 0, 0, 0, 0, 0);
         grid.setSize(sim_parameters->grid_y_size, sim_parameters->grid_x_size);
         unsigned long number_start = 0;
-        stringstream os;
-        os << "\rSetting up simulation...filling grid                           " << flush;
+        std::stringstream os;
+        os << "\rSetting up simulation...filling grid                           " << std::flush;
         writeInfo(os.str());
         // Add the individuals to the grid, and add wrapped individuals to their correct locations.
         // This loop adds individuals to data and active (for storing the coalescence tree and active lineage tracking)
@@ -331,11 +334,11 @@ namespace necsim
                                 }
                                 if(number_start + 1 > initial_count)
                                 {
-                                    stringstream msg;
-                                    msg << "Number start greater than initial count. Please report this error!" << endl;
+                                    std::stringstream msg;
+                                    msg << "Number start greater than initial count. Please report this error!" << std::endl;
                                     msg << "Number start: " << number_start << ". Initial count: " << initial_count
-                                        << endl;
-                                    throw out_of_range(msg.str());
+                                        << std::endl;
+                                    throw std::out_of_range(msg.str());
                                 }
                                 else
                                 {
@@ -363,11 +366,11 @@ namespace necsim
                             {
                                 if(number_start + 1 > initial_count)
                                 {
-                                    stringstream msg;
+                                    std::stringstream msg;
                                     msg << "Number start greater than initial count. Please report this error!";
                                     msg << "Number start: " << number_start << ". Initial count: " << initial_count
-                                        << endl;
-                                    throw out_of_range(msg.str());
+                                        << std::endl;
+                                    throw std::out_of_range(msg.str());
                                 }
                                 else
                                 {
@@ -406,13 +409,13 @@ namespace necsim
                 }
             }
         }
-        catch(out_of_range &out_of_range1)
+        catch(std::out_of_range &out_of_range1)
         {
-            stringstream ss;
-            ss << "Fatal exception thrown when filling grid (out_of_range): " << out_of_range1.what() << endl;
+            std::stringstream ss;
+            ss << "Fatal exception thrown when filling grid (out_of_range): " << out_of_range1.what() << std::endl;
             throw FatalException(ss.str());
         }
-        catch(exception &fe)
+        catch(std::exception &fe)
         {
             throw FatalException("Fatal exception thrown when filling grid (other) \n");
         }
@@ -425,8 +428,8 @@ namespace necsim
             if(initial_count > 1.1 * number_start)
             {
                 writeCritical("Data usage higher than neccessary - check allocation of individuals to the grid.");
-                stringstream ss;
-                ss << "Initial count: " << initial_count << "  Number counted: " << number_start << endl;
+                std::stringstream ss;
+                ss << "Initial count: " << initial_count << "  Number counted: " << number_start << std::endl;
                 writeWarning(ss.str());
             }
         }
@@ -444,7 +447,7 @@ namespace necsim
     {
         //	if(sim_parameters->uses_spatial_sampling)
         //	{
-        return static_cast<unsigned long>(max(floor(deme_sample * landscape->getVal(x, y, x_wrap, y_wrap, current_gen)
+        return static_cast<unsigned long>(std::max(floor(deme_sample * landscape->getVal(x, y, x_wrap, y_wrap, current_gen)
                                                     * samplegrid.getExactValue(x, y, x_wrap, y_wrap)), 0.0));
         //	}
         //	else
@@ -497,8 +500,8 @@ namespace necsim
 #ifdef historical_mode
             if(grid.get(y, x).getMaxsize() < active[chosen].getListpos())
             {
-                stringstream ss;
-                ss << "grid maxsize: " << grid.get(y, x).getMaxsize() << endl;
+                std::stringstream ss;
+                ss << "grid maxsize: " << grid.get(y, x).getMaxsize() << std::endl;
                 writeCritical(ss.str());
                 throw FatalException("ERROR_MOVE_001: Listpos outside maxsize. Check move programming function.");
             }
@@ -595,8 +598,8 @@ namespace necsim
 
             if(iCount != grid.get(oldy, oldx).getNwrap())
             {
-                stringstream ss;
-                ss << "Nwrap: " << grid.get(oldy, oldx).getNwrap() << " Counted lineages: " << iCount << endl;
+                std::stringstream ss;
+                ss << "Nwrap: " << grid.get(oldy, oldx).getNwrap() << " Counted lineages: " << iCount << std::endl;
                 writeLog(50, ss);
                 throw FatalException("Nwrap not set correctly after move for grid cell");
             }
@@ -626,7 +629,7 @@ namespace necsim
             long double tmpiGen = (*data)[active[current].getReference()].getGenerationRate();
             newminmax = 1 - (pow(1 - tmpdSpec, (1 / tmpiGen)));
         }
-        long double toret = min(newminmax, oldminmax);
+        long double toret = std::min(newminmax, oldminmax);
         return toret;
     }
 
@@ -820,7 +823,7 @@ namespace necsim
             // lineage.
             if(randwrap > matches)  // coalescence has not occured
             {
-                // os << "This shouldn't happen" << endl;
+                // os << "This shouldn't happen" << std::endl;
                 this_step.coalchosen = 0;
                 this_step.coal = false;
                 active[next_active].setNext(this_step.chosen);
@@ -853,8 +856,8 @@ namespace necsim
 #ifdef DEBUG
         if(chosen > endactive)
         {
-            stringstream ss;
-            ss << "chosen: " << chosen << " endactive: " << endactive << endl;
+            std::stringstream ss;
+            ss << "chosen: " << chosen << " endactive: " << endactive << std::endl;
             writeLog(50, ss);
             throw FatalException("ERROR_MOVE_023: Chosen is greater than endactive. Check move function.");
         }
@@ -872,9 +875,9 @@ namespace necsim
                 // check endactive
                 if(active[endactive].getNwrap() != 0)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Nwrap is not set correctly for endactive (nwrap should be 0, but is ";
-                    ss << active[endactive].getNwrap() << " ). Identified during switch of positions." << endl;
+                    ss << active[endactive].getNwrap() << " ). Identified during switch of positions." << std::endl;
                     writeError(ss.str());
                 }
                 grid.get(active[endactive].getYpos(),
@@ -888,9 +891,9 @@ namespace necsim
             {
                 if(active[endactive].getNwrap() == 0)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Nwrap is not set correctly for endactive (nwrap incorrectly 0).";
-                    ss << "Identified during switch of positions." << endl;
+                    ss << "Identified during switch of positions." << std::endl;
                     writeError(ss.str());
                 }
                 //				os << "wrap"<<endl;
@@ -904,7 +907,7 @@ namespace necsim
                     if(grid.get(active[endactive].getYpos(), active[endactive].getXpos()).getNext() != endactive)
                     {
                         throw FatalException(string("Nwrap for endactive not set correctly. Nwrap is 1, but "
-                                                    "lineage at 1st position is " + to_string((long long) grid.get(
+                                                    "lineage at 1st position is " + std::to_string((long long) grid.get(
                                 active[endactive].getYpos(),
                                 active[endactive].getXpos()).getNext()) + ". Identified during the move."));
                     }
@@ -925,13 +928,13 @@ namespace necsim
                                          "despite going further than required. Check nwrap counting.");
                             if(tmpactive == 0)
                             {
-                                stringstream ss;
+                                std::stringstream ss;
                                 ss << "gridnext: "
                                    << grid.get(active[endactive].getYpos(), active[endactive].getXpos()).getNext()
-                                   << endl;
-                                ss << "endactive: " << endactive << endl;
-                                ss << "tmpactive: " << tmpactive << endl;
-                                ss << "tmpnwrap: " << tmpnwrap << " tmpcount: " << tmpcount << endl;
+                                   << std::endl;
+                                ss << "endactive: " << endactive << std::endl;
+                                ss << "tmpactive: " << tmpactive << std::endl;
+                                ss << "tmpnwrap: " << tmpnwrap << " tmpcount: " << tmpcount << std::endl;
                                 writeLog(50, ss);
                                 writeLog(50, "Logging chosen:");
                                 active[chosen].logActive(50);
@@ -992,13 +995,13 @@ namespace necsim
                                 if(specnum<desired_specnum)
                                 {
                                                 os << " - desired
-                                                number of species reached." << endl << "Halting
-                                                simulations..." << endl;
+                                                number of species reached." << std::endl << "Halting
+                                                simulations..." << std::endl;
                                                 bContinueSim = false;
                                 }
                                 else
                                 {
-                                                os << endl;
+                                                os << std::endl;
                                 }
                 }
     }
@@ -1009,7 +1012,7 @@ namespace necsim
         {
             long double tmpminmax = calcMinMax(i);
             active[i].setMinmax(tmpminmax);
-            dMinmax = (long double) max(dMinmax, tmpminmax);
+            dMinmax = (long double) std::max(dMinmax, tmpminmax);
         }
         for(unsigned long i = 0; i <= enddata; i++)
         {
@@ -1057,7 +1060,7 @@ namespace necsim
         {
             (*data)[i].qReset();
         }
-        //		os << "Estimated species number is: " << species_index << endl;
+        //		os << "Estimated species number is: " << species_index << std::endl;
         return iSpecies;
     }
 
@@ -1069,7 +1072,7 @@ namespace necsim
             throw FatalException(
                 string("ERROR_MOVE_008: Dispersal attempted from non-forest. Check dispersal function. Forest "
                        "cover: " +
-                       to_string((long long)landscape->getVal(this_step.x, this_step.y, this_step.xwrap,
+                       std::to_string((long long)landscape->getVal(this_step.x, this_step.y, this_step.xwrap,
                                                              this_step.ywrap, generation))));
         }
     }
@@ -1178,44 +1181,44 @@ namespace necsim
     string SpatialTree::simulationParametersSqlInsertion()
     {
         string to_execute;
-        stringstream ss1, ss2;
-        ss1 << setprecision(64);
+        std::stringstream ss1, ss2;
+        ss1 << std::setprecision(64);
 
         ss1 << spec;
-        ss2 << setprecision(64);
+        ss2 << std::setprecision(64);
         ss2 << sim_parameters->m_prob;
-        to_execute = "INSERT INTO SIMULATION_PARAMETERS VALUES(" + to_string((long long) seed) + ","
-                     + to_string((long long) task);
+        to_execute = "INSERT INTO SIMULATION_PARAMETERS VALUES(" + std::to_string((long long) seed) + ","
+                     + std::to_string((long long) task);
         to_execute +=
-                ",'" + out_directory + "'," + ss1.str() + "," + to_string((long double) sim_parameters->sigma) + ",";
-        to_execute += to_string((long double) sim_parameters->tau) + "," + to_string((long double) sim_parameters->deme)
+                ",'" + out_directory + "'," + ss1.str() + "," + std::to_string((long double) sim_parameters->sigma) + ",";
+        to_execute += std::to_string((long double) sim_parameters->tau) + "," + std::to_string((long double) sim_parameters->deme)
                       + ",";
-        to_execute += to_string((long double) sim_parameters->deme_sample) + "," + to_string((long long) maxtime) + ",";
-        to_execute += to_string((long double) sim_parameters->dispersal_relative_cost) + ","
-                      + to_string((long long) desired_specnum) + ",";
-        to_execute += to_string((long double) sim_parameters->habitat_change_rate) + ",";
-        to_execute += to_string((long double) sim_parameters->gen_since_historical) + ",'" + sim_parameters->times_file
+        to_execute += std::to_string((long double) sim_parameters->deme_sample) + "," + std::to_string((long long) maxtime) + ",";
+        to_execute += std::to_string((long double) sim_parameters->dispersal_relative_cost) + ","
+                      + std::to_string((long long) desired_specnum) + ",";
+        to_execute += std::to_string((long double) sim_parameters->habitat_change_rate) + ",";
+        to_execute += std::to_string((long double) sim_parameters->gen_since_historical) + ",'" + sim_parameters->times_file
                       + "','";
-        to_execute += coarse_map_input + "'," + to_string((long long) sim_parameters->coarse_map_x_size) + ",";
-        to_execute += to_string((long long) sim_parameters->coarse_map_y_size) + ","
-                      + to_string((long long) sim_parameters->coarse_map_x_offset) + ",";
-        to_execute += to_string((long long) sim_parameters->coarse_map_y_offset) + ","
-                      + to_string((long long) sim_parameters->coarse_map_scale) + ",'";
-        to_execute += fine_map_input + "'," + to_string((long long) sim_parameters->fine_map_x_size) + ","
-                      + to_string((long long) sim_parameters->fine_map_y_size);
-        to_execute += "," + to_string((long long) sim_parameters->fine_map_x_offset) + ","
-                      + to_string((long long) sim_parameters->fine_map_y_offset) + ",'";
-        to_execute += sim_parameters->sample_mask_file + "'," + to_string((long long) sim_parameters->grid_x_size) + ","
-                      + to_string((long long) sim_parameters->grid_y_size) + ","
-                      + to_string((long long) sim_parameters->sample_x_size) + ", ";
-        to_execute += to_string((long long) sim_parameters->sample_y_size) + ", ";
-        to_execute += to_string((long long) sim_parameters->sample_x_offset) + ", ";
-        to_execute += to_string((long long) sim_parameters->sample_y_offset) + ", '";
-        to_execute += historical_coarse_map_input + "','" + historical_fine_map_input + "'," + to_string(sim_complete);
+        to_execute += coarse_map_input + "'," + std::to_string((long long) sim_parameters->coarse_map_x_size) + ",";
+        to_execute += std::to_string((long long) sim_parameters->coarse_map_y_size) + ","
+                      + std::to_string((long long) sim_parameters->coarse_map_x_offset) + ",";
+        to_execute += std::to_string((long long) sim_parameters->coarse_map_y_offset) + ","
+                      + std::to_string((long long) sim_parameters->coarse_map_scale) + ",'";
+        to_execute += fine_map_input + "'," + std::to_string((long long) sim_parameters->fine_map_x_size) + ","
+                      + std::to_string((long long) sim_parameters->fine_map_y_size);
+        to_execute += "," + std::to_string((long long) sim_parameters->fine_map_x_offset) + ","
+                      + std::to_string((long long) sim_parameters->fine_map_y_offset) + ",'";
+        to_execute += sim_parameters->sample_mask_file + "'," + std::to_string((long long) sim_parameters->grid_x_size) + ","
+                      + std::to_string((long long) sim_parameters->grid_y_size) + ","
+                      + std::to_string((long long) sim_parameters->sample_x_size) + ", ";
+        to_execute += std::to_string((long long) sim_parameters->sample_y_size) + ", ";
+        to_execute += std::to_string((long long) sim_parameters->sample_x_offset) + ", ";
+        to_execute += std::to_string((long long) sim_parameters->sample_y_offset) + ", '";
+        to_execute += historical_coarse_map_input + "','" + historical_fine_map_input + "'," + std::to_string(sim_complete);
         to_execute += ", '" + sim_parameters->dispersal_method + "', ";
         to_execute += ss2.str() + ", ";
-        to_execute += to_string((long double) sim_parameters->cutoff) + ", ";
-        to_execute += to_string(sim_parameters->restrict_self) + ", '";
+        to_execute += std::to_string((long double) sim_parameters->cutoff) + ", ";
+        to_execute += std::to_string(sim_parameters->restrict_self) + ", '";
         to_execute += sim_parameters->landscape_type + "', ";
         // Now save the protracted speciation variables (not relevant in this simulation scenario)
         to_execute += protractedVarsToString();
@@ -1236,32 +1239,32 @@ namespace necsim
         completePause(out1);
     }
 
-    void SpatialTree::dumpMap(shared_ptr<ofstream> out)
+    void SpatialTree::dumpMap(shared_ptr<std::ofstream> out)
     {
         try
         {
             // Output the data object
             *out << *landscape;
         }
-        catch(exception &e)
+        catch(std::exception &e)
         {
-            stringstream ss;
-            ss << "Failed to perform dump of map: " << e.what() << endl;
+            std::stringstream ss;
+            ss << "Failed to perform dump of map: " << e.what() << std::endl;
             writeCritical(ss.str());
         }
     }
 
-    void SpatialTree::dumpGrid(shared_ptr<ofstream> out)
+    void SpatialTree::dumpGrid(shared_ptr<std::ofstream> out)
     {
         try
         {
             // Output the data object
             *out << grid;
         }
-        catch(exception &e)
+        catch(std::exception &e)
         {
-            stringstream ss;
-            ss << "Failed to perform dump of grid: " << e.what() << endl;
+            std::stringstream ss;
+            ss << "Failed to perform dump of grid: " << e.what() << std::endl;
             writeCritical(ss.str());
         }
     }
@@ -1282,14 +1285,14 @@ namespace necsim
         sim_parameters->printVars();
     }
 
-    void SpatialTree::loadGridSave(shared_ptr<ifstream> in1)
+    void SpatialTree::loadGridSave(shared_ptr<std::ifstream> in1)
     {
         grid.setSize(sim_parameters->grid_y_size, sim_parameters->grid_x_size);
         *in1 >> grid;
         try
         {
-            stringstream os;
-            os << "\rLoading data from temp file...grid..." << flush;
+            std::stringstream os;
+            os << "\rLoading data from temp file...grid..." << std::flush;
             // New method for re-creating grid data from active lineages
             // First initialise the empty grid object
             writeInfo(os.str());
@@ -1311,7 +1314,7 @@ namespace necsim
                 {
                     if(active[i].getNwrap() == 0)
                     {
-                        throw runtime_error("Nwrap should not be 0 if x and y wrap are not 0. Programming error likely.");
+                        throw std::runtime_error("Nwrap should not be 0 if x and y wrap are not 0. Programming error likely.");
                     }
                     if(active[i].getNwrap() == 1)
                     {
@@ -1321,7 +1324,7 @@ namespace necsim
                 }
             }
         }
-        catch(exception &e)
+        catch(std::exception &e)
         {
             string msg;
             msg = "Failure to import grid from temp grid: " + string(e.what());
@@ -1329,20 +1332,20 @@ namespace necsim
         }
     }
 
-    void SpatialTree::loadMapSave(shared_ptr<ifstream> in1)
+    void SpatialTree::loadMapSave(shared_ptr<std::ifstream> in1)
     {
         // Input the map object
         try
         {
-            stringstream os;
-            os << "\rLoading data from temp file...map..." << flush;
+            std::stringstream os;
+            os << "\rLoading data from temp file...map..." << std::flush;
             writeInfo(os.str());
             landscape->setDims(sim_parameters);
             *in1 >> *landscape;
             samplegrid.importSampleMask(sim_parameters);
             importActivityMaps();
         }
-        catch(exception &e)
+        catch(std::exception &e)
         {
             string msg;
             msg = "Failure to import data from temp map: " + string(e.what());
@@ -1361,10 +1364,10 @@ namespace necsim
                 {
                     if(death_map->get(i, j) == 0.0 && landscape->getValFine(j, i, 0.0) != 0)
                     {
-                        stringstream ss;
-                        ss << "Location: " << j << ", " << i << endl;
-                        ss << "Death value: " << death_map->get(i, j) << endl;
-                        ss << "Density: " << landscape->getValFine(j, i, 0.0) << endl;
+                        std::stringstream ss;
+                        ss << "Location: " << j << ", " << i << std::endl;
+                        ss << "Death value: " << death_map->get(i, j) << std::endl;
+                        ss << "Density: " << landscape->getValFine(j, i, 0.0) << std::endl;
                         writeInfo(ss.str());
                         throw FatalException("Death map is zero where density is non-zero. "
                                              "This will cause an infinite loop.");
@@ -1375,11 +1378,11 @@ namespace necsim
                     {
                         if(landscape->getValFine(j, i, 0.0) == 0 && death_map->get(i, j) != 0.0)
                         {
-                            stringstream ss;
-                            ss << "Density is zero where death map is non-zero for " << j << ", " << i << endl;
-                            ss << "Density: " << landscape->getValFine(j, i, 0.0) << endl;
-                            ss << "Death map: " << death_map->get(i, j) << endl;
-                            ss << "This is likely incorrect." << endl;
+                            std::stringstream ss;
+                            ss << "Density is zero where death map is non-zero for " << j << ", " << i << std::endl;
+                            ss << "Density: " << landscape->getValFine(j, i, 0.0) << std::endl;
+                            ss << "Death map: " << death_map->get(i, j) << std::endl;
+                            ss << "This is likely incorrect." << std::endl;
                             writeCritical(ss.str());
                         }
                     }
@@ -1409,10 +1412,10 @@ namespace necsim
                 {
                     if(reproduction_map->get(i, j) == 0.0 && landscape->getValFine(j, i, 0.0) != 0)
                     {
-                        stringstream ss;
-                        ss << "Location: " << j << ", " << i << endl;
-                        ss << "Reproduction value: " << reproduction_map->get(i, j) << endl;
-                        ss << "Density: " << landscape->getValFine(j, i, 0.0) << endl;
+                        std::stringstream ss;
+                        ss << "Location: " << j << ", " << i << std::endl;
+                        ss << "Reproduction value: " << reproduction_map->get(i, j) << std::endl;
+                        ss << "Density: " << landscape->getValFine(j, i, 0.0) << std::endl;
                         writeInfo(ss.str());
                         throw FatalException("Reproduction map is zero where density is non-zero. "
                                              "This will cause an infinite loop.");
@@ -1420,11 +1423,11 @@ namespace necsim
 #ifdef DEBUG
                     if(landscape->getValFine(j, i, 0.0) == 0 && reproduction_map->get(i, j) != 0.0)
                     {
-                        stringstream ss;
-                        ss << "Density is zero where reproduction map is non-zero for " << j << ", " << i << endl;
-                        ss << "Density: " << landscape->getValFine(j, i, 0.0) << endl;
-                        ss << "Reproduction map: " << reproduction_map->get(i, j) << endl;
-                        ss << "This is likely incorrect." << endl;
+                        std::stringstream ss;
+                        ss << "Density is zero where reproduction map is non-zero for " << j << ", " << i << std::endl;
+                        ss << "Density: " << landscape->getValFine(j, i, 0.0) << std::endl;
+                        ss << "Reproduction map: " << reproduction_map->get(i, j) << std::endl;
+                        ss << "This is likely incorrect." << std::endl;
                         writeCritical(ss.str());
                     }
 #else // NDEBUG
@@ -1582,8 +1585,8 @@ namespace necsim
 
     void SpatialTree::addGillespie(const double &g_threshold)
     {
-        stringstream ss;
-        ss << "Using gillespie algorithm in simulation from generation " << g_threshold << "." << endl;
+        std::stringstream ss;
+        ss << "Using gillespie algorithm in simulation from generation " << g_threshold << "." << std::endl;
         writeInfo(ss.str());
         gillespie_threshold = g_threshold;
         using_gillespie = true;
@@ -1626,7 +1629,7 @@ namespace necsim
             }
             catch(FatalException &fe)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Validation of Gillespie loop failed. Last event was ";
                 switch(last_event.first)
                 {
@@ -1659,7 +1662,7 @@ namespace necsim
                     ss << "dispersal.";
                     break;
                 }
-                ss << endl << "Error was " << fe.what() << endl;
+                ss << std::endl << "Error was " << fe.what() << std::endl;
                 throw FatalException(ss.str());
 
             }
@@ -1872,9 +1875,9 @@ namespace necsim
         }
         else
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Didn't update map at generation " << generation
-               << ". Incorrect placement of map_event on events queue. Please report this bug." << endl;
+               << ". Incorrect placement of map_event on events queue. Please report this bug." << std::endl;
             throw FatalException(ss.str());
         }
 
@@ -1947,13 +1950,6 @@ namespace necsim
         auto y = destination_cell.y;
         gillespieLocationRemainingCheck(origin);
         GillespieProbability &destination = probabilities.get(y, x);
-#ifdef DEBUG
-        const MapLocation dest_map_location = destination.getMapLocation();
-        if(original_map_location == dest_map_location)
-        {
-            throw FatalException("Dispersal occured to same cell!. Please report this bug.");
-        }
-#endif // DEBUG
         if(cellToHeapPositions.get(y, x) == SpatialTree::UNUSED)
         {
             fullSetupGillespieProbability(destination, destination.getMapLocation());
@@ -1998,14 +1994,14 @@ namespace necsim
         removeOldPosition(chosen);
         switchPositions(chosen);
         TreeNode &tmp_treenode = (*data)[reference];
-        tmp_treenode.setSpec(inverseSpeciation(spec, max(tmp_treenode.getGenerationRate(), (unsigned long) 1)));
+        tmp_treenode.setSpec(inverseSpeciation(spec, std::max(tmp_treenode.getGenerationRate(), (unsigned long) 1)));
 #ifdef DEBUG
         if(!checkSpeciation(tmp_treenode.getSpecRate(), spec, tmp_treenode.getGenerationRate()))
         {
-            stringstream ss;
-            ss << "Lineage has not speciated during Gillespie speciation event." << endl;
-            ss << "Inverse speciation: " << inverseSpeciation(spec, tmp_treenode.getGenerationRate()) << endl;
-            ss << "Gen rate: " << tmp_treenode.getGenerationRate() << endl;
+            std::stringstream ss;
+            ss << "Lineage has not speciated during Gillespie speciation event." << std::endl;
+            ss << "Inverse speciation: " << inverseSpeciation(spec, tmp_treenode.getGenerationRate()) << std::endl;
+            ss << "Gen rate: " << tmp_treenode.getGenerationRate() << std::endl;
             throw FatalException(ss.str());
         }
         gillespie_speciation_events++;
@@ -2081,14 +2077,14 @@ namespace necsim
 #ifdef DEBUG
         if(lineage == 0 || lineage > endactive)
         {
-            stringstream ss;
-            ss << "Lineage " << lineage << " out of range of active." << endl;
+            std::stringstream ss;
+            ss << "Lineage " << lineage << " out of range of active." << std::endl;
             throw FatalException(ss.str());
         }
 #endif // DEBUG
         TreeNode &tree_node = (*data)[active[lineage].getReference()];
         const double generations_passed = generation - tree_node.getGeneration();
-        const auto generation_rate = static_cast<unsigned long>(round(max(
+        const auto generation_rate = static_cast<unsigned long>(round(std::max(
                 convertGlobalGenerationsToLocalGenerations(active[lineage], generations_passed)
                 / ((double) global_individuals * getNumberIndividualsAtLocation(active[lineage])), 1.0)))
                                      + tree_node.getGenerationRate();
@@ -2225,7 +2221,7 @@ namespace necsim
         {
             return 0.0;
         }
-        return min((double(current_number) - 1.0) / double(max_number_individuals), 1.0);
+        return std::min((double(current_number) - 1.0) / double(max_number_individuals), 1.0);
 
     }
 
@@ -2236,7 +2232,7 @@ namespace necsim
         return lineage_ids[random_index];
     }
 
-    pair<unsigned long, unsigned long> SpatialTree::selectTwoRandomLineages(const MapLocation &location) const
+    std::pair<unsigned long, unsigned long> SpatialTree::selectTwoRandomLineages(const MapLocation &location) const
     {
         vector<unsigned long> lineage_ids = detectLineages(location);
         if(lineage_ids.size() < 2)
@@ -2244,7 +2240,7 @@ namespace necsim
             throw FatalException("Cannot select two lineages when fewer than two exist at location.");
         }
 
-        pair<unsigned long, unsigned long> selected_lineages;
+        std::pair<unsigned long, unsigned long> selected_lineages;
         selected_lineages.first = lineage_ids[NR->i0(lineage_ids.size() - 1)];
 
         do
@@ -2254,8 +2250,8 @@ namespace necsim
         while(selected_lineages.second == selected_lineages.first);
         if(selected_lineages.first == 0 || selected_lineages.second == 0)
         {
-            stringstream ss;
-            ss << "Selected a zero lineage at " << location << endl;
+            std::stringstream ss;
+            ss << "Selected a zero lineage at " << location << std::endl;
             throw FatalException(ss.str());
         }
         return selected_lineages;
@@ -2269,9 +2265,9 @@ namespace necsim
         {
             if(species_list.getListSize() == 0)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Species list size is 0 " << " at " << location.x << ", " << location.y << " (" << location.xwrap
-                   << ", " << location.ywrap << ")" << endl;
+                   << ", " << location.ywrap << ")" << std::endl;
                 throw FatalException(ss.str());
             }
             lineage_ids.reserve(species_list.getListSize());
@@ -2305,9 +2301,9 @@ namespace necsim
 #ifdef DEBUG
             if(lineage_ids.size() != species_list.getNwrap())
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Nwrap does not match length of detected lineages in " << location.x << ", " << location.y
-                   << endl;
+                   << std::endl;
                 throw FatalException(ss.str());
             }
 #endif // DEBUG
@@ -2317,9 +2313,9 @@ namespace necsim
         {
             if(item == 0)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Lineages not correctly calculated for location " << location.x << ", " << location.y << "("
-                   << location.xwrap << ", " << location.ywrap << ")" << endl;
+                   << location.xwrap << ", " << location.ywrap << ")" << std::endl;
                 throw FatalException(ss.str());
             }
         }
@@ -2380,7 +2376,7 @@ namespace necsim
         {
             throw FatalException(string("ERROR_MOVE_007: Dispersal attempted to non-forest. "
                                         "Check dispersal function. Forest cover: "
-                                        + to_string((long long) landscape->getVal(this_step.x,
+                                        + std::to_string((long long) landscape->getVal(this_step.x,
                                                                                   this_step.y,
                                                                                   this_step.xwrap,
                                                                                   this_step.ywrap,
@@ -2406,27 +2402,27 @@ namespace necsim
                         }
                         if(index > endactive)
                         {
-                            stringstream ss;
-                            ss << "Index at " << index << " is out of range of endactive " << endactive << endl;
-                            throw out_of_range(ss.str());
+                            std::stringstream ss;
+                            ss << "Index at " << index << " is out of range of endactive " << endactive << std::endl;
+                            throw std::out_of_range (ss.str());
                         }
                         else
                         {
                             const DataPoint &datapoint = active[index];
                             if(!datapoint.isOnGrid())
                             {
-                                stringstream ss;
+                                std::stringstream ss;
                                 ss << "Location at " << datapoint.x << ", " << datapoint.y << " (" << datapoint.xwrap
                                    << ", " << datapoint.ywrap << ") is not on grid.";
-                                throw out_of_range(ss.str());
+                                throw std::out_of_range (ss.str());
                             }
                             if(datapoint.x != x || datapoint.y != y)
                             {
-                                stringstream ss;
+                                std::stringstream ss;
                                 ss << "Location at " << datapoint.x << ", " << datapoint.y << " (" << datapoint.xwrap
                                    << ", " << datapoint.ywrap << ") - index " << index << " - does not equal " << x
-                                   << ", " << y << endl;
-                                throw out_of_range(ss.str());
+                                   << ", " << y << std::endl;
+                                throw std::out_of_range (ss.str());
 
                             }
                         }
@@ -2439,32 +2435,32 @@ namespace necsim
                         nw++;
                         if(next > endactive)
                         {
-                            stringstream ss;
-                            ss << "Index at " << next << " is out of range of endactive " << endactive << endl;
-                            throw out_of_range(ss.str());
+                            std::stringstream ss;
+                            ss << "Index at " << next << " is out of range of endactive " << endactive << std::endl;
+                            throw std::out_of_range (ss.str());
                         }
                         if(active[next].getNwrap() != nw)
                         {
-                            stringstream ss;
+                            std::stringstream ss;
                             ss << "Index at " << next << " has incorrect nwrap: " << active[next].getNwrap() << " != "
-                               << nw << endl;
-                            throw out_of_range(ss.str());
+                               << nw << std::endl;
+                            throw std::out_of_range (ss.str());
                         }
                         next = active[next].getNext();
                     }
                     if(nw != nwrap)
                     {
-                        stringstream ss;
-                        ss << "Nwrap set incorrectly: " << nw << " != " << nwrap << endl;
-                        throw out_of_range(ss.str());
+                        std::stringstream ss;
+                        ss << "Nwrap set incorrectly: " << nw << " != " << nwrap << std::endl;
+                        throw std::out_of_range (ss.str());
                     }
                 }
             }
         }
-        catch(out_of_range &oor)
+        catch(std::out_of_range &oor)
         {
-            stringstream ss;
-            ss << "Error validating locations: " << oor.what() << endl;
+            std::stringstream ss;
+            ss << "Error validating locations: " << oor.what() << std::endl;
             throw FatalException(ss.str());
         }
     }
@@ -2479,16 +2475,16 @@ namespace necsim
         // Basic checks
         if(endactive >= active.size() || enddata >= data->size())
         {
-            stringstream ss;
-            ss << "Endactive (size):" << endactive << "(" << active.size() << ")" << endl;
-            ss << "Enddata (size):" << enddata << "(" << data->size() << ")" << endl;
+            std::stringstream ss;
+            ss << "Endactive (size):" << endactive << "(" << active.size() << ")" << std::endl;
+            ss << "Enddata (size):" << enddata << "(" << data->size() << ")" << std::endl;
             writeCritical(ss.str());
             throw FatalException("Endactive out of range of active or enddata out of range of data-> "
                                  "Please report this bug.");
         }
         for(unsigned long i = 1; i < endactive; i++)
         {
-            stringstream ss;
+            std::stringstream ss;
             DataPoint tmp_datapoint = active[i];
             // Validate the location exists
 #ifdef historical_mode
@@ -2500,7 +2496,7 @@ namespace necsim
                     printed++;
                     ss << "Map value: " << landscape->getVal(tmp_datapoint.getXpos(), tmp_datapoint.getYpos(),
                                                             tmp_datapoint.getXwrap(), tmp_datapoint.getYwrap(),
-                                                            generation) << endl;
+                                                            generation) << std::endl;
                 }
                 fail = true;
             }
@@ -2535,7 +2531,7 @@ namespace necsim
                         count++;
                         if(count != active[tmp_next].getNwrap())
                         {
-                            ss << "problem in wrap: " << count << " != " << active[tmp_next].getNwrap() << endl;
+                            ss << "problem in wrap: " << count << " != " << active[tmp_next].getNwrap() << std::endl;
                             fail = true;
                         }
                         tmp_next = active[tmp_next].getNext();
@@ -2552,17 +2548,17 @@ namespace necsim
             }
             if(fail)
             {
-                stringstream ss;
-                ss << "Active reference: " << i << endl;
+                std::stringstream ss;
+                ss << "Active reference: " << i << std::endl;
                 ss << "Grid wrapping: " << grid.get(tmp_datapoint.getYpos(), tmp_datapoint.getXpos()).getNwrap()
-                   << endl;
-                ss << "Expected lineage at index: " << i << endl;
+                   << std::endl;
+                ss << "Expected lineage at index: " << i << std::endl;
                 ss << "Lineage at index: "
-                   << grid.get(tmp_datapoint.getYpos(), tmp_datapoint.getXpos()).getLineageIndex(i) << endl;
-                ss << "Endactive: " << endactive << endl;
-                ss << "Active size: " << active.size() << endl;
-                ss << "Enddata: " << enddata << endl;
-                ss << "Data size: " << data->size() << endl;
+                   << grid.get(tmp_datapoint.getYpos(), tmp_datapoint.getXpos()).getLineageIndex(i) << std::endl;
+                ss << "Endactive: " << endactive << std::endl;
+                ss << "Active size: " << active.size() << std::endl;
+                ss << "Enddata: " << enddata << std::endl;
+                ss << "Data size: " << data->size() << std::endl;
                 writeCritical(ss.str());
                 tmp_datapoint.logActive(50);
                 (*data)[tmp_datapoint.getReference()].logLineageInformation(50);
@@ -2583,10 +2579,10 @@ namespace necsim
             tmp_nwrap++;
             if(active[tmp_next].getNwrap() != tmp_nwrap)
             {
-                stringstream ss;
-                ss << "tmp_nwrap: " << tmp_nwrap << endl;
-                ss << "next = " << tmp_next << endl;
-                ss << "numstart: " << numstart << endl;
+                std::stringstream ss;
+                ss << "tmp_nwrap: " << tmp_nwrap << std::endl;
+                ss << "next = " << tmp_next << std::endl;
+                ss << "numstart: " << numstart << std::endl;
                 writeLog(50, ss);
                 active[tmp_nwrap].logActive(50);
                 throw FatalException("Incorrect setting of nwrap in wrapped lineage, please report this bug.");
@@ -2595,17 +2591,17 @@ namespace necsim
         }
         if(tmp_nwrap != grid.get(y, x).getNwrap())
         {
-            stringstream ss;
-            ss << "Grid nwrap: " << grid.get(y, x).getNwrap() << endl;
-            ss << "Counted wrapping: " << tmp_nwrap << endl;
-            ss << "active: " << numstart << endl;
+            std::stringstream ss;
+            ss << "Grid nwrap: " << grid.get(y, x).getNwrap() << std::endl;
+            ss << "Counted wrapping: " << tmp_nwrap << std::endl;
+            ss << "active: " << numstart << std::endl;
             tmp_next = grid.get(y, x).getNext();
             tmp_nwrap = 0;
             while(tmp_next != 0 && tmp_nwrap < grid.get(y, x).getNwrap())
             {
                 tmp_nwrap++;
-                ss << "tmp_next: " << tmp_next << endl;
-                ss << "tmp_nwrap: " << tmp_nwrap << endl;
+                ss << "tmp_next: " << tmp_next << std::endl;
+                ss << "tmp_nwrap: " << tmp_nwrap << std::endl;
                 tmp_next = active[tmp_next].getNext();
             }
             writeLog(50, ss);
@@ -2660,11 +2656,11 @@ namespace necsim
             {
                 if(grid.get(active[endactive].getYpos(), active[endactive].getXpos()).getNext() != endactive)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Lineage at 1st position: "
-                       << grid.get(active[endactive].getYpos(), active[endactive].getXpos()).getNext() << endl;
-                    ss << "endactive: " << endactive << endl << "nwrap: " << nwrap << endl;
-                    ss << "chosen: " << chosen << endl;
+                       << grid.get(active[endactive].getYpos(), active[endactive].getXpos()).getNext() << std::endl;
+                    ss << "endactive: " << endactive << std::endl << "nwrap: " << nwrap << std::endl;
+                    ss << "chosen: " << chosen << std::endl;
                     writeLog(10, ss);
                     throw FatalException("ERROR_MOVE_016: Nwrap for endactive not set correctly. Nwrap is 1, "
                                          "but the lineage at 1st position is not endactive.");
@@ -2680,23 +2676,23 @@ namespace necsim
                     tmpcheck = active[tmpcheck].getNext();
                     if(tmpnwrap > nwrap + 1)
                     {
-                        stringstream ss;
+                        std::stringstream ss;
                         ss << "ERROR_MOVE_017: NON FATAL. Nrap for endactive not set correctly; looped "
-                              "beyond nwrap and not yet found enactive." << endl;
-                        ss << "endactive: " << endactive << endl << "nwrap: " << nwrap << endl << "x,y: "
-                           << active[endactive].getXpos() << "," << active[endactive].getYpos() << endl;
-                        ss << "chosen: " << chosen << endl;
+                              "beyond nwrap and not yet found enactive." << std::endl;
+                        ss << "endactive: " << endactive << std::endl << "nwrap: " << nwrap << std::endl << "x,y: "
+                           << active[endactive].getXpos() << "," << active[endactive].getYpos() << std::endl;
+                        ss << "chosen: " << chosen << std::endl;
                         writeLog(10, ss);
                     }
                 }
                 if(tmpnwrap != nwrap)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "ERROR_MOVE_018: NON FATAL. Nwrap for endactive not set correctly. Nwrap is " << nwrap
-                       << " but endactive is at position " << tmpnwrap << endl;
-                    ss << "endactive: " << endactive << endl << "nwrap: " << nwrap << endl << "x,y: "
-                       << active[endactive].getXpos() << "," << active[endactive].getYpos() << endl;
-                    ss << "chosen: " << chosen << endl;
+                       << " but endactive is at position " << tmpnwrap << std::endl;
+                    ss << "endactive: " << endactive << std::endl << "nwrap: " << nwrap << std::endl << "x,y: "
+                       << active[endactive].getXpos() << "," << active[endactive].getYpos() << std::endl;
+                    ss << "chosen: " << chosen << std::endl;
                     writeLog(10, ss);
                 }
             }
@@ -2743,38 +2739,38 @@ namespace necsim
                 const auto location = gp.getMapLocation();
                 if(gp.getInCellProbability() == 0.0)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Heap at " << item.cell.x << ", " << item.cell.y << " has cell with 0 in-cell probability: "
-                       << gp.getInCellProbability() << endl;
-                    ss << "Probabilities: " << gp << endl;
+                       << gp.getInCellProbability() << std::endl;
+                    ss << "Probabilities: " << gp << std::endl;
                     ss << "Individuals (lineages) at location (" << location.x << ", " << location.y << "): "
                        << getNumberIndividualsAtLocation(gp.getMapLocation()) << " ("
-                       << getNumberLineagesAtLocation(gp.getMapLocation()) << ")" << endl;
-                    ss << "Calculated probabilities: " << endl;
-                    ss << "\tCoalescence: " << calculateCoalescenceProbability(location) << endl;
-                    ss << "\tSpeciation: " << spec << endl;
-                    ss << "\tDispersal: " << 1.0 - getLocalSelfDispersalRate(location) << endl;
+                       << getNumberLineagesAtLocation(gp.getMapLocation()) << ")" << std::endl;
+                    ss << "Calculated probabilities: " << std::endl;
+                    ss << "\tCoalescence: " << calculateCoalescenceProbability(location) << std::endl;
+                    ss << "\tSpeciation: " << spec << std::endl;
+                    ss << "\tDispersal: " << 1.0 - getLocalSelfDispersalRate(location) << std::endl;
                     throw FatalException(ss.str());
                 }
                 if(item.time_of_event < generation)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Heap has event with time lower than current generation counter: " << item.time_of_event
-                       << " < " << generation << endl;
+                       << " < " << generation << std::endl;
                     ss << "Individuals (lineages) at location (" << location.x << ", " << location.y << "): "
                        << getNumberIndividualsAtLocation(gp.getMapLocation()) << " ("
-                       << getNumberLineagesAtLocation(gp.getMapLocation()) << ")" << endl;
-                    ss << "Calculated probabilities: " << endl;
-                    ss << "\tCoalescence: " << calculateCoalescenceProbability(location) << endl;
-                    ss << "\tSpeciation: " << spec << endl;
-                    ss << "\tDispersal: " << 1.0 - getLocalSelfDispersalRate(location) << endl;
+                       << getNumberLineagesAtLocation(gp.getMapLocation()) << ")" << std::endl;
+                    ss << "Calculated probabilities: " << std::endl;
+                    ss << "\tCoalescence: " << calculateCoalescenceProbability(location) << std::endl;
+                    ss << "\tSpeciation: " << spec << std::endl;
+                    ss << "\tDispersal: " << 1.0 - getLocalSelfDispersalRate(location) << std::endl;
                     throw FatalException(ss.str());
                 }
                 if(grid.get(location.y, location.x).getListSize() == 0)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Heap contains event with empty species list at " << location.x << ", " << location.y << " ("
-                       << location.xwrap << ", " << location.ywrap << ")" << endl;
+                       << location.xwrap << ", " << location.ywrap << ")" << std::endl;
                     throw FatalException(ss.str());
                 }
             }
@@ -2791,10 +2787,10 @@ namespace necsim
         const unsigned long counted_speciation_events = countSpeciationEvents();
         if(counted_speciation_events != gillespie_speciation_events)
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Counted speciation events of " << counted_speciation_events
                << " in coalescence tree does not equal number of counted events ( " << gillespie_speciation_events
-               << ")." << endl;
+               << ")." << std::endl;
             throw FatalException(ss.str());
         }
 
@@ -2819,12 +2815,12 @@ namespace necsim
         TreeNode &active_tree_node = (*data)[active[chosen].getReference()];
         if(checkSpeciation(active_tree_node.getSpecRate(), spec, active_tree_node.getGenerationRate()))
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Error during check for no speciation: lineage at " << chosen << " has been assigned a spec rate of "
                << active_tree_node.getSpecRate() << " for a speciation rate of " << spec << " and a gen rate of "
                << active_tree_node.getGenerationRate() << ", which causes speciation (the inverse speciation value is "
                << inverseSpeciation(spec, active_tree_node.getGenerationRate())
-               << "). This should not be the case - please report this bug." << endl;
+               << "). This should not be the case - please report this bug." << std::endl;
             throw FatalException(ss.str());
         }
 
@@ -2832,4 +2828,4 @@ namespace necsim
     }
 
 #endif // DEBUG
-};
+}

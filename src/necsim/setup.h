@@ -33,7 +33,10 @@
 
 // Forward declaring the global variables
 // store the log file name for access anywhere.
-using namespace std;
+
+using std::string;
+using std::vector;
+
 namespace necsim
 {
     extern string log_name;

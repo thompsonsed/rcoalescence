@@ -24,7 +24,7 @@ namespace necsim
      */
     class ProtractedTree : public virtual Tree
     {
-    private:
+    protected:
         // Variables for the protracted speciation variables
         // The number of generations a lineage must exist before speciating.
         // Speciation is therefore not allowed before this time.
@@ -41,6 +41,34 @@ namespace necsim
             bIsProtracted = true;
         }
 
+        ~ProtractedTree() override = default;
+
+        ProtractedTree(ProtractedTree &&other) noexcept : ProtractedTree()
+        {
+            *this = std::move(other);
+        }
+
+        ProtractedTree(const ProtractedTree &other) : ProtractedTree()
+        {
+            *this = other;
+        };
+
+        ProtractedTree &operator=(ProtractedTree other) noexcept
+        {
+            other.swap(*this);
+            return *this;
+        }
+
+        void swap(ProtractedTree &other) noexcept
+        {
+            if(this != &other)
+            {
+                Tree::swap(other);
+                std::swap(speciation_generation_min, other.speciation_generation_min);
+                std::swap(speciation_generation_max, other.speciation_generation_max);
+            }
+        }
+
         /**
          * @brief Calculates the speciation probability from the random number, speciation rate and number of generations a
          * lineage has existed for.
@@ -49,7 +77,8 @@ namespace necsim
          * @param no_generations the number of generations a lineage has existed for
          * @return if true, speciation has occured
          */
-        bool calcSpeciation(const long double &random_number, const long double &speciation_rate,
+        bool calcSpeciation(const long double &random_number,
+                            const long double &speciation_rate,
                             const unsigned long &no_generations) override;
 
         /**
@@ -71,7 +100,7 @@ namespace necsim
          * @param speciation_gen_min the minimum number of generations to have passed before speciation is allowed
          * @param speciation_gen_max the maximum number of generations a lineage can exist for before it is speciated.
          */
-        void setProtractedVariables(double speciation_gen_min, double speciation_gen_max) override;
+        void setProtractedVariables(double speciation_gen_min, double speciation_gen_max) final;
 
         /**
          * @brief Gets the protracted variables and returns them as a single, newline separated string.

@@ -10,21 +10,20 @@
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
 
-#ifndef CUSTOM_EXCEPTION_H
-#define CUSTOM_EXCEPTION_H
+#ifndef NECSIM_CUSTOM_EXCEPTION_H
+#define NECSIM_CUSTOM_EXCEPTION_H
 
 #include <stdexcept>
 #include <utility>
 #include "Logging.h"
 
-using namespace std;
 namespace necsim
 {
     /*!
      * @struct FatalException
      * @brief  This is called any time a fatal exception is called and the program is unwound and ended.
      */
-    struct FatalException : public runtime_error
+    struct FatalException : public std::runtime_error
     {
         FatalException() : runtime_error("Fatal exception thrown at run time, quitting program. ")
         { }
@@ -57,4 +56,4 @@ namespace necsim
         { }
     };
 }
-#endif // CUSTOM_EXCEPTION_H
+#endif // NECSIM_CUSTOM_EXCEPTION_H

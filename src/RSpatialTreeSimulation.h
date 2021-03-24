@@ -121,7 +121,7 @@ namespace rcoalescence
         /**
          * @brief Calls SpatialTree::setup() to act as a wrapper accessible by R without extra classes.
          */
-        void setup() override;
+        void setupR() override;
 
         /**
          * @brief Calls SpatialTree::runSimulation() to act as a wrapper accessible by R without extra classes.

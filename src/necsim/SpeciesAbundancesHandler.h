@@ -19,8 +19,11 @@
 #include <memory>
 #include "RNGController.h"
 
-using namespace std;
 using namespace random_numbers;
+using std::vector;
+using std::shared_ptr;
+using std::make_shared;
+
 namespace necsim
 {
     /**
@@ -45,7 +48,7 @@ namespace necsim
         /**
          * @brief Default destructor
          */
-        virtual ~SpeciesAbundancesHandler() = default;;
+        virtual ~SpeciesAbundancesHandler() = default;
 
         /**
          * @brief Creates the SpeciesAbundancesHandler object
@@ -54,8 +57,10 @@ namespace necsim
          * @param speciation_rate the speciation rate of the metacommunity
          * @param local_community_size: the number of individuals in the local community
          */
-        virtual void setup(shared_ptr<RNGController> random, const unsigned long &metacommunity_size,
-                           const long double &speciation_rate, const unsigned long &local_community_size);
+        virtual void setup(shared_ptr<RNGController> random,
+                           const unsigned long &metacommunity_size,
+                           const long double &speciation_rate,
+                           const unsigned long &local_community_size);
 
         /**
          * @brief Gets a randomly generated species identity.
@@ -67,7 +72,7 @@ namespace necsim
          * @brief Sets the abundance list.
          * @param abundance_list_in list of abundances for each species
          */
-        virtual void setAbundanceList(const shared_ptr<map<unsigned long, unsigned long>> &abundance_list_in);
+        virtual void setAbundanceList(const shared_ptr<std::map<unsigned long, unsigned long>> &abundance_list_in);
 
         /**
          * @brief Sets the abundance list.

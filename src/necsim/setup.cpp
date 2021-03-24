@@ -33,7 +33,7 @@ void logToCsv(string place, time_t start, time_t end)
             throw Fatal_Main_Exception("Csv logger output not good: " + e.what());
         }
     }
-    csv_output << place << "," << start << "," << end << endl;
+    csv_output << place << "," << start << "," << end << std::endl;
 }
 
 void closeCsv()

@@ -15,7 +15,6 @@
 #include <iomanip>
 #include "Logging.h"
 
-using namespace std;
 namespace necsim
 {
     /**
@@ -274,7 +273,7 @@ namespace necsim
          * @param t a Treenode object to output.
          * @return the output stream.
          */
-        friend ostream &operator<<(ostream &os, const TreeNode &t);
+        friend std::ostream &operator<<(std::ostream &os, const TreeNode &t);
 
         /**
          * @brief Overloading the >> operator for inputting the Treenode object from an input stream.
@@ -282,7 +281,7 @@ namespace necsim
          * @param t a Treenode object to input to.
          * @return the input stream.
          */
-        friend istream &operator>>(istream &is, TreeNode &t);
+        friend std::istream &operator>>(std::istream &is, TreeNode &t);
 
         /**
          * Overloading the equality operator for TreeNodes

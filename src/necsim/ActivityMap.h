@@ -172,7 +172,7 @@ namespace necsim
          * @param r the ActivityMap to read from
          * @return the os object
          */
-        friend ostream &operator<<(ostream &os, ActivityMap &r);
+        friend std::ostream &operator<<(std::ostream &os, ActivityMap &r);
 
         /**
          * @brief Operator for inputting from an istream.
@@ -180,7 +180,7 @@ namespace necsim
          * @param r the ActivityMap to input to
          * @return the is object
          */
-        friend istream &operator>>(istream &is, ActivityMap &r);
+        friend std::istream &operator>>(std::istream &is, ActivityMap &r);
 
     };
 

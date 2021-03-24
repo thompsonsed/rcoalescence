@@ -11,9 +11,11 @@
  */
 
 #include "ProtractedTree.h"
+
 namespace necsim
 {
-    bool ProtractedTree::calcSpeciation(const long double &random_number, const long double &speciation_rate,
+    bool ProtractedTree::calcSpeciation(const long double &random_number,
+                                        const long double &speciation_rate,
                                         const unsigned long &no_generations)
     {
         if(generation < speciation_generation_min)
@@ -30,7 +32,8 @@ namespace necsim
     void ProtractedTree::speciateLineage(const unsigned long &data_position)
     {
         (*data)[data_position].setSpec(0.0);
-        if(speciation_generation_min >= (*data)[data_position].getGenerationRate() + (*data)[data_position].getGeneration())
+        if(speciation_generation_min
+           >= (*data)[data_position].getGenerationRate() + (*data)[data_position].getGeneration())
         {
             (*data)[data_position].setGenerationRate(static_cast<unsigned long>(floor(speciation_generation_min)) + 2);
         }
@@ -57,7 +60,7 @@ namespace necsim
 
     string ProtractedTree::getProtractedVariables()
     {
-        stringstream ss;
+        std::stringstream ss;
         ss << speciation_generation_min << "\n" << speciation_generation_max << "\n";
         return ss.str();
     }
@@ -74,7 +77,7 @@ namespace necsim
 
     string ProtractedTree::protractedVarsToString()
     {
-        string tmp = "1 , " + to_string(speciation_generation_min) + ", " + to_string(speciation_generation_max);
+        string tmp = "1 , " + std::to_string(speciation_generation_min) + ", " + std::to_string(speciation_generation_max);
         return tmp;
     }
 }

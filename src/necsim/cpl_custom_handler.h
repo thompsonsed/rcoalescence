@@ -8,7 +8,6 @@
  */
 #ifndef CPL_CUSTOM_HANDLER_H
 #define CPL_CUSTOM_HANDLER_H
-#ifdef with_gdal
 
 #include <cpl_error.h>
 namespace necsim
@@ -21,6 +20,5 @@ namespace necsim
      */
     void cplNecsimCustomErrorHandler(CPLErr eErrClass, int err_no, const char* msg);
 }
-#endif // with_gdal
 
 #endif // CPL_CUSTOM_HANDLER_H

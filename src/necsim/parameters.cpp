@@ -41,8 +41,8 @@ namespace necsim
         if(doubleCompare(double(time_in), double(0.0), 0.00001))
         {
 #ifdef DEBUG
-            stringstream os;
-            os << "Detected generation at t=0.0." << endl;
+            std::stringstream os;
+            os << "Detected generation at t=0.0." << std::endl;
             writeLog(10, os);
 #endif // DEBUG
             return doubleCompare(speciation_rate, speciation_rate_in, speciation_rate * 0.000001)
@@ -75,7 +75,7 @@ namespace necsim
                                     bool fragment, unsigned long metacommunity_reference,
                                     const ProtractedSpeciationParameters &protracted_params)
     {
-        auto tmp_param = make_shared<CommunityParameters>(reference, speciation_rate, time, fragment,
+        auto tmp_param = std::make_shared<CommunityParameters>(reference, speciation_rate, time, fragment,
                                                           metacommunity_reference, protracted_params);
         comm_parameters.emplace_back(tmp_param);
     }
@@ -96,14 +96,14 @@ namespace necsim
             {
                 if(i->fragment == fragment || !fragment)
                 {
-                    stringstream ss;
-                    ss << "Non-unique parameter set: " << endl;
-                    ss << "-speciation rate: " << speciation_rate << endl;
-                    ss << "-time: " << time << endl;
-                    ss << "-fragment: " << fragment << endl;
-                    ss << "-metacommunity reference: " << metacommunity_reference << endl;
-                    ss << "-protracted speciation min: " << protracted_params.min_speciation_gen << endl;
-                    ss << "-protracted speciation max: " << protracted_params.max_speciation_gen << endl;
+                    std::stringstream ss;
+                    ss << "Non-unique parameter set: " << std::endl;
+                    ss << "-speciation rate: " << speciation_rate << std::endl;
+                    ss << "-time: " << time << std::endl;
+                    ss << "-fragment: " << fragment << std::endl;
+                    ss << "-metacommunity reference: " << metacommunity_reference << std::endl;
+                    ss << "-protracted speciation min: " << protracted_params.min_speciation_gen << std::endl;
+                    ss << "-protracted speciation max: " << protracted_params.max_speciation_gen << std::endl;
                     writeCritical(ss.str());
                     throw FatalException("Tried to get reference for non-unique parameter set in communities. "
                                          "Please report this bug.");
@@ -123,7 +123,7 @@ namespace necsim
                 }
             }
         }
-        auto tmp_param = make_shared<CommunityParameters>(max_reference, speciation_rate, time, fragment,
+        auto tmp_param = std::make_shared<CommunityParameters>(max_reference, speciation_rate, time, fragment,
                                                           metacommunity_reference, protracted_params);
         comm_parameters.emplace_back(tmp_param);
         return comm_parameters.back();
@@ -275,7 +275,7 @@ namespace necsim
                                         const long double &speciation_rate, const string &option,
                                         const unsigned long &external_reference)
     {
-        auto tmp_param = make_shared<MetacommunityParameters>(reference, speciation_rate, metacommunity_size, option,
+        auto tmp_param = std::make_shared<MetacommunityParameters>(reference, speciation_rate, metacommunity_size, option,
                                                               external_reference);
         metacomm_parameters.emplace_back(tmp_param);
     }
@@ -309,12 +309,12 @@ namespace necsim
         {
             if(i->compare(metacommunity_size, speciation_rate, option, external_reference))
             {
-                stringstream ss;
-                ss << "Duplicate metacommunity parameters: " << endl;
-                ss << "Size: " << metacommunity_size << endl;
-                ss << "Speciation rate: " << speciation_rate << endl;
-                ss << "Option: " << option << endl;
-                ss << "External reference: " << external_reference << endl;
+                std::stringstream ss;
+                ss << "Duplicate metacommunity parameters: " << std::endl;
+                ss << "Size: " << metacommunity_size << std::endl;
+                ss << "Speciation rate: " << speciation_rate << std::endl;
+                ss << "Option: " << option << std::endl;
+                ss << "External reference: " << external_reference << std::endl;
                 writeCritical(ss.str());
                 throw FatalException("Tried to get reference for non-unique parameter set in metacommunities. "
                                      "Please report this bug.");
@@ -327,7 +327,7 @@ namespace necsim
                 }
             }
         }
-        auto tmp_param = make_shared<MetacommunityParameters>(max_reference, metacommunity_size, speciation_rate,
+        auto tmp_param = std::make_shared<MetacommunityParameters>(max_reference, metacommunity_size, speciation_rate,
                                                               option, external_reference);
         metacomm_parameters.emplace_back(tmp_param);
         return max_reference;

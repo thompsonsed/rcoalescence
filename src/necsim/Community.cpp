@@ -138,7 +138,7 @@ namespace necsim
         // Check that the main data has been imported already, otherwise the dimensions of the samplemask will not be correct
         if(!has_imported_samplemask)
         {
-            stringstream os;
+            std::stringstream os;
             samplemask.importBooleanMask(grid_x_size,
                                          grid_y_size,
                                          samplemask_x_size,
@@ -159,13 +159,13 @@ namespace necsim
                         }
                     }
                 }
-                os << "Sampling " << total << " cells." << endl;
+                os << "Sampling " << total << " cells." << std::endl;
             }
             else
             {
 
 #ifdef DEBUG
-                os << "Sampling all areas." << endl;
+                os << "Sampling all areas." << std::endl;
 #endif
             }
             writeInfo(os.str());
@@ -208,9 +208,9 @@ namespace necsim
 #ifdef DEBUG
             if((*nodes)[i].getParent() >= nodes->size())
             {
-                writeLog(50, "i: " + to_string(i));
+                writeLog(50, "i: " + std::to_string(i));
                 this_node->logLineageInformation(50);
-                writeLog(50, "size: " + to_string(nodes->size()));
+                writeLog(50, "size: " + std::to_string(nodes->size()));
                 throw FatalException("The parent is outside the size of the the data object. "
                                      "Bug in expansion of data structures or object set up likely.");
             }
@@ -250,10 +250,10 @@ namespace necsim
                 }
                 if(!this_node->hasSpeciated() && this_node->getParent() == 0 && this_node->exists())
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "\n\tLineage at " << i << " has not speciated and parent is 0. Integer overflow possible. "
                                                     "Correcting by setting gens_alive to min value necessary for speciation."
-                       << endl;
+                       << std::endl;
                     writeError(ss.str());
                     double necessary_gen_rate = ceil(log(1 - this_node->getSpecRate()) / log(1 - min_spec_rate));
                     this_node->setGenerationRate((unsigned long) necessary_gen_rate);
@@ -263,8 +263,8 @@ namespace necsim
         }
 
 #ifdef DEBUG
-        stringstream ss2;
-        ss2 << "\n\tInitial count of species: " << countSpecies() << endl;
+        std::stringstream ss2;
+        ss2 << "\n\tInitial count of species: " << countSpecies() << std::endl;
         writeInfo(ss2.str());
         writeLog(10, "Calculating lineage existence.");
 #endif // DEBUG
@@ -282,19 +282,19 @@ namespace necsim
                     bSorter = true;
                     if(this_node->getParent() == 0)
                     {
-                        stringstream ss;
-                        ss << setprecision(64);
+                        std::stringstream ss;
+                        ss << std::setprecision(64);
                         ss << "Parent of lineage at " << i << " is 0, but node exists and has not speciated."
-                           << " Possible corrupt database, otherwise, please report this bug." << endl;
-                        ss << "Lineage parameters: " << endl;
-                        ss << "Speciation: " << this_node->hasSpeciated() << endl;
-                        ss << "Tip: " << this_node->isTip() << endl;
-                        ss << "Random number: " << this_node->getSpecRate() << endl;
-                        ss << "Gens alive: " << this_node->getGenerationRate() << endl;
-                        ss << "Gen added: " << this_node->getGeneration() << endl;
+                           << " Possible corrupt database, otherwise, please report this bug." << std::endl;
+                        ss << "Lineage parameters: " << std::endl;
+                        ss << "Speciation: " << this_node->hasSpeciated() << std::endl;
+                        ss << "Tip: " << this_node->isTip() << std::endl;
+                        ss << "Random number: " << this_node->getSpecRate() << std::endl;
+                        ss << "Gens alive: " << this_node->getGenerationRate() << std::endl;
+                        ss << "Gen added: " << this_node->getGeneration() << std::endl;
                         ss << "Speciation check: " << checkSpeciation(this_node->getSpecRate(),
                                                                       current_community_parameters->speciation_rate,
-                                                                      this_node->getGenerationRate()) << endl;
+                                                                      this_node->getGenerationRate()) << std::endl;
                         throw FatalException(ss.str());
                     }
                     (*nodes)[this_node->getParent()].setExistence(true);
@@ -305,7 +305,7 @@ namespace necsim
         writeLog(10, "Speciating lineages.");
 #endif // DEBUG
         species_count = 0;
-        set<unsigned long> species_list;
+        std::set<unsigned long> species_list;
         // Now loop again, creating a new species for each species that actually exists.
         auto start = nodes->begin();
         start++;
@@ -325,8 +325,8 @@ namespace necsim
 #endif // DEBUG
         if(!species_list.empty() && species_count != *species_list.rbegin())
         {
-            stringstream ss;
-            ss << "initial count is " << species_count << " species" << endl;
+            std::stringstream ss;
+            ss << "initial count is " << species_count << " species" << std::endl;
             writeInfo(ss.str());
             ss.str("");
             ss << "\tRescaling species ids for " << species_list.size() << " species...";
@@ -334,7 +334,7 @@ namespace necsim
             unsigned long initial_species_count = species_count;
             unsigned long tmp_species_count = 0;
             // Maps old to new species ids
-            map<unsigned long, unsigned long> old_ids_to_new_ids;
+            std::map<unsigned long, unsigned long> old_ids_to_new_ids;
             //		old_ids_to_new_ids.reserve(species_count);
             for(unsigned long i = 1; i < nodes->size(); i++)
             {
@@ -359,10 +359,10 @@ namespace necsim
             if(tmp_species_count > initial_species_count)
             {
                 writeInfo("\n");
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Number of generated species (" << tmp_species_count
                    << ") is more than the initial species count ";
-                ss << "(" << initial_species_count << ") - please report this bug." << endl;
+                ss << "(" << initial_species_count << ") - please report this bug." << std::endl;
                 throw FatalException(ss.str());
             }
             species_count = tmp_species_count;
@@ -397,26 +397,26 @@ namespace necsim
             for(unsigned long i = (nodes->size()) - 1; i > 0; i--)
             {
                 TreeNode* this_node = &(*nodes)[i];
-                //				os << i << endl;
+                //				os << i << std::endl;
                 if(this_node->getSpeciesID() == 0 && this_node->exists())
                 {
                     loopon = true;
                     unsigned long parent = this_node->getParent();
                     if(parent == 0)
                     {
-                        stringstream ss;
-                        ss << setprecision(64);
+                        std::stringstream ss;
+                        ss << std::setprecision(64);
                         ss << "Parent of lineage at " << i << " is 0, but no species ID assigned and node exists."
-                           << " Possible corrupt database, otherwise, please report this bug." << endl;
-                        ss << "Lineage parameters: " << endl;
-                        ss << "Speciation: " << this_node->hasSpeciated() << endl;
-                        ss << "Tip: " << this_node->isTip() << endl;
-                        ss << "Random number: " << this_node->getSpecRate() << endl;
-                        ss << "Gens alive: " << this_node->getGenerationRate() << endl;
-                        ss << "Gen added: " << this_node->getGeneration() << endl;
+                           << " Possible corrupt database, otherwise, please report this bug." << std::endl;
+                        ss << "Lineage parameters: " << std::endl;
+                        ss << "Speciation: " << this_node->hasSpeciated() << std::endl;
+                        ss << "Tip: " << this_node->isTip() << std::endl;
+                        ss << "Random number: " << this_node->getSpecRate() << std::endl;
+                        ss << "Gens alive: " << this_node->getGenerationRate() << std::endl;
+                        ss << "Gen added: " << this_node->getGeneration() << std::endl;
                         ss << "Speciation check: " << checkSpeciation(this_node->getSpecRate(),
                                                                       current_community_parameters->speciation_rate,
-                                                                      this_node->getGenerationRate()) << endl;
+                                                                      this_node->getGenerationRate()) << std::endl;
                         throw FatalException(ss.str());
                     }
                     this_node->burnSpecies((*nodes)[parent].getSpeciesID());
@@ -427,8 +427,8 @@ namespace necsim
 
                         if(!error_printed)
                         {
-                            stringstream ss;
-                            ss << "Potential parent ID error in " << i << " - incomplete simulation likely." << endl;
+                            std::stringstream ss;
+                            ss << "Potential parent ID error in " << i << " - incomplete simulation likely." << std::endl;
                             writeCritical(ss.str());
                             writeLog(50, "Lineage information:");
                             this_node->logLineageInformation(50);
@@ -452,11 +452,11 @@ namespace necsim
         writeLog(10, "Completed tree creation.");
 #endif // DEBUG
         species_index = species_count;
-        //		os << "species_index: " << species_index << endl;
+        //		os << "species_index: " << species_index << std::endl;
         return species_count;
     }
 
-    void Community::addSpecies(unsigned long &species_count, TreeNode* tree_node, set<unsigned long> &species_list)
+    void Community::addSpecies(unsigned long &species_count, TreeNode* tree_node, std::set<unsigned long> &species_list)
     {
         species_count++;
         tree_node->burnSpecies(species_count);
@@ -477,7 +477,7 @@ namespace necsim
 #ifdef DEBUG
                 if(this_node->getSpeciesID() >= species_abundances->size())
                 {
-                    throw out_of_range("Node index out of range of abundances size. Please report this bug.");
+                    throw std::out_of_range("Node index out of range of abundances size. Please report this bug.");
                 }
 #endif // DEBUG
                 // The line that counts the number of individuals
@@ -489,15 +489,15 @@ namespace necsim
                                           this_node->getYwrap())
                    && doubleCompare(this_node->getGeneration(), current_community_parameters->time, 0.0001))
                 {
-                    stringstream ss;
-                    ss << "x,y " << (*nodes)[i].getXpos() << ", " << (*nodes)[i].getYpos() << endl;
+                    std::stringstream ss;
+                    ss << "x,y " << (*nodes)[i].getXpos() << ", " << (*nodes)[i].getYpos() << std::endl;
                     ss << "tip: " << (*nodes)[i].isTip() << " Existance: " << (*nodes)[i].exists() << " samplemask: "
                        << samplemask.getMaskVal(this_node->getXpos(),
                                                 this_node->getYpos(),
                                                 this_node->getXwrap(),
-                                                this_node->getYwrap()) << endl;
+                                                this_node->getYwrap()) << std::endl;
                     ss << "ERROR_SQL_005: Tip doesn't exist. Something went wrong either in the import or "
-                          "main simulation running." << endl;
+                          "main simulation running." << std::endl;
                     writeWarning(ss.str());
 
                 }
@@ -507,26 +507,26 @@ namespace necsim
                                                                            this_node->getYwrap())
                    && doubleCompare(this_node->getGeneration(), current_community_parameters->time, 0.0001))
                 {
-                    stringstream ss;
-                    ss << "x,y " << this_node->getXpos() << ", " << this_node->getYpos() << endl;
+                    std::stringstream ss;
+                    ss << "x,y " << this_node->getXpos() << ", " << this_node->getYpos() << std::endl;
                     ss << "generation (point,required): " << this_node->getGeneration() << ", "
-                       << current_community_parameters->time << endl;
+                       << current_community_parameters->time << std::endl;
                     TreeNode* p_node = &(*nodes)[this_node->getParent()];
                     ss << "samplemasktest: " << samplemask.getTestVal(this_node->getXpos(),
                                                                       this_node->getYpos(),
                                                                       this_node->getXwrap(),
-                                                                      this_node->getYwrap()) << endl;
+                                                                      this_node->getYwrap()) << std::endl;
                     ss << "samplemask: " << samplemask.getVal(this_node->getXpos(),
                                                               this_node->getYpos(),
                                                               this_node->getXwrap(),
-                                                              this_node->getYwrap()) << endl;
+                                                              this_node->getYwrap()) << std::endl;
                     ss << "parent (tip, exists, generations): " << p_node->isTip() << ", " << p_node->exists() << ", "
-                       << p_node->getGeneration() << endl;
+                       << p_node->getGeneration() << std::endl;
                     ss << "species id zero - i: " << i << " parent: " << p_node->getParent()
                        << " speciation_probability: " << p_node->getSpecRate() << "has speciated: "
-                       << p_node->hasSpeciated() << endl;
+                       << p_node->hasSpeciated() << std::endl;
                     writeCritical(ss.str());
-                    throw runtime_error("Fatal, exiting program.");
+                    throw std::runtime_error("Fatal, exiting program.");
                 }
 #endif
             }
@@ -548,8 +548,8 @@ namespace necsim
         // open one db in memory and one from the file.
         if(!fs::exists(input_file))
         {
-            stringstream ss;
-            ss << "Output database does not exist at " << input_file << ": cannot open sql connection." << endl;
+            std::stringstream ss;
+            ss << "Output database does not exist at " << input_file << ": cannot open sql connection." << std::endl;
             throw FatalException(ss.str());
         }
         try
@@ -572,7 +572,10 @@ namespace necsim
 
     void Community::closeSQLConnection()
     {
-        database->close();
+        if(database != nullptr)
+        {
+            database->close();
+        }
         sql_connection_open = false;
         in_mem = false;
         database_set = false;
@@ -650,8 +653,8 @@ namespace necsim
         unsigned long datasize;
         database->step();
         datasize = sqlite3_column_int64(stmt->stmt, 0);
-        stringstream ss;
-        ss << "\n\tDetected " << datasize << " events in the coalescence tree." << endl;
+        std::stringstream ss;
+        ss << "\n\tDetected " << datasize << " events in the coalescence tree." << std::endl;
         writeInfo(ss.str());
         database->finalise();
         // Create db query
@@ -690,9 +693,9 @@ namespace necsim
             (*nodes)[index].setParent(parent - ignored_lineages);
             if(index == parent && parent != 0)
             {
-                stringstream stringstream1;
-                stringstream1 << "Import failed as parent is self. Please report this bug." << endl;
-                stringstream1 << " i: " << index << " parent: " << parent << endl;
+                std::stringstream stringstream1;
+                stringstream1 << "Import failed as parent is self. Please report this bug." << std::endl;
+                stringstream1 << " i: " << index << " parent: " << parent << std::endl;
                 throw FatalException(stringstream1.str());
             }
             (*nodes)[index].setSpeciation(speciation);
@@ -702,9 +705,9 @@ namespace necsim
             {
                 if(!has_printed_error)
                 {
-                    stringstream stringstream1;
-                    stringstream1 << "parent: " << parent << " index: " << index << endl;
-                    stringstream1 << "Parent before index error. Check program." << endl;
+                    std::stringstream stringstream1;
+                    stringstream1 << "parent: " << parent << " index: " << index << std::endl;
+                    stringstream1 << "Parent before index error. Check program." << std::endl;
                     has_printed_error = true;
                     writeWarning(stringstream1.str());
                 }
@@ -791,9 +794,9 @@ namespace necsim
 
     void Community::createDatabase()
     {
-        stringstream os;
+        std::stringstream os;
         os << "Applying speciation rate " << current_community_parameters->speciation_rate;
-        os << " at time " << current_community_parameters->time << "..." << endl;
+        os << " at time " << current_community_parameters->time << "..." << std::endl;
         writeInfo(os.str());
         generateBiodiversity();
         string table_command = "CREATE TABLE IF NOT EXISTS SPECIES_ABUNDANCES (ID int PRIMARY KEY NOT NULL, "
@@ -816,16 +819,16 @@ namespace necsim
             }
             else
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Speciation rate of " << current_community_parameters->speciation_rate;
-                ss << " is less than the minimum possible (" << min_spec_rate << ". Skipping." << endl;
+                ss << " is less than the minimum possible (" << min_spec_rate << ". Skipping." << std::endl;
                 throw FatalException(ss.str());
             }
         }
         unsigned long nspec = calculateCoalescenceTree();
         calcSpeciesAbundance();
-        stringstream ss;
-        ss << "\tNumber of species: " << nspec << endl;
+        std::stringstream ss;
+        ss << "\tNumber of species: " << nspec << std::endl;
         writeInfo(ss.str());
     }
 
@@ -838,10 +841,10 @@ namespace necsim
             //#ifdef DEBUG
             if(checkSpeciesAbundancesReference())
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Duplicate insertion of " << current_community_parameters->reference
                    << " into SPECIES_ABUNDANCES.";
-                ss << endl;
+                ss << std::endl;
                 writeWarning(ss.str());
                 return;
             }
@@ -861,9 +864,9 @@ namespace necsim
                 int step = stmt->step();
                 if(step != SQLITE_DONE)
                 {
-                    stringstream os;
+                    std::stringstream os;
                     os << "Could not insert into database. Check destination file has not "
-                          "been moved or deleted and that an entry doesn't already exist with the same ID." << endl;
+                          "been moved or deleted and that an entry doesn't already exist with the same ID." << std::endl;
                     os << database->getErrorMsg(step);
                     stmt->clearAndReset();
                     throw FatalException(os.str());
@@ -876,9 +879,9 @@ namespace necsim
         }
         else
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "\tCurrent_metacommunity_parameters already applied, not outputting SPECIES_ABUNDANCES table..."
-               << endl;
+               << std::endl;
             writeInfo(ss.str());
         }
     }
@@ -915,7 +918,7 @@ namespace necsim
 
     void Community::createFragmentDatabase(const Fragment &f)
     {
-        //		os << "Generating new SQL table for speciation rate " << s << "..." << flush;
+        //		os << "Generating new SQL table for speciation rate " << s << "..." << std::flush;
         string table_command = "CREATE TABLE IF NOT EXISTS FRAGMENT_ABUNDANCES (ID int PRIMARY KEY NOT NULL, fragment "
                                "TEXT NOT NULL, area DOUBLE NOT NULL, size INT NOT NULL,  species_id INT NOT NULL, "
                                "no_individuals INT NOT NULL, community_reference int NOT NULL);";
@@ -942,10 +945,10 @@ namespace necsim
                 int step = stmt->step();
                 if(step != SQLITE_DONE)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Could not insert into database. Check destination file has not "
-                          "been moved or deleted and that an entry doesn't already exist with the same ID." << endl;
-                    ss << database->getErrorMsg(step) << endl;
+                          "been moved or deleted and that an entry doesn't already exist with the same ID." << std::endl;
+                    ss << database->getErrorMsg(step) << std::endl;
                     stmt->clearAndReset();
                     throw FatalException(ss.str());
                 }
@@ -962,9 +965,9 @@ namespace necsim
     {
         if(in_mem)
         {
-            stringstream ss;
-            stringstream os;
-            os << "Writing out to " << spec_sim_parameters->filename << "..." << endl;
+            std::stringstream ss;
+            std::stringstream os;
+            os << "Writing out to " << spec_sim_parameters->filename << "..." << std::endl;
             // Now write the database to the file object.
             SQLiteHandler out_database;
             out_database.open(spec_sim_parameters->filename);
@@ -983,7 +986,7 @@ namespace necsim
         }
         // Now find out the max size of the lineage_indices, so we have a count to work from
         string count_command = "SELECT COUNT(*) FROM SPECIES_LOCATIONS WHERE community_reference == ";
-        count_command += to_string(current_community_parameters->reference) + ";";
+        count_command += std::to_string(current_community_parameters->reference) + ";";
         auto stmt = database->prepare(count_command);
         database->step();
         unsigned long tmp_val = sqlite3_column_int64(stmt->stmt, 0);
@@ -1000,7 +1003,7 @@ namespace necsim
         }
         // Now find out the max size of the lineage_indices, so we have a count to work from
         string count_command = "SELECT COUNT(*) FROM SPECIES_ABUNDANCES WHERE community_reference = ";
-        count_command += to_string(current_community_parameters->reference) + ";";
+        count_command += std::to_string(current_community_parameters->reference) + ";";
         auto stmt = database->prepare(count_command);
         database->step();
         unsigned long tmp_val = sqlite3_column_int64(stmt->stmt, 0);
@@ -1012,7 +1015,7 @@ namespace necsim
     void Community::recordSpatial()
     {
         writeInfo("\tRecording species locations...\n");
-        //	os << "Recording spatial data for speciation rate " << current_community_parameters->speciation_rate << "..." << flush;
+        //	os << "Recording spatial data for speciation rate " << current_community_parameters->speciation_rate << "..." << std::flush;
         string table_command = "CREATE TABLE IF NOT EXISTS SPECIES_LOCATIONS (ID int PRIMARY KEY NOT NULL, species_id INT "
                                "NOT NULL, x INT NOT NULL, y INT NOT NULL, community_reference INT NOT NULL);";
         database->execute(table_command);
@@ -1033,7 +1036,7 @@ namespace necsim
         for(unsigned long i = 1; i < nodes->size(); i++)
         {
             TreeNode* this_node = &(*nodes)[i];
-            //			os << nodes[i].exists() << endl;
+            //			os << nodes[i].exists() << std::endl;
             if(this_node->isTip() && this_node->exists()
                && doubleCompare(static_cast<double>(this_node->getGeneration()),
                                 static_cast<double>(current_community_parameters->time),
@@ -1166,18 +1169,12 @@ namespace necsim
                         {
                             y++;
                             // Make sure both extremes of the rectangle are still within patch.
-                            if(samplemask.sample_mask.getCopy(y, i) && samplemask.sample_mask.getCopy(y, i - 1))
-                            {
-                                y_continue = true;
-                            }
-                            else
-                            {
-                                y_continue = false;
-                            }
+                            y_continue =
+                                    samplemask.sample_mask.getCopy(y, i) && samplemask.sample_mask.getCopy(y, i - 1);
                         }
                         // Create the fragment to add.
-                        Fragment to_add;
-                        to_add.name = to_string((long long) fragment_number);
+                        Fragment to_add{};
+                        to_add.name = std::to_string((long long) fragment_number);
                         to_add.x_west = i;
                         to_add.x_east = x - 1;
                         to_add.y_north = j;
@@ -1192,8 +1189,8 @@ namespace necsim
         }
         else
         {
-            stringstream os;
-            os << "Importing fragments from " << fragment_file << endl;
+            std::stringstream os;
+            os << "Importing fragments from " << fragment_file << std::endl;
             writeInfo(os.str());
 #ifdef use_csv
             writeInfo("Using fast-cpp-csv-parse");
@@ -1207,13 +1204,13 @@ namespace necsim
             {
                 number_of_lines++;
             }
-            //			os << "Number of lines in text file: " << number_of_lines << endl;
+            //			os << "Number of lines in text file: " << number_of_lines << std::endl;
             fragment_configs.close();
             io::LineReader in(fragment_file);
             // Keep track of whether we've printed to terminal or not.
             bool bPrint = false;
             fragments.resize(number_of_lines);
-    //		os << "size: "  << fragments.capacity() << endl;
+    //		os << "size: "  << fragments.capacity() << std::endl;
             for(int i = 0; i < number_of_lines; i++)
             {
                 char *line = in.next_line();
@@ -1232,7 +1229,7 @@ namespace necsim
                     dToken = strtok(line, ",");
                     for(int j = 0; j < 6; j++)
                     {
-                        //						os << j << endl;
+                        //						os << j << std::endl;
                         if(dToken == nullptr)
                         {
                             if(!bPrint)
@@ -1244,7 +1241,7 @@ namespace necsim
                         }
                         else
                         {
-                            //							os << "-" << endl;
+                            //							os << "-" << std::endl;
                             switch(j)
                             {
                                 case 0:
@@ -1273,7 +1270,7 @@ namespace necsim
             }
 #endif
 #ifndef use_csv
-            ifstream fragment_configs(fragment_file);
+            std::ifstream fragment_configs(fragment_file);
             vector<vector<string>> tmp_raw_read;
             while(fragment_configs.good())
             {
@@ -1289,9 +1286,9 @@ namespace necsim
                     // at the end of the file)
                     if(this_fragment->size() != 1)
                     {
-                        stringstream ss;
+                        std::stringstream ss;
                         ss << "Could not parse fragments file, " << this_fragment->size() << " columns detected";
-                        ss << ", requires 6 (name, x_west, y_north, x_east, y_south, area)." << endl;
+                        ss << ", requires 6 (name, x_west, y_north, x_east, y_south, area)." << std::endl;
                         throw FatalException(ss.str());
                     }
                     fragments.resize(tmp_raw_read.size() - 1);
@@ -1304,7 +1301,7 @@ namespace necsim
                     {
                         if(item.empty())
                         {
-                            throw invalid_argument("Cannot convert empty argument.");
+                            throw std::invalid_argument("Cannot convert empty argument.");
                         }
                     }
                     fragments[i].name = (*this_fragment)[0];
@@ -1314,22 +1311,22 @@ namespace necsim
                     fragments[i].y_south = stoi((*this_fragment)[4]);
                     fragments[i].area = stof((*this_fragment)[5]);
                 }
-                catch(invalid_argument &argument)
+                catch(std::invalid_argument &argument)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Could not convert row arguments: ";
                     for(auto &n : (*this_fragment))
                     {
                         ss << n << ", ";
                     }
-                    ss << " should be str, int, int, int, int, float." << endl;
+                    ss << " should be str, int, int, int, int, float." << std::endl;
                     throw FatalException(ss.str());
                 }
             }
             fragment_configs.close();
 #endif
         }
-        //	os << "Completed fragmentation analysis: " << fragments.size() << " fragments identified." << endl;
+        //	os << "Completed fragmentation analysis: " << fragments.size() << " fragments identified." << std::endl;
     }
 
     void Community::applyFragments()
@@ -1338,11 +1335,11 @@ namespace necsim
         // then be outputted to an SQL file.
         for(unsigned int i = 0; i < fragments.size(); i++)
         {
-            stringstream os;
-            os << "\tApplying fragments... " << (i + 1) << "/" << fragments.size() << endl;
+            std::stringstream os;
+            os << "\tApplying fragments... " << (i + 1) << "/" << fragments.size() << std::endl;
             os << "\t\t " << fragments[i].name << " at ";
             os << "(x west, x east): (" << fragments[i].x_west << ", " << fragments[i].x_east;
-            os << "), (y north, y south): (" << fragments[i].y_north << ", " << fragments[i].y_south << ")." << endl;
+            os << "), (y north, y south): (" << fragments[i].y_north << ", " << fragments[i].y_south << ")." << std::endl;
 
             writeInfo(os.str());
             // Set the new samplemask to the fragment
@@ -1373,7 +1370,7 @@ namespace necsim
             // database creation will filter these out.
             calcSpeciesAbundance();
             createFragmentDatabase(fragments[i]);
-            //			os << "done." << endl;
+            //			os << "done." << std::endl;
         }
         samplemask.removeFragment();
     }
@@ -1421,18 +1418,18 @@ namespace necsim
         if(!sql_connection_open)
         {
 #ifdef DEBUG
-            stringstream os;
-            os << "opening connection..." << flush;
+            std::stringstream os;
+            os << "opening connection..." << std::flush;
 #endif
             openSQLConnection(file);
 #ifdef DEBUG
-            os << "done." << endl;
+            os << "done." << std::endl;
             writeInfo(os.str());
 #endif
         }
 #ifdef DEBUG
-        stringstream os;
-        os << "Reading current_metacommunity_parameters..." << flush;
+        std::stringstream os;
+        os << "Reading current_metacommunity_parameters..." << std::flush;
 #endif
         string sql_parameters = "SELECT speciation_rate, grid_x, grid_y, protracted, min_speciation_gen, max_speciation_gen, "
                                 "sample_x_offset, sample_y_offset, sample_x, sample_y, seed  FROM SIMULATION_PARAMETERS;";
@@ -1462,7 +1459,7 @@ namespace necsim
         }
         database->finalise();
 #ifdef DEBUG
-        os << "done." << endl;
+        os << "done." << std::endl;
         writeInfo(os.str());
 #endif
         has_imported_data = true;
@@ -1510,20 +1507,20 @@ namespace necsim
 #ifdef DEBUG
                 writeLog(50,
                          "Applied speciation current_metacommunity_parameters: "
-                         + to_string(applied_protracted_parameters.min_speciation_gen) + ", "
-                         + to_string(applied_protracted_parameters.max_speciation_gen));
+                         + std::to_string(applied_protracted_parameters.min_speciation_gen) + ", "
+                         + std::to_string(applied_protracted_parameters.max_speciation_gen));
                 writeLog(50,
                          "Simulated speciation current_metacommunity_parameters: "
-                         + to_string(minimum_protracted_parameters.min_speciation_gen) + ", "
-                         + to_string(minimum_protracted_parameters.max_speciation_gen));
+                         + std::to_string(minimum_protracted_parameters.min_speciation_gen) + ", "
+                         + std::to_string(minimum_protracted_parameters.max_speciation_gen));
 #endif // DEBUG
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Applied protracted speciation current_metacommunity_parameters: "
                    << applied_protracted_parameters.min_speciation_gen << ", ";
-                ss << applied_protracted_parameters.max_speciation_gen << endl;
+                ss << applied_protracted_parameters.max_speciation_gen << std::endl;
                 ss << "Original protracted speciation current_metacommunity_parameters: "
                    << minimum_protracted_parameters.min_speciation_gen << ", "
-                   << minimum_protracted_parameters.max_speciation_gen << endl;
+                   << minimum_protracted_parameters.max_speciation_gen << std::endl;
                 writeCritical(ss.str());
                 throw FatalException(
                         "Cannot use protracted current_metacommunity_parameters with minimum > simulated minimum or "
@@ -1594,8 +1591,8 @@ namespace necsim
             }
             if(rc != SQLITE_OK && rc != SQLITE_DONE)
             {
-                stringstream ss;
-                ss << "Could not read community current_metacommunity_parameters." << endl;
+                std::stringstream ss;
+                ss << "Could not read community current_metacommunity_parameters." << std::endl;
                 ss << database->getErrorMsg(rc);
                 stmt2->clearAndReset();
                 throw FatalException(ss.str());
@@ -1624,8 +1621,8 @@ namespace necsim
             }
             if(rc != SQLITE_OK && rc != SQLITE_DONE)
             {
-                stringstream ss;
-                ss << "Could not read metacommunity current_metacommunity_parameters." << endl;
+                std::stringstream ss;
+                ss << "Could not read metacommunity current_metacommunity_parameters." << std::endl;
                 ss << database->getErrorMsg(rc);
                 stmt4->clearAndReset();
                 throw FatalException(ss.str());
@@ -1644,9 +1641,9 @@ namespace necsim
         if(meta_reference == 0 && metacomm_parameters.isMetacommunityOption())
         {
 #ifdef DEBUG
-            stringstream ss;
+            std::stringstream ss;
             ss << "Adding metacommunity (" << metacomm_parameters.metacommunity_size << ", "
-               << metacomm_parameters.speciation_rate << ")" << endl;
+               << metacomm_parameters.speciation_rate << ")" << std::endl;
             writeInfo(ss.str());
 #endif
             meta_reference = past_metacommunities.addNew(metacomm_parameters);
@@ -1775,9 +1772,9 @@ namespace necsim
                 int step = stmt->step();
                 if(step != SQLITE_DONE)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Could not insert into database. Check destination file has not "
-                          "been moved or deleted and that an entry doesn't already exist with the same ID." << endl;
+                          "been moved or deleted and that an entry doesn't already exist with the same ID." << std::endl;
                     ss << database->getErrorMsg(step);
                     stmt->clearAndReset();
                     throw FatalException(ss.str());
@@ -1842,11 +1839,11 @@ namespace necsim
                 if(step != SQLITE_DONE)
                 {
 #ifdef DEBUG
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << database->getErrorMsg(step);
-                    ss << "Metacommunity reference: " << item->reference << endl;
+                    ss << "Metacommunity reference: " << item->reference << std::endl;
                     ss << "Speciation rate: " << item->speciation_rate << ", metacommunity size: "
-                       << item->metacommunity_size << endl;
+                       << item->metacommunity_size << std::endl;
                     writeLog(10, ss);
 #endif // DEBUG
                     throw FatalException("Could not insert into database. Check destination file has not "
@@ -1909,8 +1906,8 @@ namespace necsim
             stmt->clearAndReset();
 
         }
-        stringstream os;
-        os << "\tExecuting SQL commands...." << endl;
+        std::stringstream os;
+        os << "\tExecuting SQL commands...." << std::endl;
         writeInfo(os.str());
         database->endTransaction();
         database->finalise();
@@ -1929,7 +1926,7 @@ namespace necsim
 
                 // Now find out the max size of the lineage_indices, so we have a count to work from
                 string count_command = "UPDATE COMMUNITY_PARAMETERS SET fragments = 1 WHERE reference = ";
-                count_command += to_string(parameter->reference) + ";";
+                count_command += std::to_string(parameter->reference) + ";";
                 database->execute(count_command);
             }
         }
@@ -1937,29 +1934,29 @@ namespace necsim
 
     void Community::writeSpeciationRates()
     {
-        stringstream os;
-        os << "***************************" << endl;
-        os << "STARTING COALESCENCE TREE CALCULATIONS" << endl;
-        os << "Input file is " << spec_sim_parameters->filename << endl;
+        std::stringstream os;
+        os << "***************************" << std::endl;
+        os << "STARTING COALESCENCE TREE CALCULATIONS" << std::endl;
+        os << "Input file is " << spec_sim_parameters->filename << std::endl;
         if(!spec_sim_parameters->bMultiRun)
         {
-            os << "Speciation rate is " << *spec_sim_parameters->all_speciation_rates.begin() << endl;
+            os << "Speciation rate is " << *spec_sim_parameters->all_speciation_rates.begin() << std::endl;
         }
         else
         {
-            os << "Speciation rates are: " << flush;
+            os << "Speciation rates are: " << std::flush;
             unsigned long i = 0;
             for(const auto &item :spec_sim_parameters->all_speciation_rates)
             {
-                os << item << flush;
+                os << item << std::flush;
                 i++;
                 if(i == spec_sim_parameters->all_speciation_rates.size())
                 {
-                    os << "." << endl;
+                    os << "." << std::endl;
                 }
                 else
                 {
-                    os << ", " << flush;
+                    os << ", " << std::flush;
                 }
             }
         }
@@ -1968,31 +1965,31 @@ namespace necsim
            && spec_sim_parameters->metacommunity_parameters.hasMetacommunityOption())
         {
             os.str("");
-            os << "Protracted speciation parameters (min, max) are: " << endl;
+            os << "Protracted speciation parameters (min, max) are: " << std::endl;
             for(const auto i : spec_sim_parameters->protracted_parameters)
             {
-                os << "\t" << i.min_speciation_gen << ", " << i.max_speciation_gen << endl;
+                os << "\t" << i.min_speciation_gen << ", " << i.max_speciation_gen << std::endl;
             }
             os << "with minimums of " << minimum_protracted_parameters.min_speciation_gen << " (min) and ";
-            os << minimum_protracted_parameters.max_speciation_gen << " (max)" << endl;
+            os << minimum_protracted_parameters.max_speciation_gen << " (max)" << std::endl;
             writeInfo(os.str());
         }
         os.str("");
         if(!spec_sim_parameters->metacommunity_parameters.empty())
         {
-            os << "Metacommunity parameters are: " << endl;
+            os << "Metacommunity parameters are: " << std::endl;
             for(const auto &item: spec_sim_parameters->metacommunity_parameters)
             {
                 if(item->metacommunity_size > 0)
                 {
                     os << "\toption: " << item->option << ", ";
                     os << "size: " << item->metacommunity_size << ", ";
-                    os << "speciation rate: " << item->speciation_rate << endl;
+                    os << "speciation rate: " << item->speciation_rate << std::endl;
                 }
                 else if(item->external_reference != 0)
                 {
                     os << "\tdatabase: " << item->option << ", ";
-                    os << "reference: " << item->external_reference << endl;
+                    os << "reference: " << item->external_reference << std::endl;
                 }
             }
         }
@@ -2001,7 +1998,7 @@ namespace necsim
 
     void Community::calculateTree()
     {
-        stringstream os;
+        std::stringstream os;
         for(const auto &protracted_params : spec_sim_parameters->protracted_parameters)
         {
             setProtractedParameters(protracted_params);
@@ -2036,7 +2033,7 @@ namespace necsim
                         os.str("");
                         os << "Calculation already performed for speciation rate=" << sr << ", time=" << time;
                         os << " and protracted parameters " << protracted_params.min_speciation_gen << ", ";
-                        os << protracted_params.max_speciation_gen << endl;
+                        os << protracted_params.max_speciation_gen << std::endl;
                         writeInfo(os.str());
                     }
                 }
@@ -2055,11 +2052,11 @@ namespace necsim
     void Community::printEndTimes(time_t tStart, time_t tEnd)
     {
         time(&tEnd);
-        stringstream os;
-        os << "Calculations complete." << endl;
+        std::stringstream os;
+        os << "Calculations complete." << std::endl;
         os << "Time taken was " << floor((tEnd - tStart) / 3600) << " hours "
            << (floor((tEnd - tStart) / 60) - 60 * floor((tEnd - tStart) / 3600)) << " minutes " << (tEnd - tStart) % 60
-           << " seconds" << endl;
+           << " seconds" << std::endl;
         writeInfo(os.str());
     }
 
@@ -2185,7 +2182,7 @@ namespace necsim
         // Now find out the max size of the lineage_indices, so we have a count to work from
         string count_command = "SELECT COUNT(DISTINCT(species_id)) FROM SPECIES_ABUNDANCES WHERE no_individuals > 0 ";
         count_command += "AND community_reference == ";
-        count_command += to_string(community_reference) + ";";
+        count_command += std::to_string(community_reference) + ";";
         auto stmt = database->prepare(count_command);
         database->step();
         long tmp_val = sqlite3_column_int64(stmt->stmt, 0);
@@ -2193,7 +2190,7 @@ namespace necsim
         return static_cast<unsigned long>(tmp_val);
     }
 
-    shared_ptr<map<unsigned long, unsigned long>> Community::getSpeciesAbundances(const unsigned long &community_reference)
+    shared_ptr<std::map<unsigned long, unsigned long>> Community::getSpeciesAbundances(const unsigned long &community_reference)
     {
         if(!sql_connection_open)
         {
@@ -2205,25 +2202,25 @@ namespace necsim
             throw FatalException("No SPECIES_ABUNDANCES table has been written yet.");
         }
         string call2 = "select count(distinct(species_id)) from SPECIES_ABUNDANCES where no_individuals>0 and ";
-        call2 += "community_reference == " + to_string(community_reference);
+        call2 += "community_reference == " + std::to_string(community_reference);
         auto stmt = database->prepare(call2);
         database->step();
         unsigned long no_species = sqlite3_column_int64(stmt->stmt, 0);
         if(no_species == 0)
         {
-            stringstream ss;
-            ss << "No species found in SPECIES_ABUNDANCES for reference of " << community_reference << endl;
+            std::stringstream ss;
+            ss << "No species found in SPECIES_ABUNDANCES for reference of " << community_reference << std::endl;
             throw FatalException(ss.str());
         }
         database->finalise();
         // Now fetch the species abundances
         string all_commands = "SELECT species_id, no_individuals FROM SPECIES_ABUNDANCES WHERE community_reference ==";
-        all_commands += to_string(community_reference) + ";";
+        all_commands += std::to_string(community_reference) + ";";
         stmt = database->prepare(all_commands);
         database->step();
         // Copy the data across to the TreeNode data structure.
         // For storing the number of ignored lineages so this can be subtracted off the parent number.
-        shared_ptr<map<unsigned long, unsigned long>> output_species_abundances = make_shared<map<unsigned long, unsigned long>>();
+        shared_ptr<std::map<unsigned long, unsigned long>> output_species_abundances = make_shared<std::map<unsigned long, unsigned long>>();
         unsigned long i = 0;
         while(i < no_species)
         {

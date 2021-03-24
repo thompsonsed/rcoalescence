@@ -26,12 +26,6 @@
 namespace na = neutral_analytical;
 namespace necsim
 {
-    Metacommunity::Metacommunity() : seed(0), task(0), parameters_checked(false),
-                                     species_abundances_handler(make_unique<SimulatedSpeciesAbundancesHandler>()),
-                                     random(make_shared<RNGController>()), metacommunity_tree(make_unique<Tree>())
-    {
-
-    }
 
     void Metacommunity::setCommunityParameters(shared_ptr<MetacommunityParameters> metacommunity_parameters)
     {
@@ -61,7 +55,7 @@ namespace necsim
             }
             // Now do the same for times
 
-            exception err;
+            std::exception err;
 
             for(auto &i: vector<string>{"task", "job_type"})
             {
@@ -77,7 +71,7 @@ namespace necsim
                     parameters_checked = true;
                     break;
                 }
-                catch(exception &e)
+                catch(std::exception &e)
                 {
                     err = e;
                 }
@@ -90,7 +84,7 @@ namespace necsim
         }
     }
 
-    void Metacommunity::addSpecies(unsigned long &species_count, TreeNode* tree_node, set<unsigned long> &species_list)
+    void Metacommunity::addSpecies(unsigned long &species_count, TreeNode* tree_node, std::set<unsigned long> &species_list)
     {
 
         auto species_id = species_abundances_handler->getRandomSpeciesID();
@@ -131,15 +125,15 @@ namespace necsim
                                                     seed,
                                                     task);
         // Dispose of any previous Tree object and create a new one
-        metacommunity_tree = make_unique<Tree>();
-        metacommunity_tree->internalSetup(temp_parameters);
+        metacommunity_tree = Tree();
+        metacommunity_tree.internalSetup(temp_parameters);
         // Run our simulation and calculate the species abundance distribution (as this is all that needs to be stored).
-        if(!metacommunity_tree->runSimulation())
+        if(!metacommunity_tree.runSimulation())
         {
             throw FatalException("Completion of the non-spatial coalescence simulation "
                                  "to create the metacommunity did not finish in time.");
         }
-        metacommunity_tree->applySpecRateInternal(current_metacommunity_parameters->speciation_rate, 0.0);
+        metacommunity_tree.applySpecRateInternal(current_metacommunity_parameters->speciation_rate, 0.0);
         // species_abundances now contains the number of individuals per species
         // Make it cumulative to increase the speed of indexing using binary search.
         species_abundances_handler = make_unique<SimulatedSpeciesAbundancesHandler>();
@@ -147,7 +141,7 @@ namespace necsim
                                           current_metacommunity_parameters->metacommunity_size,
                                           current_metacommunity_parameters->speciation_rate,
                                           nodes->size());
-        auto tmp_species_abundances = metacommunity_tree->getSpeciesAbundances();
+        auto tmp_species_abundances = metacommunity_tree.getSpeciesAbundances();
         if(tmp_species_abundances->empty())
         {
             throw FatalException("Simulated species abundance list is empty. Please report this bug.");
@@ -157,6 +151,11 @@ namespace necsim
 #ifdef DEBUG
         writeLog(10, "Spatially implicit simulation completed.");
 #endif //DEBUG
+    }
+
+    void Metacommunity::applyNoOutput(shared_ptr<SpecSimParameters> sp)
+    {
+        Community::applyNoOutput(sp);
     }
 
     void Metacommunity::applyNoOutput(shared_ptr<SpecSimParameters> sp, shared_ptr<vector<TreeNode>> tree_data)
@@ -212,7 +211,7 @@ namespace necsim
     {
         Community external_metacommunity;
         external_metacommunity.openSQLConnection(current_metacommunity_parameters->option);
-        shared_ptr<map<unsigned long, unsigned long>> sad = external_metacommunity.getSpeciesAbundances(
+        shared_ptr<std::map<unsigned long, unsigned long>> sad = external_metacommunity.getSpeciesAbundances(
                 current_metacommunity_parameters->external_reference);
         species_abundances_handler.reset();
         species_abundances_handler = make_unique<SimulatedSpeciesAbundancesHandler>();
@@ -225,12 +224,12 @@ namespace necsim
 
     void Metacommunity::printMetacommunityParameters()
     {
-        stringstream ss;
-        ss << "Metacommunity current_metacommunity_parameters:" << endl;
-        ss << "Metacommunity size: " << current_metacommunity_parameters->metacommunity_size << endl;
-        ss << "Speciation rate: " << current_metacommunity_parameters->speciation_rate << endl;
-        ss << "Option: " << current_metacommunity_parameters->option << endl;
-        ss << "External reference: " << current_metacommunity_parameters->external_reference << endl;
+        std::stringstream ss;
+        ss << "Metacommunity current_metacommunity_parameters:" << std::endl;
+        ss << "Metacommunity size: " << current_metacommunity_parameters->metacommunity_size << std::endl;
+        ss << "Speciation rate: " << current_metacommunity_parameters->speciation_rate << std::endl;
+        ss << "Option: " << current_metacommunity_parameters->option << std::endl;
+        ss << "External reference: " << current_metacommunity_parameters->external_reference << std::endl;
         writeInfo(ss.str());
     }
 

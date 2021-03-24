@@ -51,86 +51,86 @@ namespace necsim
         // storing the coalescence tree itself
         shared_ptr<vector<TreeNode>> data;
         // a reference for the last written point in data.
-        unsigned long enddata;
+        unsigned long enddata{};
         // Stores the command line current_metacommunity_parameters and parses the required information.
-        shared_ptr<SimParameters> sim_parameters;
+        shared_ptr<SimParameters> sim_parameters{};
         // random number generator
-        shared_ptr<RNGController> NR;
+        shared_ptr<RNGController> NR{};
         // Storing the speciation rates for later reference.
-        vector<long double> speciation_rates;
+        vector<long double> speciation_rates{};
         // flag for having set the simulation seed.
-        bool seeded;
+        bool seeded{};
         // random seed
-        long long seed;
+        long long seed{};
         // for file naming - good to know which task in a series is being executed here
-        long long task;
+        long long task{};
         // The map file containing the times that we want to expand the model and record all lineages again.
         // If this is null, uses_temporal_sampling will be false and the vector will be empty.
-        string times_file;
-        vector<double> reference_times;
+        string times_file{};
+        vector<double> reference_times{};
         // Set to true if we are recording at times other than the present day.
-        bool uses_temporal_sampling;
+        bool uses_temporal_sampling{};
         // The time variables (for timing the simulation in real time)
-        time_t start, sim_start, sim_end, now, sim_finish, out_finish;
-        time_t time_taken;
+        time_t start{}, sim_start{}, sim_end{}, now{}, sim_finish{}, out_finish{};
+        time_t time_taken{};
         // Active lineages stored as a row of datapoints
-        vector<DataPoint> active;
+        vector<DataPoint> active{};
         // Stores the point of the end of the active vector. 0 is reserved as null
-        unsigned long endactive;
+        unsigned long endactive{};
         // the maximum size of endactive
-        unsigned long startendactive;
+        unsigned long startendactive{};
         // the maximum simulated number of individuals in the present day.
-        unsigned long maxsimsize;
+        unsigned long maxsimsize{};
         // for create the link to the speciationcounter object which handles everything.
-        Community community;
+        Community community{};
         // This might need to be updated for simulations that have large changes in maximum population size over time.
         // number of simulation num_steps
-        long steps;
+        long steps{};
         // Maximum time to run for (in seconds)
-        unsigned long maxtime;
+        unsigned long maxtime{};
         // number of generations passed,
-        double generation;
+        double generation{};
         // The number of individuals per cell
-        double deme;
+        double deme{};
         // The proportion of individuals to sample
-        double deme_sample;
+        double deme_sample{};
         // the speciation rate
-        long double spec;
+        long double spec{};
         // Path to output directory
-        string out_directory;
+        string out_directory{};
         // sqlite3 object that stores all the data
-        shared_ptr<SQLiteHandler> database;
+        shared_ptr<SQLiteHandler> database{};
         // only set to true if the simulation has finished, otherwise will be false.
-        bool sim_complete;
+        bool sim_complete{};
         // set to true when variables are imported
-        bool has_imported_vars;
+        bool has_imported_vars{};
         // If sql database is written first to memory, then need another object to contain the in-memory database.
 #ifdef sql_ram
-        SQLiteHandler outdatabase;
+        SQLiteHandler outdatabase{};
 #endif
         // Create the step object that will be retained for the whole simulation.
         // Does not need saving on simulation pause.
-        Step this_step;
-        string sql_output_database;
+        Step this_step{};
+        string sql_output_database{};
         // If true, means the command-line imports were under the (deprecated) fullmode.
-        bool bFullMode;
+        bool bFullMode{};
         // If true, the simulation is to be resumed.
-        bool bResume;
+        bool bResume{};
         // If true, a config file contains the simulation variables.
-        bool bConfig;
+        bool bConfig{};
         // If true, simulation can be resumed.
-        bool has_paused, has_imported_pause;
+        bool has_paused{}, has_imported_pause{};
         // Should always be false in the base class
-        bool bIsProtracted;
+        bool bIsProtracted{};
         // variable for storing the paused sim location if files have been moved during paused/resumed simulations!
-        string pause_sim_directory;
+        string pause_sim_directory{};
         // Set to true to use the gillespie method - this is currently only supported for spatial simulations using a
         // dispersal map and point speciation (i.e. the method is unsupported for non-spatial simulations,
         // spatial simulations not using a dispersal map and those that use protracted speciation).
-        bool using_gillespie;
+        bool using_gillespie{};
 
     public:
-        Tree() : data(make_shared<vector<TreeNode>>()), enddata(0), sim_parameters(make_shared<SimParameters>()),
+        Tree() : data(make_shared<vector<TreeNode >>()), enddata(0), sim_parameters(make_shared<SimParameters>()),
                  NR(make_shared<RNGController>()), speciation_rates(), seeded(false), seed(-1), task(-1),
                  times_file("null"), reference_times(), uses_temporal_sampling(false), start(0), sim_start(0),
                  sim_end(0), now(0), sim_finish(0), out_finish(0), time_taken(0), active(), endactive(0),
@@ -144,15 +144,77 @@ namespace necsim
                  has_paused(false), has_imported_pause(false), bIsProtracted(false), pause_sim_directory("null"),
                  using_gillespie(false)
         {
-
         }
 
-        virtual ~Tree()
+        virtual ~Tree() = default;
+
+        Tree(Tree &&other) noexcept : Tree()
         {
-            database->close();
+            *this = std::move(other);
+        }
+
+        Tree(const Tree &other) : Tree()
+        {
+            *this = other;
+        };
+
+        Tree &operator=(Tree other) noexcept
+        {
+            other.swap(*this);
+            return *this;
+        }
+
+        void swap(Tree &other) noexcept
+        {
+            if(this != &other)
+            {
+                std::swap(data, other.data);
+                std::swap(enddata, other.enddata);
+                std::swap(sim_parameters, other.sim_parameters);
+                std::swap(NR, other.NR);
+                std::swap(speciation_rates, other.speciation_rates);
+                std::swap(seeded, other.seeded);
+                std::swap(seed, other.seed);
+                std::swap(task, other.task);
+                std::swap(times_file, other.times_file);
+                std::swap(reference_times, other.reference_times);
+                std::swap(uses_temporal_sampling, other.uses_temporal_sampling);
+                std::swap(start, other.start);
+                std::swap(sim_start, other.sim_start);
+                std::swap(sim_end, other.sim_end);
+                std::swap(now, other.now);
+                std::swap(sim_finish, other.sim_finish);
+                std::swap(out_finish, other.out_finish);
+                std::swap(time_taken, other.time_taken);
+                std::swap(active, other.active);
+                std::swap(endactive, other.endactive);
+                std::swap(startendactive, other.startendactive);
+                std::swap(maxsimsize, other.maxsimsize);
+                community.swap(other.community);
+                std::swap(steps, other.steps);
+                std::swap(maxtime, other.maxtime);
+                std::swap(generation, other.generation);
+                std::swap(deme, other.deme);
+                std::swap(deme_sample, other.deme_sample);
+                std::swap(spec, other.spec);
+                std::swap(out_directory, other.out_directory);
+                std::swap(database, other.database);
+                std::swap(sim_complete, other.sim_complete);
+                std::swap(has_imported_vars, other.has_imported_vars);
 #ifdef sql_ram
-            outdatabase.close();
+                std::swap(outdatabase, other.outdatabase);
 #endif
+                std::swap(this_step, other.this_step);
+                std::swap(sql_output_database, other.sql_output_database);
+                std::swap(bFullMode, other.bFullMode);
+                std::swap(bResume, other.bResume);
+                std::swap(bConfig, other.bConfig);
+                std::swap(has_paused, other.has_paused);
+                std::swap(has_imported_pause, other.has_imported_pause);
+                std::swap(bIsProtracted, other.bIsProtracted);
+                std::swap(pause_sim_directory, other.pause_sim_directory);
+                std::swap(using_gillespie, other.using_gillespie);
+            }
         }
 
         /**
@@ -164,7 +226,7 @@ namespace necsim
 
          * @param configfile the path to the config file containing parameters to parse.
          */
-        void importSimulationVariables(const string &configfile);
+        void importSimulationVariables(string configfile);
 
         /**
          * @brief Import the simulation variables from a ConfigOption.
@@ -176,6 +238,17 @@ namespace necsim
          * @param config the set of config parameters to import
          */
         void importSimulationVariables(ConfigParser config);
+
+        /**
+         * @brief Import the simulation variables from a string containing the config file data
+         *
+         * This function parses the simulation variables, imports them (from either the command line or a config file),
+         * checks that the input files exist and checks for any paused simulations. The flags are then set correctly,
+         * meaning that setup() and runSim() can be run immediately afterwards.
+
+         * @param config_string the set of config parameters to import as a string
+         */
+        void importSimulationVariablesFromString(string config_string);
 
         /**
          * @brief Runs the basic file existence checks.
@@ -520,7 +593,7 @@ namespace necsim
          * @param community_reference the community reference
          * @return the species abundances
          */
-        shared_ptr<map<unsigned long, unsigned long>> getSpeciesAbundances(const unsigned long &community_reference);
+        shared_ptr<std::map<unsigned long, unsigned long>> getSpeciesAbundances(const unsigned long &community_reference);
 
         /**
          * @brief Gets the species abundances from the internal tree.
@@ -662,31 +735,31 @@ namespace necsim
          * @brief Checks the output folder exists and initiates the pause.
          * @return the output file stream to save objects to
          */
-        shared_ptr<ofstream> initiatePause();
+        shared_ptr<std::ofstream> initiatePause();
 
         /**
          * @brief Saves the main simulation variables to file.
          * @param out the output file stream to save the object to
          */
-        void dumpMain(shared_ptr<ofstream> out);
+        void dumpMain(shared_ptr<std::ofstream> out);
 
         /**
          * @brief Saves the active object to file.
          * @param out the output file stream to save the object to
          */
-        void dumpActive(shared_ptr<ofstream> out);
+        void dumpActive(shared_ptr<std::ofstream> out);
 
         /**
          * @brief Saves the data object to file.
          * @param out the output file stream to save the object to
          */
-        void dumpData(shared_ptr<ofstream> out);
+        void dumpData(shared_ptr<std::ofstream> out);
 
         /**
          * @brief Completes the pause routine and outputs the sql dump.
          * @param out the output stream to close up
          */
-        void completePause(shared_ptr<ofstream> out);
+        void completePause(shared_ptr<std::ofstream> out);
 
         /**
          * @brief Sets the resume variables so that the simulation can be resumed.
@@ -710,22 +783,22 @@ namespace necsim
          */
         void setResumeParameters();
 
-        shared_ptr<ifstream> openSaveFile();
+        shared_ptr<std::ifstream> openSaveFile();
 
         /**
          * @brief Loads the main simulation parameters from the save file into memory.
          */
-        virtual void loadMainSave(shared_ptr<ifstream> in1);
+        virtual void loadMainSave(shared_ptr<std::ifstream> in1);
 
         /**
          * @brief Loads the data object from the save file into memory.
          */
-        void loadDataSave(shared_ptr<ifstream> in1);
+        void loadDataSave(shared_ptr<std::ifstream> in1);
 
         /**
          * @brief Loads the active object from the save file into memory.
          */
-        void loadActiveSave(shared_ptr<ifstream> in1);
+        void loadActiveSave(shared_ptr<std::ifstream> in1);
 
         /**
          * @brief Checks for resuming and prints to the terminal
@@ -783,6 +856,7 @@ namespace necsim
          * @param chosen the lineage to check for
          */
         void miniCheck(const unsigned long &chosen);
+
 #endif // DEBUG
     };
 }

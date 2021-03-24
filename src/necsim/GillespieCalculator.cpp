@@ -41,17 +41,17 @@ namespace necsim
                                                                       + (1.0 - dispersal_outside_cell_probability)
                                                                         * coalescence_probability) > 1.0)
         {
-            stringstream ss;
-            ss << "Event probabilities do not sum to 1. " << endl;
-            ss << "Dispersal: " << (1.0 - speciation_probability) * dispersal_outside_cell_probability << endl;
-            ss << "Speciation: " << speciation_probability << endl;
+            std::stringstream ss;
+            ss << "Event probabilities do not sum to 1. " << std::endl;
+            ss << "Dispersal: " << (1.0 - speciation_probability) * dispersal_outside_cell_probability << std::endl;
+            ss << "Speciation: " << speciation_probability << std::endl;
             ss << "Coalescence: "
                << (1 - speciation_probability) * (1.0 - dispersal_outside_cell_probability) * coalescence_probability
-               << endl;
+               << std::endl;
             ss << "Total: " << speciation_probability + (1.0 - speciation_probability)
                                                         * (dispersal_outside_cell_probability
                                                            + (1.0 - dispersal_outside_cell_probability)
-                                                             * coalescence_probability) << endl;
+                                                             * coalescence_probability) << std::endl;
             throw FatalException(ss.str());
         }
 #endif //DEBUG
@@ -109,10 +109,10 @@ namespace necsim
         random_number = 0.0;
     }
 
-    ostream &operator<<(ostream &os, const GillespieProbability &gp)
+    std::ostream &operator<<(std::ostream &os, const GillespieProbability &gp)
     {
         os << gp.random_number << "," << gp.speciation_probability << "," << gp.coalescence_probability << "," << ","
-           << gp.dispersal_outside_cell_probability << "," << gp.location << endl;
+           << gp.dispersal_outside_cell_probability << "," << gp.location << std::endl;
         return os;
     }
 

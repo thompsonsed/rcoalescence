@@ -26,7 +26,7 @@
 #include "DataMask.h"
 #include "SimParameters.h"
 
-using namespace std;
+
 namespace necsim
 {
     /**
@@ -710,7 +710,7 @@ namespace necsim
          * @param r the Map object to output.
          * @return the output stream.
          */
-        friend ostream &operator<<(ostream &os, const Landscape &r)
+        friend std::ostream &operator<<(std::ostream &os, const Landscape &r)
         {
             os << r.fine_x_min << "\n" << r.fine_x_max << "\n" << r.coarse_x_min << "\n" << r.coarse_x_max;
             os << "\n" << r.fine_y_min << "\n" << r.fine_y_max << "\n" << r.coarse_y_min << "\n" << r.coarse_y_max
@@ -734,7 +734,7 @@ namespace necsim
          * @param r the Map object to input to.
          * @return the input stream.
          */
-        friend istream &operator>>(istream &is, Landscape &r)
+        friend std::istream &operator>>(std::istream &is, Landscape &r)
         {
             is >> r.fine_x_min;
             is >> r.fine_x_max >> r.coarse_x_min;

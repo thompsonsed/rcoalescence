@@ -21,6 +21,7 @@
 #include <memory>
 
 #ifdef WIN_INSTALL
+#define NOMINMAX
 #include <windows.h>
 //#define sleep Sleep
 #endif
@@ -32,7 +33,7 @@
 #include "SpecSimParameters.h"
 #include "SQLiteHandler.h"
 
-using namespace std;
+
 using std::string;
 namespace necsim
 {
@@ -132,36 +133,36 @@ namespace necsim
     class Community
     {
     protected:
-        bool in_mem; // boolean for whether the database is in memory or not.
-        bool database_set; // boolean for whether the database has been set already.
-        shared_ptr<SQLiteHandler> database; // stores the in-memory database connection.
-        bool sql_connection_open; // true if the data connection has been established.
-        shared_ptr<vector<TreeNode>> nodes; // in older versions this was called lineage_indices.
-        shared_ptr<vector<unsigned long>> species_abundances;
-        unsigned long species_index;
-        bool has_imported_samplemask; // checks whether the samplemask has already been imported.
-        bool has_imported_data; // checks whether the main sim data has been imported.
-        Samplematrix samplemask; // the samplemask object for defining the areas we want to sample from.
-        vector<Fragment> fragments; // a vector of fragments for storing each fragment's coordinates.
-        shared_ptr<CommunityParameters> current_community_parameters;
-        shared_ptr<MetacommunityParameters> current_metacommunity_parameters;
+        bool in_mem{}; // boolean for whether the database is in memory or not.
+        bool database_set{}; // boolean for whether the database has been set already.
+        shared_ptr<SQLiteHandler> database{}; // stores the in-memory database connection.
+        bool sql_connection_open{}; // true if the data connection has been established.
+        shared_ptr<vector<TreeNode>> nodes{}; // in older versions this was called lineage_indices.
+        shared_ptr<vector<unsigned long>> species_abundances{};
+        unsigned long species_index{};
+        bool has_imported_samplemask{}; // checks whether the samplemask has already been imported.
+        bool has_imported_data{}; // checks whether the main sim data has been imported.
+        Samplematrix samplemask{}; // the samplemask object for defining the areas we want to sample from.
+        vector<Fragment> fragments{}; // a vector of fragments for storing each fragment's coordinates.
+        shared_ptr<CommunityParameters> current_community_parameters{};
+        shared_ptr<MetacommunityParameters> current_metacommunity_parameters{};
         // the minimum speciation rate the original simulation was run with
         // this is read from the database SIMULATION_PARAMETERS table
-        long double min_spec_rate;
+        long double min_spec_rate{};
         // The dimensions of the sample grid size.
-        unsigned long grid_x_size, grid_y_size;
+        unsigned long grid_x_size{}, grid_y_size{};
         // The dimensions of the original sample map file
-        unsigned long samplemask_x_size, samplemask_y_size, samplemask_x_offset, samplemask_y_offset, seed;
+        unsigned long samplemask_x_size{}, samplemask_y_size{}, samplemask_x_offset{}, samplemask_y_offset{}, seed{};
         // Vector containing past speciation rates
-        CommunitiesArray past_communities;
-        MetacommunitiesArray past_metacommunities;
+        CommunitiesArray past_communities{};
+        MetacommunitiesArray past_metacommunities{};
         // Protracted speciation current_metacommunity_parameters
-        bool protracted;
-        ProtractedSpeciationParameters minimum_protracted_parameters;
-        ProtractedSpeciationParameters applied_protracted_parameters;
-        unsigned long max_species_id, max_fragment_id, max_locations_id;
+        bool protracted{};
+        ProtractedSpeciationParameters minimum_protracted_parameters{};
+        ProtractedSpeciationParameters applied_protracted_parameters{};
+        unsigned long max_species_id{}, max_fragment_id{}, max_locations_id{};
         // Does not need to be stored during simulation pause
-        shared_ptr<SpecSimParameters> spec_sim_parameters;
+        shared_ptr<SpecSimParameters> spec_sim_parameters{};
     public:
 
         /**
@@ -195,16 +196,59 @@ namespace necsim
         {
         }
 
-        /**
-        * @brief Default destructor
-        */
-        virtual ~Community()
+        virtual ~Community() = default;
+
+        Community(Community &&other) noexcept : Community()
         {
-            if(nodes)
+            *this = std::move(other);
+        }
+
+        Community(const Community &other) : Community()
+        {
+            *this = other;
+        };
+
+        Community &operator=(Community other) noexcept
+        {
+            other.swap(*this);
+            return *this;
+        }
+
+        void swap(Community &other) noexcept
+        {
+            if(this != &other)
             {
-                nodes.reset();
+                std::swap(in_mem, other.in_mem);
+                std::swap(database_set, other.database_set);
+                std::swap(database, other.database);
+                std::swap(sql_connection_open, other.sql_connection_open);
+                std::swap(nodes, other.nodes);
+                std::swap(species_abundances, other.species_abundances);
+                std::swap(species_index, other.species_index);
+                std::swap(has_imported_samplemask, other.has_imported_samplemask);
+                std::swap(has_imported_data, other.has_imported_data);
+                std::swap(samplemask, other.samplemask);
+                std::swap(fragments, other.fragments);
+                std::swap(current_community_parameters, other.current_community_parameters);
+                std::swap(current_metacommunity_parameters, other.current_metacommunity_parameters);
+                std::swap(min_spec_rate, other.min_spec_rate);
+                std::swap(grid_x_size, other.grid_x_size);
+                std::swap(grid_y_size, other.grid_y_size);
+                std::swap(samplemask_x_size, other.samplemask_x_size);
+                std::swap(samplemask_y_size, other.samplemask_y_size);
+                std::swap(samplemask_x_offset, other.samplemask_x_offset);
+                std::swap(samplemask_y_offset, other.samplemask_y_offset);
+                std::swap(seed, other.seed);
+                std::swap(past_communities, other.past_communities);
+                std::swap(past_metacommunities, other.past_metacommunities);
+                std::swap(protracted, other.protracted);
+                std::swap(minimum_protracted_parameters, other.minimum_protracted_parameters);
+                std::swap(applied_protracted_parameters, other.applied_protracted_parameters);
+                std::swap(max_species_id, other.max_species_id);
+                std::swap(max_fragment_id, other.max_fragment_id);
+                std::swap(max_locations_id, other.max_locations_id);
+                std::swap(spec_sim_parameters, other.spec_sim_parameters);
             }
-            closeSQLConnection();
         }
 
         /**
@@ -278,7 +322,7 @@ namespace necsim
          * @param treenode pointer to the TreeNode object for this lineage
          * @param species_list the set of all species ids.
          */
-        virtual void addSpecies(unsigned long &species_count, TreeNode* treenode, set<unsigned long> &species_list);
+        virtual void addSpecies(unsigned long &species_count, TreeNode* treenode, std::set<unsigned long> &species_list);
 
         /**
          * @brief Calculates the species abundance of the dataset.
@@ -625,7 +669,7 @@ namespace necsim
          * @brief Applies the given speciation parameters to the coalescence tree, but does not write the output.
          * @param sp speciation parameters to apply, including speciation rate, times and spatial sampling procedure
          */
-        void applyNoOutput(shared_ptr<SpecSimParameters> sp);
+        virtual void applyNoOutput(shared_ptr<SpecSimParameters> sp);
 
         /**
          * @brief Applies the given speciation parameters to the coalescence tree, but does not write the output.
@@ -652,8 +696,8 @@ namespace necsim
             if(sp->use_fragments)
             {
                 calcFragments(sp->fragment_config_file);
-                stringstream os;
-                os << "Total fragments: " << fragments.size() << endl;
+                std::stringstream os;
+                os << "Total fragments: " << fragments.size() << std::endl;
                 writeInfo(os.str());
             }
             if(spec_sim_parameters->metacommunity_parameters.empty())
@@ -708,7 +752,7 @@ namespace necsim
          * @param community_reference the reference of the desired community
          * @return a map of species ids to species abundances
          */
-        shared_ptr<map<unsigned long, unsigned long>> getSpeciesAbundances(const unsigned long &community_reference);
+        shared_ptr<std::map<unsigned long, unsigned long>> getSpeciesAbundances(const unsigned long &community_reference);
 
         /**
          * @brief Gets the species abundance from the species_abundances internal object

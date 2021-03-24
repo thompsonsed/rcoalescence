@@ -12,7 +12,7 @@
  */
 #include <cmath>
 
-using namespace std;
+
 namespace necsim
 {
     bool doubleCompare(double d1, double d2, double epsilon)

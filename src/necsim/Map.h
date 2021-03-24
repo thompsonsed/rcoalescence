@@ -8,9 +8,8 @@
  * @copyright <a href="https://opensource.org/licenses/MIT"> MIT Licence.</a>
  */
 
-#ifndef MAP_H
-#define MAP_H
-#ifdef with_gdal
+#ifndef NECSIM_MAP_H
+#define NECSIM_MAP_H
 
 #include <string>
 #include <cstring>
@@ -25,12 +24,8 @@
 #include "custom_exceptions.h"
 #include "cpl_custom_handler.h"
 
-using namespace std;
-#ifdef DEBUG
-
-#include "custom_exceptions.h"
-
-#endif // DEBUG
+using std::shared_ptr;
+using std::make_shared;
 namespace necsim
 {
     /**
@@ -80,6 +75,10 @@ namespace necsim
             removeCPLErrorHandler();
         }
 
+        Map(Map &&m) noexcept = default;
+
+        Map(const Map &m) = default;
+
         ~Map() override
         {
             close();
@@ -125,7 +124,7 @@ namespace necsim
             if(!po_dataset)
             {
                 string s = "File " + file_name + " not found.";
-                throw runtime_error(s);
+                throw std::runtime_error(s);
             }
         }
 
@@ -174,16 +173,16 @@ namespace necsim
             setCPLErrorHandler();
             if((*po_dataset)->GetRasterCount() < 1)
             {
-                stringstream ss;
-                ss << "No raster band detected in " << file_name << endl;
+                std::stringstream ss;
+                ss << "No raster band detected in " << file_name << std::endl;
                 throw FatalException(ss.str());
             }
             po_band = make_shared<GDALRasterBand*>((GDALRasterBand*) (*po_dataset)->GetRasterBand(1));
             removeCPLErrorHandler();
             if(po_band == nullptr)
             {
-                stringstream ss;
-                ss << "Could not open po_band in " << file_name << ": returned a nullptr" << endl;
+                std::stringstream ss;
+                ss << "Could not open po_band in " << file_name << ": returned a nullptr" << std::endl;
                 throw FatalException(ss.str());
             }
         }
@@ -207,7 +206,8 @@ namespace necsim
 #ifdef DEBUG
             if(po_dataset == nullptr)
             {
-                throw FatalException("po_dataset is nullptr. This is likely a problem with gdal. Please report this bug.");
+                throw FatalException(
+                        "po_dataset is nullptr. This is likely a problem with gdal. Please report this bug.");
             }
             if(po_band == nullptr)
             {
@@ -224,12 +224,12 @@ namespace necsim
                     no_data_value = 0.0;
                 }
             }
-            catch(out_of_range &out_of_range1)
+            catch(std::out_of_range &out_of_range1)
             {
                 no_data_value = 0.0;
             }
-            stringstream ss;
-            ss << "No data value is: " << no_data_value << endl;
+            std::stringstream ss;
+            ss << "No data value is: " << no_data_value << std::endl;
             writeInfo(ss.str());
             // Check sizes match
             gdal_data_type = (*po_band)->GetRasterDataType();
@@ -240,7 +240,7 @@ namespace necsim
             if(cpl_error >= CE_Warning)
             {
                 ss.str("");
-                ss << "cpl error detected greater than or equal to warning level." << endl;
+                ss << "cpl error detected greater than or equal to warning level." << std::endl;
                 writeInfo(ss.str());
                 string message = "No transform present in dataset for " + file_name;
                 cplNecsimCustomErrorHandler(cpl_error, 6, message.c_str());
@@ -252,7 +252,7 @@ namespace necsim
             ss.str("");
             ss << "Affine transform is " << geoTransform[0] << ", " << geoTransform[1] << ", " << geoTransform[2]
                << ", ";
-            ss << geoTransform[3] << ", " << geoTransform[4] << ", " << geoTransform[5] << endl;
+            ss << geoTransform[3] << ", " << geoTransform[4] << ", " << geoTransform[5] << std::endl;
             writeInfo(ss.str());
             upper_left_x = geoTransform[0];
             upper_left_y = geoTransform[3];
@@ -270,19 +270,19 @@ namespace necsim
         void printMetaData()
         {
             setCPLErrorHandler();
-            stringstream ss;
+            std::stringstream ss;
             const char* dt_name = GDALGetDataTypeName(gdal_data_type);
-            ss << "Filename: " << file_name << endl;
+            ss << "Filename: " << file_name << std::endl;
             writeLog(10, ss.str());
             ss.str("");
-            ss << "data type: " << gdal_data_type << "(" << dt_name << ")" << endl;
+            ss << "data type: " << gdal_data_type << "(" << dt_name << ")" << std::endl;
             writeLog(10, ss.str());
             ss.str("");
             ss << "Geo-transform (ulx, uly, x res, y res): " << upper_left_x << ", " << upper_left_y << ", ";
-            ss << x_res << ", " << y_res << ", " << endl;
+            ss << x_res << ", " << y_res << ", " << std::endl;
             writeLog(10, ss.str());
             ss.str("");
-            ss << "No data value: " << no_data_value << endl;
+            ss << "No data value: " << no_data_value << std::endl;
             writeLog(10, ss.str());
             removeCPLErrorHandler();
 
@@ -327,7 +327,7 @@ namespace necsim
         {
             if(!fs::exists(filename) || fs::is_directory(filename))
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Cannot import from " << filename << ": file does not exist.";
                 throw FatalException(ss.str());
             }
@@ -348,8 +348,8 @@ namespace necsim
             if(filename.find(".tif") != string::npos)
             {
                 setCPLErrorHandler();
-                stringstream ss;
-                ss << "Importing " << filename << " " << endl;
+                std::stringstream ss;
+                ss << "Importing " << filename << " " << std::endl;
                 writeInfo(ss.str());
                 open(filename);
                 getRasterBand();
@@ -363,11 +363,11 @@ namespace necsim
                 // Check sizes
                 if((num_cols != block_x_size || num_rows != block_y_size) || num_cols == 0 || num_rows == 0)
                 {
-                    stringstream stringstream1;
+                    std::stringstream stringstream1;
                     stringstream1 << "Raster data size does not match inputted dimensions for " << filename
-                                  << ". Using raster sizes." << endl;
-                    stringstream1 << "Old dimensions: " << num_cols << ", " << num_rows << endl;
-                    stringstream1 << "New dimensions: " << block_x_size << ", " << block_y_size << endl;
+                                  << ". Using raster sizes." << std::endl;
+                    stringstream1 << "Old dimensions: " << num_cols << ", " << num_rows << std::endl;
+                    stringstream1 << "New dimensions: " << block_x_size << ", " << block_y_size << std::endl;
                     writeWarning(stringstream1.str());
                     setSize(block_y_size, block_x_size);
                 }
@@ -381,10 +381,10 @@ namespace necsim
 #ifdef DEBUG
                 if(sizeof(T) * 8 != gdal_data_sizes[gdal_data_type])
                 {
-                    stringstream ss2;
-                    ss2 << "Object data size: " << sizeof(T) * 8 << endl;
-                    ss2 << "Tif data type: " << dt_name << ": " << gdal_data_sizes[gdal_data_type] << " bytes" << endl;
-                    ss2 << "Tif data type does not match object data size in " << file_name << endl;
+                    std::stringstream ss2;
+                    ss2 << "Object data size: " << sizeof(T) * 8 << std::endl;
+                    ss2 << "Tif data type: " << dt_name << ": " << gdal_data_sizes[gdal_data_type] << " bytes" << std::endl;
+                    ss2 << "Tif data type does not match object data size in " << file_name << std::endl;
                     writeWarning(ss2.str());
                 }
 #endif
@@ -565,9 +565,9 @@ namespace necsim
         template<typename T2> void importUsingBuffer(GDALDataType dt_buff)
         {
             setCPLErrorHandler();
-            stringstream ss;
+            std::stringstream ss;
             ss << "\nUsing buffer of type " << GDALGetDataTypeName(dt_buff) << " into array of dimensions ";
-            ss << num_cols << " by " << num_rows << " with block size " << block_x_size << ", " << block_y_size << endl;
+            ss << num_cols << " by " << num_rows << " with block size " << block_x_size << ", " << block_y_size << std::endl;
             writeInfo(ss.str());
             unsigned int number_printed = 0;
             // create an empty row of type float
@@ -575,8 +575,8 @@ namespace necsim
             t1 = (T2*) CPLMalloc(sizeof(T2) * num_cols);
             if(CPLGetLastErrorNo() != CE_None)
             {
-                stringstream os;
-                os << "Error thrown by CPLMalloc: " << CPLGetLastErrorType() << ": " << CPLGetLastErrorMsg() << endl;
+                std::stringstream os;
+                os << "Error thrown by CPLMalloc: " << CPLGetLastErrorType() << ": " << CPLGetLastErrorMsg() << std::endl;
                 throw FatalException(os.str());
             }
             // import the data a row at a time, using our template row.
@@ -584,24 +584,24 @@ namespace necsim
 #ifdef DEBUG
             if(sizeof(T2) * 8 != GDALGetDataTypeSize(dt_buff))
             {
-                stringstream ss0;
+                std::stringstream ss0;
                 ss0 << "Size of template (" << sizeof(T2) << ") does not equal size of gdal buffer (";
-                ss0 << GDALGetDataTypeSize(dt_buff) << "). Please report this bug." << endl;
+                ss0 << GDALGetDataTypeSize(dt_buff) << "). Please report this bug." << std::endl;
                 throw FatalException(ss0.str());
             }
             if(t1 == nullptr)
             {
-                stringstream ss1;
+                std::stringstream ss1;
                 ss1 << "CPL malloc could not acquire " << sizeof(T2) * num_cols << " of space and returned a nullptr.";
                 ss1 << " Please check that your install of gdal is fully functional, and otherwise report this bug."
-                    << endl;
+                    << std::endl;
                 throw FatalException(ss1.str());
             }
             if(static_cast<unsigned long>(int_block_x_size) != block_x_size)
             {
-                stringstream ss2;
+                std::stringstream ss2;
                 ss2 << "Error in integer conversion - please report this bug: " << int_block_x_size << " != ";
-                ss2 << block_x_size << endl;
+                ss2 << block_x_size << std::endl;
                 throw FatalException(ss2.str());
             }
             if(po_band == nullptr)
@@ -651,7 +651,7 @@ namespace necsim
             double dComplete = ((double) j / (double) num_rows) * 20;
             if(number_printed < dComplete)
             {
-                stringstream os;
+                std::stringstream os;
                 os << "\rImporting " << file_name << " ";
                 number_printed = 0;
                 while(number_printed < dComplete)
@@ -659,7 +659,7 @@ namespace necsim
                     os << ".";
                     number_printed++;
                 }
-                os << flush;
+                os << std::flush;
                 writeInfo(os.str());
             }
         }
@@ -671,8 +671,8 @@ namespace necsim
         {
             if(cpl_error >= CE_Warning && !cpl_error_set)
             {
-                stringstream ss;
-                ss << "\nCPL error thrown during import of " << file_name << endl;
+                std::stringstream ss;
+                ss << "\nCPL error thrown during import of " << file_name << std::endl;
                 cplNecsimCustomErrorHandler(cpl_error, 3, ss.str().c_str());
                 CPLErrorReset();
                 cpl_error = CE_None;
@@ -685,7 +685,7 @@ namespace necsim
          * @param m the object to write out
          * @return the modified output stream
          */
-        friend ostream &operator>>(ostream &os, const Map &m)
+        friend std::ostream &operator>>(std::ostream &os, const Map &m)
         {
             return Matrix<T>::writeOut(os, m);
         }
@@ -696,7 +696,7 @@ namespace necsim
          * @param m the object to write in
          * @return the modified input stream
          */
-        friend istream &operator<<(istream &is, Map &m)
+        friend std::istream &operator<<(std::istream &is, Map &m)
         {
             return Matrix<T>::readIn(is, m);
         }
@@ -706,7 +706,7 @@ namespace necsim
          * @param m the Map object to copy from
          * @return the self Map object
          */
-        Map &operator=(const Map &m)
+        Map &operator=(const Map &m) noexcept
         {
             Matrix<T>::operator=(m);
             this->po_dataset = m.po_dataset;
@@ -715,6 +715,25 @@ namespace necsim
             this->block_y_size = m.block_y_size;
             this->no_data_value = m.no_data_value;
             this->file_name = m.file_name;
+            this->gdal_data_type = m.gdal_data_type;
+            this->cpl_error = m.cpl_error;
+            this->upper_left_x = m.upper_left_x;
+            this->upper_left_y = m.upper_left_y;
+            this->x_res = m.x_res;
+            this->y_res = m.y_res;
+            this->cpl_error_set = m.cpl_error_set;
+            return *this;
+        }
+
+        Map &operator=(Map &&m) noexcept
+        {
+            static_cast<Matrix<T> &>(*this) = std::move(static_cast<Matrix<T> &>(m));
+            this->po_dataset = std::move(m.po_dataset);
+            this->po_band = std::move(m.po_band);
+            this->block_x_size = m.block_x_size;
+            this->block_y_size = m.block_y_size;
+            this->no_data_value = m.no_data_value;
+            this->file_name = std::move(m.file_name);
             this->gdal_data_type = m.gdal_data_type;
             this->cpl_error = m.cpl_error;
             this->upper_left_x = m.upper_left_x;
@@ -797,6 +816,5 @@ namespace necsim
     }
 
 }
-#endif // with_gdal
 
-#endif //MAP_H
+#endif //NECSIM_MAP_H

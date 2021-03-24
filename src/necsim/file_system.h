@@ -25,7 +25,7 @@
 #ifndef SPECIATIONCOUNTER_FILESYSTEM_H
 #define SPECIATIONCOUNTER_FILESYSTEM_H
 
-using namespace std;
+using std::string;
 namespace necsim
 {
     /**
@@ -92,7 +92,7 @@ namespace necsim
      * @param str the input stream from the csv file.
      * @return a vector where each element corresponds to the respective row from the csv.
      */
-    vector<string> getCsvLineAndSplitIntoTokens(istream &str);
+    std::vector<string> getCsvLineAndSplitIntoTokens(std::istream &str);
 
     /**
      * @brief Overload the output operator for vectors
@@ -101,7 +101,7 @@ namespace necsim
      * @param v the vector to write out
      * @return the modified output operator
      */
-    template<class T> ostream &operator<<(ostream &os, const vector<T> &v)
+    template<class T> std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
     {
         os << v.size() << ",";
         for(const auto &item: v)
@@ -118,7 +118,7 @@ namespace necsim
      * @param v the vector of objects to read in to
      * @return the input stream
      */
-    template<class T> istream &operator>>(istream &is, vector<T> &v)
+    template<class T> std::istream &operator>>(std::istream &is, std::vector<T> &v)
     {
         char delim;
         int n;

@@ -19,15 +19,15 @@
 #include <chrono>
 
 #ifdef WIN_INSTALL
+#define NOMINMAX
 #include <windows.h>
-//#define sleep Sleep
-//#else
-//#include <unistd.h>
 #endif // WIN_INSTALL
 
 
 #include "file_system.h"
 #include "custom_exceptions.h"
+using std::shared_ptr;
+using std::make_shared;
 namespace necsim
 {
     /**

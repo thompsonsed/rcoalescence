@@ -29,7 +29,7 @@
 
 namespace na = neutral_analytical;
 
-using namespace std;
+
 namespace necsim
 {
     /**
@@ -39,11 +39,11 @@ namespace necsim
     {
     protected:
         // Maps abundance values to a vector containing species ids
-        map<unsigned long, vector<unsigned long>> species_abundances;
+        std::map<unsigned long, vector<unsigned long>> species_abundances;
         // Maps abundance values to the maximum number of species expected to be contained.
-        map<unsigned long, unsigned long> species_richness_per_abundance;
+        std::map<unsigned long, unsigned long> species_richness_per_abundance;
         // Maps cumulative probabilities of choosing each abundance to abundance values
-        shared_ptr<map<unsigned long, unsigned long>> cumulative_abundance_map;
+        shared_ptr<std::map<unsigned long, unsigned long>> cumulative_abundance_map;
         // Total species number
         double total_species_number;
         unsigned long number_of_individuals;
@@ -65,7 +65,7 @@ namespace necsim
          * @brief Sets the abundance list.
          * @param abundance_list_in map of species ids to abundances
          */
-        void setAbundanceList(const shared_ptr<map<unsigned long, unsigned long>> &abundance_list_in) override;
+        void setAbundanceList(const shared_ptr<std::map<unsigned long, unsigned long>> &abundance_list_in) override;
 
         /**
          * @brief Sets the abundance list

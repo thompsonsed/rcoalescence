@@ -36,8 +36,9 @@
 #include <cctype>
 #include <algorithm>
 
-using namespace std;
 using std::string;
+using std::vector;
+
 namespace necsim
 {
     /**
@@ -82,7 +83,7 @@ namespace necsim
          * @param k the KeyOption object.
          * @return os the output stream.
          */
-        friend ostream &operator<<(ostream &os, const SectionOption &k);
+        friend std::ostream &operator<<(std::ostream &os, const SectionOption &k);
 
         /**
          * @brief Overloading the >> operator for inputting from an input stream.
@@ -90,7 +91,7 @@ namespace necsim
          * @param k the KeyOption object
          * @return is the input stream
          */
-        friend istream &operator>>(istream &is, SectionOption &k);
+        friend std::istream &operator>>(std::istream &is, SectionOption &k);
     };
 
     /**
@@ -141,7 +142,7 @@ namespace necsim
          * Each variable is defined as 'key=value', and must be one per line
          * Each key's variable will be read as a string into a KeyOption structure.
          */
-        void parseConfig(istream &istream1);
+        void parseConfig(std::istream &istream1);
 
         /**
         * @brief Returns the vector of key options imported from the file.
@@ -224,7 +225,7 @@ namespace necsim
          * @param c the ConfigOption object.
          * @return os the output stream.
          */
-        friend ostream &operator<<(ostream &os, const ConfigParser &c);
+        friend std::ostream &operator<<(std::ostream &os, const ConfigParser &c);
 
         /**
          * @brief Overloading the >> operator for inputting from an input stream.
@@ -233,7 +234,7 @@ namespace necsim
          * @param c the ConfigOption object
          * @return is the input stream
          */
-        friend istream &operator>>(istream &is, ConfigParser &c);
+        friend std::istream &operator>>(std::istream &is, ConfigParser &c);
     };
 }
 #endif // CONFIGPARSER_H

@@ -22,8 +22,10 @@
 #include "Matrix.h"
 #include "RNGController.h"
 
-using namespace std;
+
 using namespace random_numbers;
+using std::shared_ptr;
+
 namespace necsim
 {
     /**
@@ -38,20 +40,34 @@ namespace necsim
     class SpeciesList
     {
     private:
-        unsigned long list_size, max_size; // List size and maximum size of the cell (based on percentage cover).
-        unsigned long next_active; // For calculating the wrapping, using the next and last system.
+        unsigned long list_size{}, max_size{}; // List size and maximum size of the cell (based on percentage cover).
+        unsigned long next_active{}; // For calculating the wrapping, using the next and last system.
         vector<unsigned long> lineage_indices; // list of the active reference number, with zeros for empty cells.
-        unsigned long nwrap; // The number of wrapping (next and last possibilities) that there are.
+        unsigned long nwrap{}; // The number of wrapping (next and last possibilities) that there are.
     public:
         /**
          * @brief Default constructor
          */
         SpeciesList();
 
+        SpeciesList(const SpeciesList &other) noexcept
+        {
+            *this = other;
+        }
+
+        SpeciesList(SpeciesList &&other) noexcept
+        {
+            *this = std::move(other);
+        }
+
         /**
          * @brief Default destructor
          */
         ~SpeciesList() = default;
+
+        SpeciesList &operator=(const SpeciesList &other) noexcept;
+
+        SpeciesList &operator=(SpeciesList &&other) noexcept;
 
         /**
          * @brief Initialises the list to the specified size.
@@ -201,7 +217,7 @@ namespace necsim
          * @param r the SpeciesList object to output.
          * @return the output stream.
          */
-        friend ostream &operator<<(ostream &os, const SpeciesList &r);
+        friend std::ostream &operator<<(std::ostream &os, const SpeciesList &r);
 
         /**
          * @brief Inputs the SpeciesList object from an input stream.
@@ -209,7 +225,7 @@ namespace necsim
          * @param is the input stream.
          * @param r the SpeciesList object to input to.
          */
-        friend istream &operator>>(istream &is, SpeciesList &r);
+        friend std::istream &operator>>(std::istream &is, SpeciesList &r);
     };
 }
 #endif

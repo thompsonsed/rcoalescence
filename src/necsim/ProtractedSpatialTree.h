@@ -22,23 +22,46 @@
 #define SPECIATIONCOUNTER_PROTRACTEDSPATIALTREE_H
 namespace necsim
 {
-    class ProtractedSpatialTree : public virtual SpatialTree, public virtual ProtractedTree
+    class ProtractedSpatialTree : public SpatialTree, public ProtractedTree
     {
-        //    /**
-        //     * @brief Calculates the speciation probability from the random number, speciation rate and number of generations a
-        //     * lineage has existed for.
-        //     * @param random_number the generated random number from 0-1
-        //     * @param speciation_rate the speciation rate to be applied
-        //     * @param no_generations the number of generations a lineage has existed for
-        //     * @return if true, speciation has occured
-        //     */
-        //    bool calcSpeciation(const long double &random_number,
-        //                        const long double &speciation_rate,
-        //                        const unsigned long &no_generations) override
-        //    {
-        //        return ProtractedTree::calcSpeciation(random_number, speciation_rate, no_generations);
-        //    }
+    public:
+        ProtractedSpatialTree() : Tree(), SpatialTree(), ProtractedTree()
+        {
+        }
 
+        ProtractedSpatialTree(ProtractedSpatialTree &&other) noexcept : ProtractedSpatialTree()
+        {
+            *this = std::move(other);
+        }
+
+
+        ~ProtractedSpatialTree() override= default;
+
+
+
+        ProtractedSpatialTree(const ProtractedSpatialTree &other) : ProtractedSpatialTree()
+        {
+            *this = other;
+        };
+
+        ProtractedSpatialTree &operator=(ProtractedSpatialTree other) noexcept
+        {
+            other.swap(*this);
+            return *this;
+        }
+
+        void swap(ProtractedSpatialTree &other) noexcept
+        {
+            if(this != &other)
+            {
+                SpatialTree::swap(other);
+                std::swap(speciation_generation_min, other.speciation_generation_min);
+                std::swap(speciation_generation_max, other.speciation_generation_max);
+
+            }
+        }
     };
+
+
 }
 #endif //SPECIATIONCOUNTER_PROTRACTEDSPATIALTREE_H

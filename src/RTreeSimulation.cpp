@@ -292,7 +292,7 @@ bool RTreeSimulation::getMultipleOutput()
     return multiple_output;
 }
 
-void RTreeSimulation::setup()
+void RTreeSimulation::setupR()
 {
     Tree::setup();
 }

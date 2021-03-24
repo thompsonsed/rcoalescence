@@ -110,23 +110,23 @@ namespace necsim
         }
         if(bInvalidArguments || bAskHelp)
         {
-            stringstream os;
-            os << "At least six command-line arguments are expected." << endl;
-            os << "1 - Path to SQL database file." << endl;
-            os << "2 - T/F of whether to record full spatial data." << endl;
-            os << "3 - the sample mask to use (use null if no mask is to be used)" << endl;
+            std::stringstream os;
+            os << "At least six command-line arguments are expected." << std::endl;
+            os << "1 - Path to SQL database file." << std::endl;
+            os << "2 - T/F of whether to record full spatial data." << std::endl;
+            os << "3 - the sample mask to use (use null if no mask is to be used)" << std::endl;
             os << "4 - the file containing tempororal points of interest. If null, the present is used for all "
-                  "calculations." << endl;
+                  "calculations." << std::endl;
             os << "5 - T/F of whether to calculate abundances for each rectangular fragment. Alternatively, provide a "
-                  "csv file with fragment data to be read." << endl;
-            os << "6 - Speciation rate." << endl;
-            os << "7 - onwards - Further speciation rates. [OPTIONAL]" << endl;
-            os << "Would you like to run with the default paramenters?" << endl;
-            os << "       (This requires a SQL database file at ../../Data/Coal_sim/Test_output/data_0_1.db)" << endl;
-            os << "Enter Y/N: " << flush;
+                  "csv file with fragment data to be read." << std::endl;
+            os << "6 - Speciation rate." << std::endl;
+            os << "7 - onwards - Further speciation rates. [OPTIONAL]" << std::endl;
+            os << "Would you like to run with the default paramenters?" << std::endl;
+            os << "       (This requires a SQL database file at ../../Data/Coal_sim/Test_output/data_0_1.db)" << std::endl;
+            os << "Enter Y/N: " << std::flush;
             writeInfo(os.str());
             string sDef;
-            cin >> sDef;
+            std::cin >> sDef;
             if(sDef == "Y" || sDef == "y")
             {
                 bRunDefault = true;

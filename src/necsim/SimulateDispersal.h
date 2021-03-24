@@ -57,15 +57,15 @@ namespace necsim
         // The sqlite3 database object for storing outputs
         SQLiteHandler database;
         // Vector for storing pairs of dispersal distances to parameter references
-        vector<tuple<unsigned long, Cell, double>> distances;
+        vector<std::tuple<unsigned long, Cell, double>> distances;
         // Maps distances to parameter references
-        map<unsigned long, unsigned long> parameter_references;
+        std::map<unsigned long, unsigned long> parameter_references;
         // Vector for storing the cells (for randomly choosing from)
         vector<Cell> cells;
         // The number of repeats to run the dispersal loop for
         unsigned long num_repeats;
         // The number of num_steps within each dispersal loop for the average distance travelled, which should be
-        set<unsigned long> num_steps;
+        std::set<unsigned long> num_steps;
         // The number of threads launched to parallelise the distance simulation
         unsigned long num_workers;
         // generation counter
@@ -79,20 +79,66 @@ namespace necsim
 
         SimulateDispersal() : density_landscape(make_shared<Landscape>()), data_mask(), dispersal_coordinator(),
                               simParameters(make_shared<SimParameters>()), random(make_shared<RNGController>()),
-                              database(), distances(), parameter_references(), cells(), num_steps()
+                              seed(0), database(), distances(), parameter_references(), cells(), num_repeats(0),
+                              num_steps(), num_workers(), generation(0.0), is_sequential(false),
+                              max_parameter_reference()
         {
-            num_repeats = 0;
-            seed = 0;
-            is_sequential = false;
-            max_parameter_reference = 0;
-            generation = 0.0;
         }
 
-        ~
+        ~SimulateDispersal() = default;
 
-        SimulateDispersal()
+        SimulateDispersal(SimulateDispersal &&other) noexcept : SimulateDispersal()
         {
-            database.close();
+            *this = std::move(other);
+        }
+
+        SimulateDispersal(const SimulateDispersal &other) : SimulateDispersal()
+        {
+            density_landscape = other.density_landscape;
+            data_mask = other.data_mask;
+            dispersal_coordinator = other.dispersal_coordinator;
+            simParameters = other.simParameters;
+            random = other.random;
+            seed = other.seed;
+            database = other.database;
+            distances = other.distances;
+            parameter_references = other.parameter_references;
+            cells = other.cells;
+            num_repeats = other.num_repeats;
+            num_steps = other.num_steps;
+            num_workers = other.num_workers;
+            generation = other.generation;
+            is_sequential = other.is_sequential;
+            max_parameter_reference = other.max_parameter_reference;
+        };
+
+        SimulateDispersal &operator=(SimulateDispersal other) noexcept
+        {
+            other.swap(*this);
+            return *this;
+        }
+
+        void swap(SimulateDispersal &other) noexcept
+        {
+            if(this != &other)
+            {
+                std::swap(density_landscape, other.density_landscape);
+                std::swap(data_mask, other.data_mask);
+                other.dispersal_coordinator.swap(dispersal_coordinator);
+                std::swap(simParameters, other.simParameters);
+                std::swap(random, other.random);
+                std::swap(seed, other.seed);
+                std::swap(database, other.database);
+                std::swap(distances, other.distances);
+                std::swap(parameter_references, other.parameter_references);
+                std::swap(cells, other.cells);
+                std::swap(num_repeats, other.num_repeats);
+                std::swap(num_steps, other.num_steps);
+                std::swap(num_workers, other.num_workers);
+                std::swap(generation, other.generation);
+                std::swap(is_sequential, other.is_sequential);
+                std::swap(max_parameter_reference, other.max_parameter_reference);
+            }
         }
 
         /**
@@ -105,9 +151,9 @@ namespace necsim
         /**
          * @brief Sets the pointer to the simulation parameters object
          * @param sim_parameters pointer to the simulation parameters to use
-         * @param print if true, writes the parameters out using writeInfo()
+         * @param p if true, writes the parameters out using writeInfo()
          */
-        void setSimulationParameters(shared_ptr<SimParameters> sim_parameters, bool print = true);
+        void setSimulationParameters(shared_ptr<SimParameters> sim_parameters, bool p = true);
 
         /**
          * @brief Import the maps from the simulation parameters.
@@ -209,14 +255,13 @@ namespace necsim
          * @param dispersal_coordinator Reference to the dispersal corrdinator to use
          * @param generation Reference to the generation variable used byt the dispersal coordinator
          */
-        template <bool chooseRandomCells = true>
-        void runDistanceLoop(const unsigned long bidx,
-                             const unsigned long eidx,
-                             const unsigned long num_repeats,
-                             std::mutex &mutex,
-                             unsigned long &finished,
-                             DispersalCoordinator &dispersal_coordinator,
-                             double &generation);
+        template<bool chooseRandomCells = true> void runDistanceLoop(const unsigned long bidx,
+                                                                     const unsigned long eidx,
+                                                                     const unsigned long num_repeats,
+                                                                     std::mutex &mutex,
+                                                                     unsigned long &finished,
+                                                                     DispersalCoordinator &dispersal_coordinator,
+                                                                     double &generation);
 
         /**
          * @brief Runs the distance simulation eidx-bidx times on a separate worker and reports the progress
@@ -230,13 +275,12 @@ namespace necsim
          * @param mutex The mutex to synchronise progress feedback to the user
          * @param finished The total number of cells simulated across all workers
          */
-        template <bool chooseRandomCells = true>
-        void runDistanceWorker(const unsigned long seed,
-                               const unsigned long bidx,
-                               const unsigned long eidx,
-                               const unsigned long num_repeats,
-                               std::mutex &mutex,
-                               unsigned long &finished);
+        template<bool chooseRandomCells = true> void runDistanceWorker(const unsigned long seed,
+                                                                       const unsigned long bidx,
+                                                                       const unsigned long eidx,
+                                                                       const unsigned long num_repeats,
+                                                                       std::mutex &mutex,
+                                                                       unsigned long &finished);
 
         /**
          * @brief Simulates the dispersal kernel for the set parameters, storing the mean dispersal distance
@@ -259,6 +303,8 @@ namespace necsim
          * @param samples Vector of cells to be sampled during the distance simulation
          */
         void runSampleDistanceTravelled(const vector<Cell> &samples);
+
+        void runSampleDistanceTravelled(const vector<long> &sample_x, const vector<long> &sample_y);
 
         /**
          * @brief Writes the information about this repeat to the logger.

@@ -12,12 +12,15 @@
  */
 
 #include "SimulatedSpeciesAbundancesHandler.h"
+using std::make_shared;
+using std::stringstream;
+
 namespace necsim
 {
     SimulatedSpeciesAbundancesHandler::SimulatedSpeciesAbundancesHandler() : species_abundances(),
                                                                              species_richness_per_abundance(),
                                                                              cumulative_abundance_map(
-                                                                                     make_shared<map<unsigned long, unsigned long>>()),
+                                                                                     make_shared<std::map<unsigned long, unsigned long>>()),
                                                                              total_species_number(0),
                                                                              number_of_individuals(0)
     { }
@@ -28,14 +31,14 @@ namespace necsim
         // TOD move this to debug
         if(species_abundances.count(random_abundance) == 0)
         {
-            stringstream ss;
-            ss << "No species abundances found for " << random_abundance << ". Please report this bug." << endl;
+            std::stringstream ss;
+            ss << "No species abundances found for " << random_abundance << ". Please report this bug." << std::endl;
             throw FatalException(ss.str());
         }
         if(species_richness_per_abundance[random_abundance] == 0)
         {
-            stringstream ss;
-            ss << "Richness is 0 for abundance of " << random_abundance << endl;
+            std::stringstream ss;
+            ss << "Richness is 0 for abundance of " << random_abundance << std::endl;
             throw FatalException(ss.str());
         }
         if(species_richness_per_abundance[random_abundance] == 1)
@@ -45,16 +48,16 @@ namespace necsim
         unsigned long random_species_index = random->i0(species_richness_per_abundance[random_abundance] - 1);
         if(random_species_index >= species_abundances[random_abundance].size())
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Random species index larger than species abundance size: " << random_species_index << ">=";
-            ss << species_abundances[random_abundance].size() << endl;
+            ss << species_abundances[random_abundance].size() << std::endl;
             throw FatalException(ss.str());
         }
         return species_abundances[random_abundance][random_species_index];
     }
 
     void SimulatedSpeciesAbundancesHandler::setAbundanceList(
-            const shared_ptr<map<unsigned long, unsigned long>> &abundance_list_in)
+            const shared_ptr<std::map<unsigned long, unsigned long>> &abundance_list_in)
     {
         shared_ptr<vector<unsigned long>> abundance_list = make_shared<vector<unsigned long>>();
         abundance_list->reserve(abundance_list_in->size());
@@ -125,9 +128,9 @@ namespace necsim
 #ifdef DEBUG
             if(cumulative_abundance_map->begin()->first != 0)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Species abundance generated for " << cumulative_abundance_map->begin()->first;
-                ss << " has zero abundance. Please report this bug." << endl;
+                ss << " has zero abundance. Please report this bug." << std::endl;
                 throw FatalException(ss.str());
             }
 #endif // DEBUG
@@ -137,16 +140,16 @@ namespace necsim
 #ifdef DEBUG
         if(cumulative_abundance_map->rbegin()->first != metacommunity_size)
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Last cumulative abundance value (" << cumulative_abundance_map->rbegin()->first;
-            ss << ") is not equal to community size (" << metacommunity_size << "). Please report this bug." << endl;
+            ss << ") is not equal to community size (" << metacommunity_size << "). Please report this bug." << std::endl;
             throw FatalException(ss.str());
         }
         if(metacommunity_size == 1 && cumulative_abundance_map->size() != 1)
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Community size is 1, but cumulative abundance map has " << cumulative_abundance_map->size();
-            ss << " elements. Please report this bug." << endl;
+            ss << " elements. Please report this bug." << std::endl;
             throw FatalException(ss.str());
         }
 #endif // DEBUG
@@ -170,13 +173,13 @@ namespace necsim
         }
         if(metacommunity_size == 1)
         {
-            stringstream ss;
-            ss << "Community size is 1 with cumulative abundance map: " << endl;
+            std::stringstream ss;
+            ss << "Community size is 1 with cumulative abundance map: " << std::endl;
             for(const auto &item: *cumulative_abundance_map)
             {
-                ss << item.first << ": " << item.second << endl;
+                ss << item.first << ": " << item.second << std::endl;
             }
-            ss << "Please report this bug." << endl;
+            ss << "Please report this bug." << std::endl;
             throw FatalException(ss.str());
         }
 #endif // DEBUG

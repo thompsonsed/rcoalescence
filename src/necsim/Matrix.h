@@ -37,7 +37,7 @@
 #include <cstdint>
 #include "Logging.h"
 
-using namespace std;
+using std::vector;
 namespace necsim
 {
     // Array of data sizes for importing tif files.
@@ -61,31 +61,39 @@ namespace necsim
         vector<T> matrix;
     public:
 
+        Matrix() : num_cols(0), num_rows(0), matrix()
+        {
+
+        }
+
         /**
          * @brief The standard constructor
          * @param rows optionally provide the number of rows.
          * @param cols optionally provide the number of columns.
          */
-        explicit Matrix(unsigned long rows = 0, unsigned long cols = 0) : matrix(rows * cols, T())
+        explicit Matrix(unsigned long rows, unsigned long cols) : num_cols(cols), num_rows(rows),
+                                                                  matrix(rows * cols, T())
         {
+        }
+
+        Matrix(Matrix &&m) noexcept
+        {
+            *this = std::move(m);
         }
 
         /**
          * @brief The copy constructor.
          * @param m a Matrix object to copy from.
          */
-        Matrix(const Matrix &m) : matrix()
+        Matrix(const Matrix &m) noexcept: num_cols(0), num_rows(0), matrix()
         {
-            this = m;
+            *this = m;
         }
 
         /**
         * @brief The destructor.
         */
-        virtual ~Matrix()
-        {
-
-        }
+        virtual ~Matrix() = default;
 
         /**
          * @brief Sets the matrix size.
@@ -142,14 +150,14 @@ namespace necsim
 #ifdef DEBUG
             if(num_cols == 0 || num_rows == 0)
             {
-                throw out_of_range("Matrix has 0 rows and columns for indexing from.");
+                throw std::out_of_range ("Matrix has 0 rows and columns for indexing from.");
             }
             if(col + num_cols * row > matrix.size())
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Index of " << col + num_cols * row << ", (" << row << ", " << col << ")";
-                ss << " is out of range of matrix vector with size " << matrix.size() << endl;
-                throw out_of_range(ss.str());
+                ss << " is out of range of matrix vector with size " << matrix.size() << std::endl;
+                throw std::out_of_range (ss.str());
             }
 #endif // DEBUG
             return col + num_cols * row;
@@ -166,10 +174,10 @@ namespace necsim
 #ifdef DEBUG
             if(row < 0 || row >= num_rows || col < 0 || col >= num_cols)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Index of " << row << ", " << col << " is out of range of matrix with size " << num_rows;
-                ss << ", " << num_cols << endl;
-                throw out_of_range(ss.str());
+                ss << ", " << num_cols << std::endl;
+                throw std::out_of_range (ss.str());
             }
 #endif
             return matrix[index(row, col)];
@@ -186,10 +194,10 @@ namespace necsim
 #ifdef DEBUG
             if(row < 0 || row >= num_rows || col < 0 || col >= num_cols)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Index of " << row << ", " << col << " is out of range of matrix with size " << num_rows;
-                ss << ", " << num_cols << endl;
-                throw out_of_range(ss.str());
+                ss << ", " << num_cols << std::endl;
+                throw std::out_of_range (ss.str());
             }
 #endif
             return matrix[index(row, col)];
@@ -206,10 +214,10 @@ namespace necsim
 #ifdef DEBUG
             if(row < 0 || row >= num_rows || col < 0 || col >= num_cols)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Index of " << row << ", " << col << " is out of range of matrix with size " << num_rows;
-                ss << ", " << num_cols << endl;
-                throw out_of_range(ss.str());
+                ss << ", " << num_cols << std::endl;
+                throw std::out_of_range (ss.str());
             }
 #endif
             return matrix[index(row, col)];
@@ -219,7 +227,7 @@ namespace necsim
          * @brief Returns iterators for range-based for loops.
          * @return iterator to the start of the vector
          */
-        typename  vector<T>::iterator begin()
+        typename vector<T>::iterator begin()
         {
             return matrix.begin();
         }
@@ -237,7 +245,7 @@ namespace necsim
          * @brief Returns iterators for range-based for loops.
          * @return iterator to the start of the vector
          */
-        typename  vector<T>::const_iterator begin() const
+        typename vector<T>::const_iterator begin() const
         {
             return matrix.begin();
         }
@@ -251,7 +259,6 @@ namespace necsim
             return matrix.end();
         }
 
-
         /**
          * @brief Gets the arithmetic mean of the Matrix
          * @return the mean value in the matrix
@@ -263,7 +270,7 @@ namespace necsim
                 return 0.0;
             }
             T total = sum();
-            return double(total)/matrix.size();
+            return double(total) / matrix.size();
 
         }
 
@@ -288,11 +295,37 @@ namespace necsim
          * @brief Overloading the = operator.
          * @param m the matrix to copy from.
          */
-        Matrix &operator=(const Matrix &m)
+        Matrix &operator=(const Matrix &m) noexcept
         {
-            this->matrix = m.matrix;
-            this->num_cols = m.num_cols;
-            this->num_rows = m.num_rows;
+            if(m.matrix.empty())
+            {
+                matrix.clear();
+                num_cols = 0;
+                num_rows = 0;
+            }
+            else
+            {
+                matrix = m.matrix;
+                num_cols = m.num_cols;
+                num_rows = m.num_rows;
+            }
+            return *this;
+        }
+
+        Matrix &operator=(Matrix &&m) noexcept
+        {
+            if(m.matrix.empty())
+            {
+                matrix.clear();
+                num_cols = 0;
+                num_rows = 0;
+            }
+            else
+            {
+                matrix = std::move(m.matrix);
+                num_cols = m.num_cols;
+                num_rows = m.num_rows;
+            }
             return *this;
         }
 
@@ -528,7 +561,7 @@ namespace necsim
          * @param m the object to write out
          * @return the output stream
          */
-        friend ostream &writeOut(ostream &os, const Matrix &m)
+        friend std::ostream &writeOut(std::ostream &os, const Matrix &m)
         {
             for(unsigned long r = 0; r < m.num_rows; r++)
             {
@@ -547,7 +580,7 @@ namespace necsim
          * @param m the object to read into
          * @return
          */
-        friend istream &readIn(istream &is, Matrix &m)
+        friend std::istream &readIn(std::istream &is, Matrix &m)
         {
             char delim;
             for(unsigned long r = 0; r < m.num_rows; r++)
@@ -568,7 +601,7 @@ namespace necsim
          * @param m the matrix to output.
          * @return the output stream.
          */
-        friend ostream &operator<<(ostream &os, const Matrix &m)
+        friend std::ostream &operator<<(std::ostream &os, const Matrix &m)
         {
             return writeOut(os, m);
         }
@@ -580,7 +613,7 @@ namespace necsim
          * @param m the matrix to input to.
          * @return the input stream.
          */
-        friend istream &operator>>(istream &is, Matrix &m)
+        friend std::istream &operator>>(std::istream &is, Matrix &m)
         {
             return readIn(is, m);
         }
@@ -620,7 +653,7 @@ namespace necsim
             if(!importCsv(filename))
             {
                 string s = "Type detection failed for " + filename + ". Check file_name is correct.";
-                throw runtime_error(s);
+                throw std::runtime_error(s);
             }
         }
 
@@ -633,8 +666,8 @@ namespace necsim
         {
         if(file_name.find(".csv") != string::npos)
             {
-                stringstream os;
-                os  << "Importing " << file_name << " " << flush;
+                std::stringstream os;
+                os  << "Importing " << file_name << " " << std::flush;
                 writeInfo(os.str());
                 // LineReader option
                 io::LineReader in(file_name);
@@ -680,7 +713,7 @@ namespace necsim
                         double dComplete = ((double)i/(double)num_rows)*20;
                         if( number_printed < dComplete)
                         {
-                            stringstream os;
+                            std::stringstream os;
                             os  << "\rImporting " << file_name << " ";
                             number_printed = 0;
                             while(number_printed < dComplete)
@@ -688,7 +721,7 @@ namespace necsim
                                 os << ".";
                                 number_printed ++;
                             }
-                            os << flush;
+                            os << std::flush;
                             writeInfo(os.str());
                         }
 
@@ -712,16 +745,16 @@ namespace necsim
         {
             if(filename.find(".csv") != string::npos)
             {
-                stringstream os;
-                os << "Importing" << filename << " " << flush;
-                ifstream inputstream;
+                std::stringstream os;
+                os << "Importing" << filename << " " << std::flush;
+                std::ifstream inputstream;
                 inputstream.open(filename.c_str());
                 unsigned long number_printed = 0;
                 for(uint32_t j = 0; j < num_rows; j++)
                 {
                     string line;
                     getline(inputstream, line);
-                    istringstream iss(line);
+                    std::istringstream iss(line);
                     for(uint32_t i = 0; i < num_cols; i++)
                     {
                         char delim;
@@ -732,19 +765,19 @@ namespace necsim
                     double dComplete = ((double) j / (double) num_rows) * 5;
                     if(number_printed < dComplete)
                     {
-                        os << "\rImporting " << filename << " " << flush;
+                        os << "\rImporting " << filename << " " << std::flush;
                         while(number_printed < dComplete)
                         {
                             os << ".";
                             number_printed++;
                         }
-                        os << flush;
+                        os << std::flush;
                         writeInfo(os.str());
 
                     }
                 }
-                stringstream os2;
-                os2 << "\rImporting" << filename << "..." << "done." << "                          " << endl;
+                std::stringstream os2;
+                os2 << "\rImporting" << filename << "..." << "done." << "                          " << std::endl;
                 inputstream.close();
                 writeInfo(os2.str());
                 return true;
@@ -762,7 +795,7 @@ namespace necsim
      * @param matrix2 the second matrix
      * @return the minimum number of columns between the two matrices
      */
-    template<typename T> const unsigned long findMinCols(const Matrix<T> &matrix1, const Matrix<T> &matrix2)
+    template<typename T> unsigned long findMinCols(const Matrix<T> &matrix1, const Matrix<T> &matrix2)
     {
         if(matrix1.getCols() < matrix2.getCols())
         {
@@ -778,7 +811,7 @@ namespace necsim
      * @param matrix2 the second matrix
      * @return the minimum number of rows between the two matrices
      */
-    template<typename T> const unsigned long findMinRows(const Matrix<T> &matrix1, const Matrix<T> &matrix2)
+    template<typename T> unsigned long findMinRows(const Matrix<T> &matrix1, const Matrix<T> &matrix2)
     {
         if(matrix1.getRows() < matrix2.getRows())
         {

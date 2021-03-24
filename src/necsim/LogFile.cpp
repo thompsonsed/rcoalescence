@@ -22,8 +22,8 @@ namespace necsim
 #ifdef DEBUG
         auto t = time(nullptr);
         auto tm = *localtime(&t);
-        stringstream ss;
-        ss << put_time(&tm, LOGNAME_FORMAT);
+        std::stringstream ss;
+        ss << std::put_time(&tm, LOGNAME_FORMAT);
         return ss.str();
 #endif
         return string("");
@@ -52,7 +52,7 @@ namespace necsim
                 basic_string = file_name + file_extension;
                 throw FatalException("Could not create unique file name after 10000000 tries.");
             }
-            basic_string = file_name + "_" + to_string(iterator) + file_extension; // NOLINT
+            basic_string = file_name + "_" + std::to_string(iterator) + file_extension; // NOLINT
             file_path = fs::path(basic_string);
             iterator++;
         }
@@ -71,7 +71,7 @@ namespace necsim
     LogFile::~LogFile()
     {
 
-        output_stream << getTime() << " LOGGING ENDED" << endl;
+        output_stream << getTime() << " LOGGING ENDED" << std::endl;
         output_stream.close();
     }
 
@@ -84,7 +84,7 @@ namespace necsim
         if(!output_stream)
         {
             // Throw runtime error to avoid problems of attempting to write py object out before the logger has been set.
-            throw runtime_error("Could not create log file at " + file_name_in + ".");
+            throw std::runtime_error("Could not create log file at " + file_name_in + ".");
         }
         levels_map[0] = "noneset";
         levels_map[10] = "debug";
@@ -92,7 +92,7 @@ namespace necsim
         levels_map[30] = "warning";
         levels_map[40] = "error";
         levels_map[50] = "critical";
-        output_stream << getTime() << " LOGGING STARTED" << endl;
+        output_stream << getTime() << " LOGGING STARTED" << std::endl;
     }
 
     void LogFile::write(const int &level, string message)
@@ -103,11 +103,11 @@ namespace necsim
         }
         output_stream << getTime() << " ";
         message.replace(message.begin(), message.end(), '\n', ' ');
-        output_stream << levels_map[level] << ": " << message << endl;
+        output_stream << levels_map[level] << ": " << message << std::endl;
 
     }
 
-    void LogFile::write(const int &level, stringstream &message)
+    void LogFile::write(const int &level, std::stringstream &message)
     {
         write(level, message.str());
     }

@@ -18,7 +18,8 @@
 #include <vector>
 #include "double_comparison.h"
 
-using namespace std;
+using std::vector;
+using std::shared_ptr;
 namespace necsim
 {
     struct ProtractedSpeciationParameters
@@ -204,7 +205,7 @@ namespace necsim
         unsigned long reference{};
         unsigned long metacommunity_size{};
         long double speciation_rate{};
-        string option;
+        std::string option;
         unsigned long external_reference{};
 
         /**
@@ -226,7 +227,7 @@ namespace necsim
          * @param external_reference the reference for the external database
          */
         MetacommunityParameters(const unsigned long &reference_in, const unsigned long &metacommunity_size_in,
-                                const long double &speciation_rate_in, const string &option_in,
+                                const long double &speciation_rate_in, const std::string &option_in,
                                 const unsigned long &external_reference_in);
 
         /**
@@ -237,7 +238,7 @@ namespace necsim
          * @param external_reference_in the reference for the external database
          * @return true if the two parameter sets are identical
          */
-        bool compare(unsigned long metacommunity_size_in, long double speciation_rate_in, const string &option_in,
+        bool compare(unsigned long metacommunity_size_in, long double speciation_rate_in, const std::string &option_in,
                      const unsigned long &ext_reference_in);
 
         /**
@@ -322,7 +323,7 @@ namespace necsim
          * @param external_reference the reference for the external database
          */
         void pushBack(const unsigned long &reference, const unsigned long &metacommunity_size,
-                      const long double &speciation_rate, const string &option,
+                      const long double &speciation_rate, const std::string &option,
                       const unsigned long &external_reference);
 
         /**
@@ -357,7 +358,7 @@ namespace necsim
          * @return the new reference number, which should be unique
          */
         unsigned long addNew(const unsigned long &metacommunity_size, const long double &speciation_rate,
-                             const string &option, const unsigned long &external_reference);
+                             const std::string &option, const unsigned long &external_reference);
 
         /**
          * @brief Adds a new set of metacommunity parameters to the array.
@@ -375,7 +376,7 @@ namespace necsim
          * @return true if the reference exists in past metacommunity parameters
          */
         bool hasOption(const unsigned long &metacommunity_size, const long double &speciation_rate,
-                       const string &option, const unsigned long &external_reference);
+                       const std::string &option, const unsigned long &external_reference);
 
         /**
          * @brief Checks whether the calculation with the supplied reference has already been performed.
@@ -402,7 +403,7 @@ namespace necsim
          * @return the metacommunity reference number, or 0 if it doesn't exist
          */
         unsigned long getReference(const unsigned long &metacommunity_size, const long double &speciation_rate,
-                                   const string &option, const unsigned long &external_reference);
+                                   const std::string &option, const unsigned long &external_reference);
 
         /**
          * @brief Gets the metacommunity reference for the provided parameters, or returns 0 if it doesn't exist

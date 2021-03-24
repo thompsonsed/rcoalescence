@@ -12,8 +12,9 @@
  * Contact: samuel.thompson14@imperial.ac.uk or thompsonsed@gmail.com
  */
 
-#include "AnalyticalSpeciesAbundancesHandler.h"
 #include "custom_exceptions.h"
+#include "AnalyticalSpeciesAbundancesHandler.h"
+
 
 namespace necsim
 {
@@ -51,11 +52,11 @@ namespace necsim
             speciation_rate = neutral_analytical::calcSpeciationRate(original_fbn, metacommunity_size);
             expected_richness = static_cast<unsigned long>(neutral_analytical::siSpeciesRichness(metacommunity_size,
                                                                                                  speciation_rate));
-            stringstream ss;
-            ss << "\tRescaling large metacommunity size using fundamental biodiversity number..." << endl;
-            ss << "\tNew metacommunity size: " << metacommunity_size << endl;
-            ss << "\tNew speciation rate: " << speciation_rate << endl;
-            ss << "\tGenerating abundances for " << expected_richness << " species" << endl;
+            std::stringstream ss;
+            ss << "\tRescaling large metacommunity size using fundamental biodiversity number..." << std::endl;
+            ss << "\tNew metacommunity size: " << metacommunity_size << std::endl;
+            ss << "\tNew speciation rate: " << speciation_rate << std::endl;
+            ss << "\tGenerating abundances for " << expected_richness << " species" << std::endl;
             writeInfo(ss.str());
             for(unsigned long i = 0; i < expected_richness; i++)
             {
@@ -67,8 +68,8 @@ namespace necsim
         }
         else
         {
-            stringstream ss;
-            ss << "\tGenerating abundances for " << expected_richness << " species" << endl;
+            std::stringstream ss;
+            ss << "\tGenerating abundances for " << expected_richness << " species" << std::endl;
             writeInfo(ss.str());
             // Otherwise just generate the full SAD - note that this only approximates the desired metacommunity size.
             for(unsigned long i = 0; i < expected_richness; i++)
@@ -79,13 +80,13 @@ namespace necsim
         // Make sure that we've seen at least as many individuals as in the local community.
         if(seen_no_individuals < local_community_size && metacommunity_size > local_community_size)
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Seen number of individuals (" << seen_no_individuals << ") is not more than local community size (";
-            ss << local_community_size << ") - please report this bug" << endl;
-            ss << "Metacommunity: " << endl;
-            ss << "\tsize: " << metacommunity_size << endl;
-            ss << "\tspeciation rate: " << speciation_rate << endl;
-            ss << "Local community size: " << local_community_size << endl;
+            ss << local_community_size << ") - please report this bug" << std::endl;
+            ss << "Metacommunity: " << std::endl;
+            ss << "\tsize: " << metacommunity_size << std::endl;
+            ss << "\tspeciation rate: " << speciation_rate << std::endl;
+            ss << "Local community size: " << local_community_size << std::endl;
             throw FatalException(ss.str());
         }
 
@@ -98,9 +99,9 @@ namespace necsim
 #ifdef DEBUG
         if(individual_id > seen_no_individuals)
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Random individual ID (" << individual_id << ") is greater than the number of seen indiviudals (";
-            ss << seen_no_individuals << ")" << endl;
+            ss << seen_no_individuals << ")" << std::endl;
             throw FatalException(ss.str());
         }
         if(ind_to_species.empty())
@@ -135,16 +136,16 @@ namespace necsim
 #ifdef DEBUG
         if(ind_to_species.rbegin()->first != seen_no_individuals)
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "ind_to_species end does not equal seen no inds: " << ind_to_species.rbegin()->first << "!=";
-            ss << seen_no_individuals << endl;
+            ss << seen_no_individuals << std::endl;
             throw FatalException(ss.str());
         }
         if(ind_to_species.rbegin()->second != max_species_id)
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Last species id has not been set correctly: " << ind_to_species.rbegin()->second << "!=";
-            ss << max_species_id << endl;
+            ss << max_species_id << std::endl;
             throw FatalException(ss.str());
         }
 #endif //DEBUG
@@ -153,8 +154,8 @@ namespace necsim
     unsigned long AnalyticalSpeciesAbundancesHandler::getRandomAbundanceOfSpecies()
     {
         // First generate a random abundance class
-        return static_cast<unsigned long>(max(static_cast<double>(
-                                                      min(random->randomLogarithmic(1.0 - speciation_rate),
+        return static_cast<unsigned long>(std::max(static_cast<double>(
+                                                           std::min(random->randomLogarithmic(1.0 - speciation_rate),
                                                           metacommunity_size)), 1.0));
     }
 

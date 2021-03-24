@@ -16,16 +16,7 @@
 
 namespace necsim
 {
-    DispersalCoordinator::DispersalCoordinator() : dispersal_prob_map(), raw_dispersal_prob_map(), NR(nullptr),
-                                                   landscape(make_shared<Landscape>()),
-                                                   reproduction_map(make_shared<ActivityMap>()), generation(nullptr),
-                                                   doDispersal(nullptr), checkEndPointFptr(nullptr), xdim(0), ydim(0),
-                                                   full_dispersal_map(false)
-    {
 
-    }
-
-    DispersalCoordinator::~DispersalCoordinator() = default;
 
     void DispersalCoordinator::setRandomNumber(shared_ptr<RNGController> NR_ptr)
     {
@@ -120,7 +111,7 @@ namespace necsim
     void DispersalCoordinator::importDispersal(const unsigned long &dispersal_dim, const string &dispersal_file)
     {
         // Check file existence
-        ifstream infile(dispersal_file);
+        std::ifstream infile(dispersal_file);
         if(!infile.good())
         {
             string msg =
@@ -161,19 +152,19 @@ namespace necsim
                     {
                         Step origin_step;
                         calculateCellCoordinates(origin_step, k);
-                        stringstream ss;
+                        std::stringstream ss;
                         Step destination_step;
                         calculateCellCoordinates(destination_step, j + (i * xdim));
                         ss << "Dispersal from " << origin_step.x << ", " << origin_step.y << " (";
                         ss << origin_step.xwrap << ", " << origin_step.ywrap << ") to ";
                         ss << destination_step.x << ", " << destination_step.y << " (" << destination_step.xwrap;
-                        ss << ", " << destination_step.ywrap << ")" << endl;
-                        ss << "Source row: " << k << " destination row: " << index << endl;
-                        ss << "Dispersal map value: " << dispersal_prob_map.get(k, index) << endl;
+                        ss << ", " << destination_step.ywrap << ")" << std::endl;
+                        ss << "Source row: " << k << " destination row: " << index << std::endl;
+                        ss << "Dispersal map value: " << dispersal_prob_map.get(k, index) << std::endl;
                         ss << "Origin density: "
                            << landscape->getVal(origin_step.x, origin_step.y, origin_step.xwrap, origin_step.ywrap, 0.0)
-                           << endl;
-                        ss << "Destination density: " << landscape->getValFine(j, i, *generation) << endl;
+                           << std::endl;
+                        ss << "Destination density: " << landscape->getValFine(j, i, *generation) << std::endl;
                         writeError(ss.str());
                         throw FatalException("Dispersal map is non zero where density is 0.");
                     }
@@ -304,23 +295,23 @@ namespace necsim
                     {
                         if(!destination_value && origin_value)
                         {
-                            stringstream ss;
+                            std::stringstream ss;
                             ss << "Dispersal from " << origin_step.x << ", " << origin_step.y << " (";
                             ss << origin_step.xwrap << ", " << origin_step.ywrap << ") to ";
                             ss << destination_step.x << ", " << destination_step.y << " (" << destination_step.xwrap;
-                            ss << ", " << destination_step.ywrap << ")" << endl;
-                            ss << "Source row: " << y << " destination row: " << x << endl;
-                            ss << "Dispersal map value: " << dispersal_prob << endl;
+                            ss << ", " << destination_step.ywrap << ")" << std::endl;
+                            ss << "Source row: " << y << " destination row: " << x << std::endl;
+                            ss << "Dispersal map value: " << dispersal_prob << std::endl;
                             ss << "Origin density: " << landscape->getVal(origin_step.x,
                                                                           origin_step.y,
                                                                           origin_step.xwrap,
                                                                           origin_step.ywrap,
-                                                                          0.0) << endl;
+                                                                          0.0) << std::endl;
                             ss << "Destination density: " << landscape->getVal(destination_step.x,
                                                                                destination_step.y,
                                                                                destination_step.xwrap,
                                                                                destination_step.ywrap,
-                                                                               0.0) << endl;
+                                                                               0.0) << std::endl;
                             writeError(ss.str());
                             throw FatalException("Dispersal map is non zero where density is 0.");
                         }
@@ -333,10 +324,10 @@ namespace necsim
                 }
                 if(dispersal_total == 0.0 && origin_value)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "No dispersal probabilities from cell at " << origin_step.x << ", " << origin_step.y;
                     ss << " (" << origin_step.xwrap << ", " << origin_step.ywrap;
-                    ss << ") to any other cell, despite non-zero density." << endl;
+                    ss << ") to any other cell, despite non-zero density." << std::endl;
                     throw FatalException(ss.str());
                 }
             }
@@ -364,13 +355,13 @@ namespace necsim
         auto actual = calculateCellReference(step);
         if(actual != expected)
         {
-            stringstream ss;
-            ss << "Expected reference " << expected << endl;
-            ss << "Actual reference " << actual << endl;
+            std::stringstream ss;
+            ss << "Expected reference " << expected << std::endl;
+            ss << "Actual reference " << actual << std::endl;
             ss << "Coordinates: " << step.x << ", " << step.y << "(" << step.xwrap << ", ";
-            ss << step.ywrap << ")" << endl;
+            ss << step.ywrap << ")" << std::endl;
             ss << "Converted values: " << landscape->convertSampleXToFineX(step.x, step.xwrap);
-            ss << ", " << landscape->convertSampleYToFineY(step.y, step.ywrap) << endl;
+            ss << ", " << landscape->convertSampleYToFineY(step.y, step.ywrap) << std::endl;
             throw FatalException(ss.str());
         }
     }
@@ -404,8 +395,8 @@ namespace necsim
                     disperseDispersalMap(tmp_step);
                     if(tmp_step == orig_step)
                     {
-                        stringstream ss2;
-                        ss2 << "Self dispersal possible: " << orig_step << " to " << tmp_step << endl;
+                        std::stringstream ss2;
+                        ss2 << "Self dispersal possible: " << orig_step << " to " << tmp_step << std::endl;
                         throw FatalException(ss2.str());
                     }
                     tmp_step = orig_step;
@@ -414,14 +405,14 @@ namespace necsim
         }
         catch(FatalException &fe)
         {
-            stringstream ss;
+            std::stringstream ss;
             unsigned long index = calculateCellIndex(cell);
             ss << "Cell at " << cell.x << ", " << cell.y << " has incorrect self-dispersal assignment: " << fe.what()
-               << endl;
-            ss << "Dispersal value: " << dispersal_prob_map.get(index, index) << endl;
+               << std::endl;
+            ss << "Dispersal value: " << dispersal_prob_map.get(index, index) << std::endl;
             if(index > 0)
             {
-                ss << "Prior value: " << dispersal_prob_map.get(index, index - 1) << endl;
+                ss << "Prior value: " << dispersal_prob_map.get(index, index - 1) << std::endl;
             }
             throw FatalException(ss.str());
         }
@@ -477,9 +468,9 @@ namespace necsim
 #ifdef DEBUG
         if(landscape->getVal(this_step.x, this_step.y, this_step.xwrap, this_step.ywrap, *generation) < 1.0)
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Dispersal attempted to cell of zero density " << this_step.x << ", " << this_step.y;
-            ss << " (" << this_step.xwrap << ", " << this_step.ywrap << ")" << endl;
+            ss << " (" << this_step.xwrap << ", " << this_step.ywrap << ")" << std::endl;
             throw FatalException(ss.str());
         }
 #endif // DEBUG
@@ -539,11 +530,11 @@ namespace necsim
                && !landscape->isOnMap(this_step.x - min_distance, this_step.y, this_step.xwrap, this_step.ywrap)
                && !landscape->isOnMap(this_step.x, this_step.y - min_distance, this_step.xwrap, this_step.ywrap))
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Minimum distance calculated of " << min_distance << " for cell at x, y (" << this_step.x;
                 ss << ", " << this_step.y << ") and wrap (" << this_step.xwrap << ", " << this_step.ywrap << ")";
-                ss << " is outside of bounds of map at generation " << *generation << endl;
-                ss << "Please report this bug." << endl;
+                ss << " is outside of bounds of map at generation " << *generation << std::endl;
+                ss << "Please report this bug." << std::endl;
                 throw FatalException(ss.str());
             }
 #endif // DEBUG
@@ -584,11 +575,11 @@ namespace necsim
                 if(counter > 10000000)
                 {
 #ifdef DEBUG
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "No possible parent found for cell at x, y (" << this_step.x;
                     ss << ", " << this_step.y << ") and wrap (" << this_step.xwrap << ", " << this_step.ywrap << ")";
                     ss << " at generation " << generation << " and with minimum distance of " << min_distance;
-                    ss << ". Moving to nearest habitat cell." << endl;
+                    ss << ". Moving to nearest habitat cell." << std::endl;
 #endif // DEBUG
                     disperseNearestHabitat(this_step);
                     fail = false;
@@ -630,10 +621,10 @@ namespace necsim
 #ifdef DEBUG
         if(landscape->getVal(this_step.x, this_step.y, this_step.xwrap, this_step.ywrap, *generation) == 0 && !fail)
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "x,y: " << this_step.x << "," << this_step.y;
             ss << " x,y wrap: " << this_step.xwrap << "," << this_step.ywrap << "Habitat cover: ";
-            ss << landscape->getVal(this_step.x, this_step.y, this_step.xwrap, this_step.ywrap, *generation) << endl;
+            ss << landscape->getVal(this_step.x, this_step.y, this_step.xwrap, this_step.ywrap, *generation) << std::endl;
             writeLog(50, ss);
             throw FatalException("ERROR_MOVE_007: Dispersal attempted to non-habitat. Check dispersal function.");
         }
@@ -658,8 +649,8 @@ namespace necsim
         end_y_wrap += this_step.ywrap;
         if(!landscape->checkMap(end_x, end_y, end_x_wrap, end_y_wrap, *generation))
         {
-            stringstream ss;
-            ss << "Attempted nearest habitat cell is not habitat! Please report this bug." << endl;
+            std::stringstream ss;
+            ss << "Attempted nearest habitat cell is not habitat! Please report this bug." << std::endl;
             ss << "Nearby habitat cell at " << end_x << ", " << end_y << " (" << end_x_wrap << ", " << end_y_wrap;
             ss << ") does not contain habitat. Initial cell was ";
             ss << this_step.x << ", " << this_step.y << " (" << this_step.xwrap << ", " << this_step.ywrap;
@@ -673,8 +664,8 @@ namespace necsim
                                               tmpx,
                                               tmpy,
                                               *generation);
-            ss << "Coords of nearest habitat :" << tmpx << ", " << tmpy << endl;
-            ss << endl;
+            ss << "Coords of nearest habitat :" << tmpx << ", " << tmpy << std::endl;
+            ss << std::endl;
             throw FatalException(ss.str());
         }
         this_step.x = static_cast<long>(end_x);
@@ -826,10 +817,10 @@ namespace necsim
         unsigned long cell_index = calculateCellIndex(cell);
         if(cell_index >= raw_dispersal_prob_map.getCols())
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Index of " << cell_index << " for cell " << cell.x << ", " << cell.y
                << " is out of range of dispersal map with bounds " << raw_dispersal_prob_map.getCols() << ", "
-               << raw_dispersal_prob_map.getRows() << endl;
+               << raw_dispersal_prob_map.getRows() << std::endl;
             throw FatalException(ss.str());
         }
         return raw_dispersal_prob_map.getCopy(cell_index, cell_index);

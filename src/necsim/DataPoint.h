@@ -18,7 +18,6 @@
 #include "Logging.h"
 #include "Step.h"
 
-using namespace std;
 namespace necsim
 {
     /**
@@ -192,7 +191,7 @@ namespace necsim
          * @param d the Datapoint object to output.
          * @return returns the output stream at the end.
          */
-        friend ostream &operator<<(ostream &os, const DataPoint &d);
+        friend std::ostream &operator<<(std::ostream &os, const DataPoint &d);
 
         /**
          * @brief An operator for piping the variables in to the Datapoint object from the input stream.
@@ -200,7 +199,7 @@ namespace necsim
          * @param d the Datapoint object to input to.
          * @return returns the input stream at the end.
          */
-        friend istream &operator>>(istream &is, DataPoint &d);
+        friend std::istream &operator>>(std::istream &is, DataPoint &d);
 
 #ifdef DEBUG
         void logActive(const int &level);

@@ -14,6 +14,9 @@
 #include "RNGController.h"
 #include "MapLocation.h"
 
+using std::shared_ptr;
+using std::vector;
+
 namespace necsim
 {
     using namespace random_numbers;
@@ -45,9 +48,9 @@ namespace necsim
         GillespieProbability() : GillespieProbability(MapLocation())
         { }
 
-        GillespieProbability(const MapLocation &c) : dispersal_outside_cell_probability(0.0),
-                                                     coalescence_probability(0.0), speciation_probability(0.0),
-                                                     random_number(0.0), location(c)
+        explicit GillespieProbability(const MapLocation &c) : dispersal_outside_cell_probability(0.0),
+                                                              coalescence_probability(0.0), speciation_probability(0.0),
+                                                              random_number(0.0), location(c)
         {
 
         }
@@ -86,7 +89,7 @@ namespace necsim
 
         void reset();
 
-        friend ostream &operator<<(ostream &os, const GillespieProbability &gp);
+        friend std::ostream &operator<<(std::ostream &os, const GillespieProbability &gp);
 
         friend std::istream &operator>>(std::istream &is, GillespieProbability &gp);
     };
@@ -170,24 +173,24 @@ namespace necsim
 
         GillespieHeapNode(GillespieHeapNode &&other) noexcept
         {
-            cell = std::move(other.cell);
-            time_of_event = std::move(other.time_of_event);
-            event_type = std::move(other.event_type);
+            cell = other.cell;
+            time_of_event = other.time_of_event;
+            event_type = other.event_type;
 
-            heap = std::move(other.heap);
-            locator = std::move(other.locator);
+            heap = other.heap;
+            locator = other.locator;
 
             updateHeapPosition();
         }
 
-        GillespieHeapNode &operator=(GillespieHeapNode &&other)
+        GillespieHeapNode &operator=(GillespieHeapNode &&other) noexcept
         {
-            cell = std::move(other.cell);
-            time_of_event = std::move(other.time_of_event);
-            event_type = std::move(other.event_type);
+            cell = other.cell;
+            time_of_event = other.time_of_event;
+            event_type = other.event_type;
 
-            heap = std::move(other.heap);
-            locator = std::move(other.locator);
+            heap = other.heap;
+            locator = other.locator;
 
             updateHeapPosition();
 

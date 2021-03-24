@@ -17,7 +17,7 @@
 
 #define LOGNAME_FORMAT "%d%m%Y_%H%M%S"
 
-using namespace std;
+using std::string;
 namespace necsim
 {
     /**
@@ -46,22 +46,25 @@ namespace necsim
     {
     protected:
         // output stream to log file
-        ofstream output_stream;
+        std::ofstream output_stream;
         // log file name
         string file_name;
         // mapping integer levels to logger level
-        map<int, string> levels_map;
+        std::map<int, string> levels_map;
 
-        // Makes the class non-copyable as we don't want to copy file streams
-        LogFile(const LogFile &) = delete;
 
-        LogFile &operator=(const LogFile &) = delete;
+
+
 
     public:
         /**
          * @brief Default constructor.
          */
         LogFile();
+        // Makes the class non-copyable as we don't want to copy file streams
+        LogFile(const LogFile &) = delete;
+
+        LogFile &operator=(const LogFile &) = delete;
 
         /**
          * @brief Constructor taking location of a log file.
@@ -92,7 +95,7 @@ namespace necsim
          * @param level the level of logging severity
          * @param message the message to write out
          */
-        void write(const int &level, stringstream &message);
+        void write(const int &level, std::stringstream &message);
     };
 }
 #endif //LOGFILE_H

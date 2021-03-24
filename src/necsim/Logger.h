@@ -17,7 +17,7 @@
 #include "LogFile.h"
 #include "cpl_custom_handler.h"
 
-using namespace std;
+
 namespace necsim
 {
     /**
@@ -72,7 +72,7 @@ namespace necsim
          * @param level the level of logging severity
          * @param message the message to pass out as a stringstream
          */
-        virtual void writeLog(const int &level, stringstream &message);
+        virtual void writeLog(const int &level, std::stringstream &message);
 
 #endif // DEBUG
     };

@@ -15,7 +15,6 @@
 
 #include <string>
 #include <sstream>
-//#include <std/filesystem.hpp>
 
 #include <chrono>
 #include <thread>
@@ -23,6 +22,7 @@
 
 
 #ifdef WIN_INSTALL
+#define NOMINMAX
 #include <windows.h>
 //#define sleep Sleep
 #endif
@@ -30,6 +30,7 @@
 #include "file_system.h"
 #include "custom_exceptions.h"
 #include "Logging.h"
+using namespace std::chrono_literals;
 namespace necsim
 {
     void openSQLiteDatabase(const string &database_name, sqlite3*&database)
@@ -40,9 +41,9 @@ namespace necsim
             rc = sqlite3_open(":memory:", &database);
             if(rc != SQLITE_OK && rc != SQLITE_DONE)
             {
-                stringstream ss;
-                ss << "Could not connect to in-memory database. Error: " << rc << endl;
-                ss << " (" << sqlite3_errmsg(database) << ")" << endl;
+                std::stringstream ss;
+                ss << "Could not connect to in-memory database. Error: " << rc << std::endl;
+                ss << " (" << sqlite3_errmsg(database) << ")" << std::endl;
                 throw FatalException(ss.str());
             }
             return;
@@ -73,10 +74,10 @@ namespace necsim
             }
             if(rc != SQLITE_OK && rc != SQLITE_DONE)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "ERROR_SQL_010: SQLite database file could not be opened. Check the folder exists and you "
-                      "have write permissions. (REF1) Error code: " << rc << endl;
-                ss << " Attempted call " << max(i, j) << " times" << endl;
+                      "have write permissions. (REF1) Error code: " << rc << std::endl;
+                ss << " Attempted call " << std::max(i, j) << " times" << std::endl;
                 throw FatalException(ss.str());
             }
         }
@@ -101,7 +102,7 @@ namespace necsim
                 {
                     if(!fs::create_directories(parent_path))
                     {
-                        throw runtime_error("Cannot create parent folder for " + file);
+                        throw std::runtime_error("Cannot create parent folder for " + file);
                     }
                 }
             }
@@ -112,14 +113,14 @@ namespace necsim
     {
         if(fs::exists(testfile))
         {
-            stringstream os;
-            os << "\rChecking folder existance..." << testfile << " exists.               " << endl;
+            std::stringstream os;
+            os << "\rChecking folder existance..." << testfile << " exists.               " << std::endl;
             writeInfo(os.str());
             return true;
         }
         else
         {
-            throw runtime_error(
+            throw std::runtime_error(
                     string("ERROR_MAIN_008: FATAL. Input or output folder does not exist: " + testfile + "."));
         }
     }
@@ -143,13 +144,13 @@ namespace necsim
         return static_cast<unsigned long>(pow(x2, 2) + x1);
     }
 
-    vector<string> getCsvLineAndSplitIntoTokens(istream &str)
+    std::vector<string> getCsvLineAndSplitIntoTokens(std::istream &str)
     {
-        vector<string> result;
+        std::vector<string> result;
         string line;
         getline(str, line);
 
-        stringstream lineStream(line);
+        std::stringstream lineStream(line);
         string cell;
 
         while(getline(lineStream, cell, ','))

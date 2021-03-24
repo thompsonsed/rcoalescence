@@ -12,15 +12,16 @@
  *
  */
 
-#include "ConfigParser.h"
-//#include <std/filesystem/operations.hpp>
+
 
 #include "cpp17_includes.h"
 #include "custom_exceptions.h"
 #include "Logging.h"
+#include "ConfigParser.h"
+
 namespace necsim
 {
-    void importArgs(const unsigned int &argc, char* argv[], vector<string> &comargs)
+    void importArgs(const unsigned int &argc, char* argv[], std::vector<string> &comargs)
     {
         for(unsigned int i = 0; i < argc; i++)
         {
@@ -33,7 +34,7 @@ namespace necsim
         }
     }
 
-    string SectionOption::getOption(string refval)
+    std::string SectionOption::getOption(std::string refval)
     {
         for(unsigned int i = 0; i < refs.size(); i++)
         {
@@ -43,14 +44,14 @@ namespace necsim
             }
         }
 #ifdef DEBUG
-        stringstream ss;
-        ss << "Reference " << refval << " not found in keyoption." << endl;
+        std::stringstream ss;
+        ss << "Reference " << refval << " not found in keyoption." << std::endl;
         writeInfo(ss.str());
 #endif
         return ("null");
     }
 
-    ostream &operator<<(ostream &os, const SectionOption &k)
+    std::ostream &operator<<(std::ostream &os, const SectionOption &k)
     {
         os << k.section << "\n" << k.val.size() << "\n" << k.refs.size() << "\n";
         for(const auto &i : k.val)
@@ -64,13 +65,13 @@ namespace necsim
         return os;
     }
 
-    istream &operator>>(istream &is, SectionOption &k)
+    std::istream &operator>>(std::istream &is, SectionOption &k)
     {
-        // os << m.num_rows<<" , "<<m.num_cols<<" , "<<endl;
+        // os << m.num_rows<<" , "<<m.num_cols<<" , "<<std::endl;
         unsigned int valsize, refsize;
         is >> k.section >> valsize >> refsize;
         is.ignore();
-        string tmp;
+        std::string tmp;
         for(unsigned int i = 0; i < valsize; i++)
         {
             getline(is, tmp);
@@ -84,7 +85,7 @@ namespace necsim
         return is;
     }
 
-    void ConfigParser::setConfig(const string &file, bool main, bool full_parse)
+    void ConfigParser::setConfig(const std::string &file, bool main, bool full_parse)
     {
         if(!configSet)
         {
@@ -101,11 +102,11 @@ namespace necsim
 
     void ConfigParser::parseConfig()
     {
-        ifstream is_file;
+        std::ifstream is_file;
         if(!fs::exists(config_file))
         {
-            stringstream ss;
-            ss << "No config file found at " << config_file << ". Check file exists." << endl;
+            std::stringstream ss;
+            ss << "No config file found at " << config_file << ". Check file exists." << std::endl;
             throw ConfigException(ss.str());
         }
         try
@@ -114,8 +115,7 @@ namespace necsim
         }
         catch(...)
         {
-            throw ConfigException(
-                    "ERROR_CONF_004c: Could not open the config file. Check file exists and is readable.");
+            throw ConfigException("ERROR_CONF_004c: Could not open the config file. Check file exists and is readable.");
         }
         parseConfig(is_file);
         if(is_file.eof())
@@ -128,44 +128,44 @@ namespace necsim
         }
     }
 
-    void ConfigParser::parseConfig(istream &istream1)
+    void ConfigParser::parseConfig(std::istream &istream)
     {
-        if(!istream1.fail() || !istream1.good())
+        if(!istream.fail() || !istream.good())
         {
-            string line;
+            std::string line;
             // Get the first line of the file.
-            while(getline(istream1, line))
+            while(getline(istream, line))
             {
-                istringstream is_line(line);
-                string key;
-                string val;
+                std::istringstream is_line(line);
+                std::string key;
+                std::string val;
                 // Skip all whitespace
-                is_line >> skipws;
+                is_line >> std::skipws;
                 // start a new section
                 if(line[0] == '[')
                 {
                     SectionOption tempSections;
                     // get the section name
-                    string section;
+                    std::string section;
                     if(getline(is_line, section, ']'))
                     {
                         section = section.erase(0, 1);
                         tempSections.section = section;
                     }
                     // read each line
-                    while(getline(istream1, line))
+                    while(getline(istream, line))
                     {
                         // end the section when a new one starts.
                         if(line[0] == '[' || line.size() == 0)
                         {
                             break;
                         }
-                        istringstream is_line2(line); // update the input-line stream
+                        std::istringstream is_line2(line); // update the input-line stream
                         if(getline(is_line2, key, '='))
                         {
 
                             key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
-                            is_line2 >> skipws;
+                            is_line2 >> std::skipws;
                         }
                         if(!is_line2)
                         {
@@ -198,12 +198,12 @@ namespace necsim
         }
     }
 
-    vector<SectionOption> ConfigParser::getSectionOptions()
+    std::vector<SectionOption> ConfigParser::getSectionOptions()
     {
         return configs;
     }
 
-    void ConfigParser::setSectionOption(string section, string reference, string value)
+    void ConfigParser::setSectionOption(std::string section, std::string reference, std::string value)
     {
         SectionOption* section_option = nullptr;
         for(auto &option : configs)
@@ -235,9 +235,9 @@ namespace necsim
         return configs.size();
     }
 
-    vector<string> ConfigParser::getSections()
+    std::vector<string> ConfigParser::getSections()
     {
-        vector<string> toret;
+        std::vector<string> toret;
         for(auto &config : configs)
         {
             toret.push_back(config.section);
@@ -245,7 +245,7 @@ namespace necsim
         return toret;
     }
 
-    bool ConfigParser::hasSection(const string &sec)
+    bool ConfigParser::hasSection(const std::string &sec)
     {
         for(auto &config : configs)
         {
@@ -257,7 +257,7 @@ namespace necsim
         return false;
     }
 
-    vector<string> ConfigParser::getSectionValues(string sec)
+    std::vector<string> ConfigParser::getSectionValues(std::string sec)
     {
         for(auto &config : configs)
         {
@@ -269,7 +269,7 @@ namespace necsim
         throw ConfigException("Section not found in config file: " + sec);
     }
 
-    string ConfigParser::getSectionOptions(string section, string ref)
+    std::string ConfigParser::getSectionOptions(std::string section, std::string ref)
     {
         for(auto &config : configs)
         {
@@ -290,7 +290,7 @@ namespace necsim
         return "null";
     }
 
-    string ConfigParser::getSectionOptions(string section, string ref, string def)
+    std::string ConfigParser::getSectionOptions(std::string section, std::string ref, std::string def)
     {
         for(auto &config : configs)
         {
@@ -308,7 +308,7 @@ namespace necsim
         return def;
     }
 
-    int ConfigParser::importConfig(vector<string> &comargs)
+    int ConfigParser::importConfig(std::vector<string> &comargs)
     {
         // Check that the previous arguments have already been imported.
         if(isMain)
@@ -318,24 +318,23 @@ namespace necsim
                 throw ConfigException("ERROR_CONF_003: Number of command line arguments not correct before import.");
             }
         }
-        ifstream is_file;
+        std::ifstream is_file;
         try
         {
             is_file.open(config_file);
         }
         catch(...)
         {
-            throw ConfigException(
-                    "ERROR_CONF_004a: Could not open the config file. Check file exists and is readable.");
+            throw ConfigException("ERROR_CONF_004a: Could not open the config file. Check file exists and is readable.");
         }
         if(!is_file.fail())
         {
-            string line;
+            std::string line;
             while(getline(is_file, line))
             {
-                istringstream is_line(line);
-                string key;
-                is_line >> skipws;
+                std::istringstream is_line(line);
+                std::string key;
+                is_line >> std::skipws;
                 if(line[0] == '[')
                 {
                     continue;
@@ -343,15 +342,15 @@ namespace necsim
                 if(getline(is_line, key, '='))
                 {
                     // Could implement proper data parsing based on the key object.
-                    is_line >> skipws;
-                    string value;
+                    is_line >> std::skipws;
+                    std::string value;
                     if(getline(is_line, value))
                     {
                         value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
                         if(!is_line)
                         {
-                            stringstream os;
-                            os << value << endl;
+                            std::stringstream os;
+                            os << value << std::endl;
                             writeWarning(os.str());
                             throw ConfigException("ERROR_CONF_001: Read error in config file.");
                         }
@@ -364,8 +363,7 @@ namespace necsim
         }
         else
         {
-            throw ConfigException(
-                    "ERROR_CONF_004d: Could not open the config file. Check file exists and is readable.");
+            throw ConfigException("ERROR_CONF_004d: Could not open the config file. Check file exists and is readable.");
         }
         if(is_file.eof())
         {
@@ -377,13 +375,13 @@ namespace necsim
         }
         if(isMain)
         {
-            // remove the file name from the command line arguments to maintain the vector format.
+            // remove the file name from the command line arguments to maintain the std::vector format.
             comargs.erase(comargs.begin() + 2);
         }
         return static_cast<int>(comargs.size());
     }
 
-    ostream &operator<<(ostream &os, const ConfigParser &c)
+    std::ostream &operator<<(std::ostream &os, const ConfigParser &c)
     {
         os << c.config_file << "\n" << c.configSet << "\n" << c.isMain << "\n" << c.isFullParser << "\n"
            << c.configs.size() << "\n";
@@ -394,7 +392,7 @@ namespace necsim
         return os;
     }
 
-    istream &operator>>(istream &is, ConfigParser &c)
+    std::istream &operator>>(std::istream &is, ConfigParser &c)
     {
         unsigned int configsize;
         is.ignore();
@@ -403,7 +401,7 @@ namespace necsim
         SectionOption tmpoption;
         if(configsize > 10000)
         {
-            throw runtime_error("Config size extremely large, check file: " + to_string(configsize));
+            throw std::runtime_error("Config size extremely large, check file: " + std::to_string(configsize));
         }
         if(configsize > 0)
         {
@@ -413,7 +411,7 @@ namespace necsim
                 c.configs.push_back(tmpoption);
             }
         }
-        //		os << "end config" << endl;
+        //		os << "end config" << std::endl;
         return is;
     }
 }
