@@ -180,13 +180,14 @@ void RTreeSimulation::resumeSQLConnection()
 
 void RTreeSimulation::applySpeciation(const string &file_in,
                                       const bool &use_spatial_in,
+                                      const bool &record_ages_in,
                                       const string &sample_file,
                                       const string &use_fragments_in,
                                       vector<double> times_list)
 {
     resumeSQLConnection();
     checkWrittenMainSim();
-    spec_sim_parameters->setup(file_in, use_spatial_in, sample_file, times_list, use_fragments_in);
+    spec_sim_parameters->setup(file_in, use_spatial_in, record_ages_in, sample_file, times_list, use_fragments_in);
     apply(spec_sim_parameters);
     spec_sim_parameters->wipe();
     pauseSQLConnection();

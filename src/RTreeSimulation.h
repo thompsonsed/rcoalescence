@@ -176,6 +176,7 @@ namespace rcoalescence
          * Records data for all times stored in the reference_times vector.
          * @param file_in the file path to save the database to
          * @param use_spatial_in if true, records all spatial locations of lineages
+         * @param record_ages_in if true, records the species ages to the database
          * @param sample_file a map containing spatial sampling data
          * @param use_fragments_in if true, detects fragments from the map, if a file path, uses the file coordinates
          * @param speciation_rates a vector of speciation rates to apply
@@ -187,6 +188,7 @@ namespace rcoalescence
          */
         void applySpeciation(const string &file_in,
                              const bool &use_spatial_in,
+                             const bool &record_ages_in,
                              const string &sample_file,
                              const string &use_fragments_in,
                              vector<double> times_list);

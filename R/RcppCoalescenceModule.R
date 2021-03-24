@@ -92,6 +92,7 @@
 #' These are for rebuilding the coalescence tree under different conditions.
 #' * *output_file*: the directory to output to, defaults to "none"
 #' * *use_spatial*: if true, records full spatial locations of all individuals. Default=FALSE
+#' * *record_ages*: if true, records the ages of species to the database. Default=FALSE
 #' * *sample_file*: supply a mask for defining spatial sampling. Default="null"
 #' * *use_fragments*: supply a file containing fragment coordinates, or TRUE to let program calculate fragments
 #' * *speciation_rates*: list of speciation rates to apply
@@ -254,6 +255,7 @@ TreeSimulation <- setRcppClass(
 
     applySpeciationRates = function(speciation_rates = NA,
                                     output_file = "none",
+                                    record_ages = FALSE,
                                     times_list = c(0.0),
                                     metacommunity_option = NA,
                                     metacommunity_size = NA,
@@ -270,7 +272,7 @@ TreeSimulation <- setRcppClass(
         )
       }
       ._applySpeciationRates(
-        output_file, FALSE, "null",
+        output_file, FALSE, record_ages, "null",
         "F", times_list
       )
     },
@@ -672,6 +674,7 @@ SpatialTreeSimulation <- setRcppClass(
     applySpeciationRates = function(speciation_rates = NA,
                                     output_file = "none",
                                     use_spatial = FALSE,
+                                    record_ages=FALSE,
                                     sample_file = "null",
                                     use_fragments = FALSE,
                                     times_list = c(0.0),
@@ -697,6 +700,7 @@ SpatialTreeSimulation <- setRcppClass(
       ._applySpeciationRates(
         output_file,
         use_spatial,
+        record_ages,
         sample_file,
         use_fragments,
         times_list
@@ -874,6 +878,7 @@ ProtractedTreeSimulation <- setRcppClass(
 
     applySpeciationRates = function(speciation_rates,
                                     output_file = "none",
+                                    record_ages = FALSE,
                                     times_list = c(0.0),
                                     min_speciation_gens =
                                       c(0.0),
@@ -916,7 +921,7 @@ ProtractedTreeSimulation <- setRcppClass(
           ._addProtractedParameters(min_speciation_gens, max_speciation_gens)
         }
       }
-      ._applySpeciationRates(output_file, FALSE, "null", "F", times_list)
+      ._applySpeciationRates(output_file, FALSE, record_ages, "null", "F", times_list)
     },
 
 
@@ -1090,6 +1095,7 @@ ProtractedSpatialTreeSimulation <- setRcppClass(
     applySpeciationRates = function(speciation_rates,
                                     output_file = "none",
                                     use_spatial = FALSE,
+                                    record_ages=FALSE,
                                     sample_file = "null",
                                     use_fragments = FALSE,
                                     times_list = c(0.0),
@@ -1134,6 +1140,7 @@ ProtractedSpatialTreeSimulation <- setRcppClass(
       ._applySpeciationRates(
         output_file,
         use_spatial,
+        record_ages,
         sample_file,
         use_fragments,
         times_list
