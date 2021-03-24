@@ -12,33 +12,21 @@
 #ifndef RCOALESCENCE_RPROTRACTEDSPATIALTREE_H
 #define RCOALESCENCE_RPROTRACTEDSPATIALTREE_H
 
-#include "necsim/ProtractedTree.h"
+
+#ifndef WIN_INSTALL
+#include <unistd.h>
+#endif // WIN_INSTALL
+
+#include <Rcpp.h>
 #include "necsim/ProtractedSpatialTree.h"
-#include "RSpatialTreeSimulation.h"
+#include "RGenericSpatialTreeSimulation.h"
+using namespace necsim;
 
 namespace rcoalescence
 {
     /**
-     * @brief Wrapper for spatial, protracted simulations.
+     * @brief Wrapper for spatial simulations.
      */
-    class RProtractedSpatialTreeSimulation : virtual public RSpatialTreeSimulation,
-                                             virtual public ProtractedSpatialTree
-    {
-    public:
-        RProtractedSpatialTreeSimulation() : RSpatialTreeSimulation(), ProtractedSpatialTree()
-        {
-            bIsProtracted = true;
-        }
-
-        using ProtractedTree::calcSpeciation;
-        using ProtractedTree::speciateLineage;
-        using ProtractedTree::getProtracted;
-        using ProtractedTree::setProtractedVariables;
-        using ProtractedTree::getProtractedVariables;
-        using ProtractedTree::getProtractedGenerationMin;
-        using ProtractedTree::getProtractedGenerationMax;
-        using ProtractedTree::protractedVarsToString;
-    };
+    using RProtractedSpatialTreeSimulation = RGenericSpatialTreeSimulation<necsim::ProtractedSpatialTree>;
 }
-
 #endif //RCOALESCENCE_RPROTRACTEDSPATIALTREE_H

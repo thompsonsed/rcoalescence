@@ -248,7 +248,7 @@ namespace rcoalescence
         /**
          * @brief Calls Tree::setup() to act as a wrapper accessible by R without extra classes.
          */
-        void setupR() virtual;
+        virtual void setupR();
 
         /**
          * @brief Calls Tree::runSimulation() to act as a wrapper accessible by R without extra classes.
