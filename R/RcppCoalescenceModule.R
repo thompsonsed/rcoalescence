@@ -483,7 +483,61 @@ TreeSimulation <- setRcppClass(
       }
       return(species_locations)
     },
-
+    
+    getAllSpeciesAbundances = function(){
+      "Gets all species abundance calculations from the output database."
+      if(!checkOutputDatabase()){
+        stop(paste("No output database exists yet. Ensure you have called output() on your object."))
+      }
+      output_df <- getCommunityReferences() %>% 
+        rename(community_reference=reference) 
+      species_richness <- getSpeciesAbundances(output_df$community_reference)
+      output_df <- output_df %>% 
+        left_join(species_richness)
+      return(output_df)
+    },
+    
+    getSpeciesAges = function(community_reference = 1) {
+      "Gets a data frame of species ages
+ where the community reference
+        matches the input"
+      if (!checkOutputDatabase()) {
+        return(._getSpeciesAbundances(community_reference))
+      }
+      checkOutputDatabaseExists()
+      conn <-
+        dbConnect(SQLite(), output_database)
+      community_reference_vector <- as.vector(community_reference)
+      species_locations <-
+        dbGetQuery(
+          conn,
+          paste0(
+            "SELECT community_reference, species_id, age_generations FROM SPECIES_AGES WHERE
+            community_reference IN (",
+            paste0("'", community_reference_vector, "'", collapse = ", "),
+            ")"
+          )
+        )
+      dbDisconnect(conn)
+      if (length(community_reference_vector) == 1) {
+        return(species_locations %>% dplyr::select("species_id", "age_generations"))
+      }
+      return(species_locations)
+    },
+    
+    getAllSpeciesAges = function(){
+      "Gets all species age calculations from the output database."
+      if(!checkOutputDatabase()){
+        stop(paste("No output database exists yet. Ensure you have called output() on your object."))
+      }
+      output_df <- getCommunityReferences() %>% 
+        rename(community_reference=reference) 
+      species_richness <- getSpeciesAges(output_df$community_reference)
+      output_df <- output_df %>% 
+        left_join(species_richness)
+      return(output_df)
+    },
+    
     getSpeciesRichness = function(community_reference =
                                     NA) {
       "Gets the community reference from the output database, or from the
@@ -524,28 +578,14 @@ TreeSimulation <- setRcppClass(
     getAllSpeciesRichness = function(){
       "Gets all species richness calculations from the output database."
       if(!checkOutputDatabase()){
-        return(._getLastSpeciesRicness())
+        stop(paste("No output database exists yet. Ensure you have called output() on your object."))
       }
-      checkOutputDatabaseExists()
-      conn <-
-        dbConnect(SQLite(), output_database)
-      species_richness <-
-        dbGetQuery(
-          conn,
-          paste0(
-            "SELECT community_reference, COUNT(DISTINCT(species_id)) FROM SPECIES_ABUNDANCES WHERE
-              no_individuals > 0 GROUP BY community_reference"
-          )
-        )
-      names(species_richness) <- c("community_reference", "species_richness")
-      dbDisconnect(conn)
       output_df <- getCommunityReferences() %>% 
-        rename(community_reference=reference) %>% 
+        rename(community_reference=reference) 
+      species_richness <- getSpeciesRichness(output_df$community_reference)
+      output_df <- output_df %>% 
         left_join(species_richness)
       return(output_df)
-      
-      
-      
     }
   )
 )
