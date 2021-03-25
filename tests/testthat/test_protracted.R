@@ -536,38 +536,80 @@ test_that("More complex spatial example using protracted speciation",
                          all.equal(community_references, tmp$getCommunityReferences()))
             expect_equal(76, tmp$getSpeciesRichness(1))
             expect_equal(76, tmp$getSpeciesRichness(2))
-            expect_equal(6, tmp$getSpeciesRichness(3))
-            expect_equal(6, tmp$getSpeciesRichness(4))
+            expect_equal(76, tmp$getSpeciesRichness(3))
+            expect_equal(76, tmp$getSpeciesRichness(4))
             expect_equal(76, tmp$getSpeciesRichness(5))
             expect_equal(76, tmp$getSpeciesRichness(6))
-            expect_equal(6, tmp$getSpeciesRichness(7))
-            expect_equal(6, tmp$getSpeciesRichness(8))
+            expect_equal(76, tmp$getSpeciesRichness(7))
+            expect_equal(76, tmp$getSpeciesRichness(8))
             expect_equal(75, tmp$getSpeciesRichness(9))
             expect_equal(76, tmp$getSpeciesRichness(10))
-            expect_equal(6, tmp$getSpeciesRichness(11))
-            expect_equal(6, tmp$getSpeciesRichness(12))
+            expect_equal(76, tmp$getSpeciesRichness(11))
+            expect_equal(76, tmp$getSpeciesRichness(12))
             expect_equal(75, tmp$getSpeciesRichness(13))
             expect_equal(76, tmp$getSpeciesRichness(14))
-            expect_equal(6, tmp$getSpeciesRichness(15))
-            expect_equal(6, tmp$getSpeciesRichness(16))
-            expect_equal(72, tmp$getSpeciesRichness(17))
-            expect_equal(74, tmp$getSpeciesRichness(18))
-            expect_equal(6, tmp$getSpeciesRichness(19))
-            expect_equal(6, tmp$getSpeciesRichness(20))
-            expect_equal(74, tmp$getSpeciesRichness(21))
+            expect_equal(76, tmp$getSpeciesRichness(15))
+            expect_equal(76, tmp$getSpeciesRichness(16))
+            expect_equal(70, tmp$getSpeciesRichness(17))
+            expect_equal(75, tmp$getSpeciesRichness(18))
+            expect_equal(74, tmp$getSpeciesRichness(19))
+            expect_equal(75, tmp$getSpeciesRichness(20))
+            expect_equal(72, tmp$getSpeciesRichness(21))
             expect_equal(75, tmp$getSpeciesRichness(22))
-            expect_equal(6, tmp$getSpeciesRichness(23))
-            expect_equal(6, tmp$getSpeciesRichness(24))
-            expect_equal(72, tmp$getSpeciesRichness(25))
-            expect_equal(74, tmp$getSpeciesRichness(26))
-            expect_equal(6, tmp$getSpeciesRichness(27))
-            expect_equal(6, tmp$getSpeciesRichness(28))
-            expect_equal(74, tmp$getSpeciesRichness(29))
+            expect_equal(75, tmp$getSpeciesRichness(23))
+            expect_equal(75, tmp$getSpeciesRichness(24))
+            expect_equal(70, tmp$getSpeciesRichness(25))
+            expect_equal(75, tmp$getSpeciesRichness(26))
+            expect_equal(74, tmp$getSpeciesRichness(27))
+            expect_equal(75, tmp$getSpeciesRichness(28))
+            expect_equal(72, tmp$getSpeciesRichness(29))
             expect_equal(75, tmp$getSpeciesRichness(30))
-            expect_equal(6, tmp$getSpeciesRichness(31))
-            expect_equal(6, tmp$getSpeciesRichness(32))
+            expect_equal(75, tmp$getSpeciesRichness(31))
+            expect_equal(75, tmp$getSpeciesRichness(32))
             
           })
 
-# unlink(file.path("output"), recursive = TRUE)
-# unlink(file.path("default"), recursive = TRUE)
+
+test_that("More complicated protracted speciation validating that the results make sense across parameter space.",
+          {
+            output_df <- NULL
+            protracted_parameters_min <- c()
+            protracted_parameters_max <- c()
+            for(min_spec_gen in c(1, 100, 1000000)){
+              for(max_spec_gen in c(100, 100000, 10000000)){
+                if(min_spec_gen > max_spec_gen){
+                  break
+                }
+                protracted_parameters_min <- c(protracted_parameters_min, min_spec_gen)
+                protracted_parameters_max <- c(protracted_parameters_max, max_spec_gen)
+              }
+            }
+            
+            for(seed in seq(1, 5)){
+              tmp <- ProtractedSpatialTreeSimulation$new()
+              tmp$setSimulationParameters(task = 203, seed = seed, 
+                                          min_speciation_rate = 1e-06,
+                                          deme = 10, 
+                                          uses_logging = FALSE, 
+                                          min_speciation_gen = 1000000,
+                                          max_speciation_gen = 10000000,
+                                          sigma = 2, 
+                                          fine_map_file = "null",
+                                          fine_map_x_size = 20, 
+                                          fine_map_y_size = 20, 
+                                          landscape_type = "closed")    
+              tmp$runSimulation()
+              tmp$applySpeciationRates(speciation_rates = c(0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001), min_speciation_gens=protracted_parameters_min,
+                                       max_speciation_gens=protracted_parameters_max)
+              tmp$output()
+              seed <- seed + 1
+              richness <- tmp$getAllSpeciesRichness()
+              if(is.null(output_df)){
+                output_df <- richness
+              }else{
+                output_df <- output_df %>% bind_rows(richness)
+              }
+            }
+            expected_df <- read.csv("sample/protracted_sample_results.csv") %>% select(-X)
+            expect_equal(expected_df, output_df)
+          })
