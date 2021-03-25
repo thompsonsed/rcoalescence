@@ -93,7 +93,7 @@ test_that("Biodiversity metrics correctly stored in output database", {
     select(-X)
   expect_equal(expected_ages, tmp$getAllSpeciesAges())
   expected_df <- read.csv("sample/species_ages_example_results_single.csv") %>% select(-X)
-  expect_equal(expected_df, tmp$getSpecesAges())
+  expect_equal(expected_df, tmp$getSpeciesAges())
 })
 
 context("More complex spatial coalescence simulations")

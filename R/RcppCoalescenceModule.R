@@ -502,7 +502,7 @@ TreeSimulation <- setRcppClass(
  where the community reference
         matches the input"
       if (!checkOutputDatabase()) {
-        return(._getSpeciesAbundances(community_reference))
+        stop("No output database exists yet. Ensure you have called output() on your object.")
       }
       checkOutputDatabaseExists()
       conn <-
@@ -544,7 +544,7 @@ TreeSimulation <- setRcppClass(
         internal object if no community reference is supplied (this will return the
         last calculated species richness)."
       if (!checkOutputDatabase()) {
-        if (is.na(community_reference)) {
+        if (is.null(community_reference)) {
           return(._getLastSpeciesRichness())
         }
         return(._getSpeciesRichness(community_reference))
