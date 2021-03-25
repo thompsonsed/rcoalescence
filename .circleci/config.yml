@@ -4,7 +4,7 @@
 #
 version: 2.0
 jobs:
-  build_local:
+  build_local_r_3:
     docker:
       - image: thompsonsed/rcoalescence-rbase3.6-xenial
 
@@ -19,6 +19,36 @@ jobs:
             cd ../
             R CMD INSTALL --no-multiarch --with-keep.source rcoalescence
 
+      - run:
+          name: run tests
+          command: |
+            cd tests
+            Rscript testthat.R
+
+      - run:
+          name: run R CHECK
+          command: |
+            R -e "devtools::install_dev_deps()"
+            R -e "devtools::check()"
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+  build_local_r_4:
+    docker:
+      - image: thompsonsed/rcoalescence-rbase4-xenial
+
+    working_directory: ~/rcoalescence
+
+    steps:
+      - checkout
+
+      - run:
+          name: build package from local
+          command: |
+            cd ../
+            R CMD INSTALL --no-multiarch --with-keep.source rcoalescence
 
       - run:
           name: run tests
@@ -31,19 +61,18 @@ jobs:
           command: |
             R -e "devtools::install_dev_deps()"
             R -e "devtools::check()"
-            
+
       - store_artifacts:
           path: test-reports
           destination: test-reports
 
-  build_github:
+  build_github_r_3:
     docker:
       - image: thompsonsed/rcoalescence-rbase3.6-xenial
 
     working_directory: ~
 
     steps:
-
       - run:
           name: build package from github
           command: |
@@ -61,12 +90,35 @@ jobs:
           path: test-reports
           destination: test-reports
 
-  
+  build_github_r_4:
+    docker:
+      - image: thompsonsed/rcoalescence-rbase4-xenial
+
+    working_directory: ~
+
+    steps:
+      - run:
+          name: build package from github
+          command: |
+            R -e "devtools::install_github('thompsonsed/rcoalescence')"
+
+      - checkout
+
+      - run:
+          name: run tests
+          command: |
+            cd tests
+            Rscript testthat.R
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
 
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build_local
-      - build_github
-
+      - build_local_r_3
+      - build_local_r_4
+      - build_github_r_3
+      - build_github_r_4
