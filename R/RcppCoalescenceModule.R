@@ -519,6 +519,30 @@ TreeSimulation <- setRcppClass(
         return(species_locations$species_richness[1])
       }
       return(species_locations)
+    },
+    
+    getAllSpeciesRichness = function(){
+      "Gets all species richness calculations from the output database."
+      if(!checkOutputDatabase()){
+        return(._getLastSpeciesRicness())
+      }
+      checkOutputDatabaseExists()
+      conn <-
+        dbConnect(SQLite(), output_database)
+      species_richness <-
+        dbGetQuery(
+          conn,
+          paste0(
+            "SELECT community_reference, COUNT(DISTINCT(species_id)) FROM SPECIES_ABUNDANCES WHERE
+              no_individuals > 0 GROUP BY community_reference"
+          )
+        )
+      dbDisconnect(conn)
+      output_df <- getCommunityReferences() %>% left_join(species_richness)
+      return(output_df)
+      
+      
+      
     }
   )
 )
