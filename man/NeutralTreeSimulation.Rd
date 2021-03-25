@@ -121,6 +121,7 @@ These are for rebuilding the coalescence tree under different conditions.
 \itemize{
 \item \emph{output_file}: the directory to output to, defaults to "none"
 \item \emph{use_spatial}: if true, records full spatial locations of all individuals. Default=FALSE
+\item \emph{record_ages}: if true, records the ages of species to the database. Default=FALSE
 \item \emph{sample_file}: supply a mask for defining spatial sampling. Default="null"
 \item \emph{use_fragments}: supply a file containing fragment coordinates, or TRUE to let program calculate fragments
 \item \emph{speciation_rates}: list of speciation rates to apply

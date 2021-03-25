@@ -14,6 +14,7 @@ simulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for 
 \item{\code{applySpeciationRates(
   speciation_rates = NA,
   output_file = "none",
+  record_ages = FALSE,
   times_list = c(0),
   metacommunity_option = NA,
   metacommunity_size = NA,
@@ -27,6 +28,12 @@ simulation and run. Dispersal parameters (sigma, tau, etc) are not relevant for 
 
 \item{\code{createDefaultOutputDatabase()}}{Creates the default output database string}
 
+\item{\code{getAllSpeciesAbundances()}}{Gets all species abundance calculations from the output database.}
+
+\item{\code{getAllSpeciesAges()}}{Gets all species age calculations from the output database.}
+
+\item{\code{getAllSpeciesRichness()}}{Gets all species richness calculations from the output database.}
+
 \item{\code{getCommunityReferences()}}{Returns a data frame containing all the community references and their
 parameter sets.}
 
@@ -38,10 +45,14 @@ parameter sets.}
 \item{\code{getSpeciesAbundances(community_reference = 1)}}{Gets a data frame of species abundances where the community reference
 matches the input}
 
+\item{\code{getSpeciesAges(community_reference = 1)}}{Gets a data frame of species ages
+where the community reference
+       matches the input}
+
 \item{\code{getSpeciesLocations(community_reference = 1)}}{Gets a data frame of species locations where the community reference
 matches the input.}
 
-\item{\code{getSpeciesRichness(community_reference = NA)}}{Gets the community reference from the output database, or from the
+\item{\code{getSpeciesRichness(community_reference = NULL)}}{Gets the community reference from the output database, or from the
 internal object if no community reference is supplied (this will return the
 last calculated species richness).}
 
@@ -113,6 +124,7 @@ These are for rebuilding the coalescence tree under different conditions.
 \itemize{
 \item \emph{output_file}: the directory to output to, defaults to "none"
 \item \emph{use_spatial}: if true, records full spatial locations of all individuals. Default=FALSE
+\item \emph{record_ages}: if true, records the ages of species to the database. Default=FALSE
 \item \emph{sample_file}: supply a mask for defining spatial sampling. Default="null"
 \item \emph{use_fragments}: supply a file containing fragment coordinates, or TRUE to let program calculate fragments
 \item \emph{speciation_rates}: list of speciation rates to apply

@@ -28,6 +28,9 @@ suppressPackageStartupMessages({
   library(ggpubr)
 })
 output_dir <- "output"
+if(dir.exists(output_dir)){
+  unlink(output_dir, recursive = TRUE)
+}
 figure_directory <- "figures"
 if (!dir.exists(figure_directory)) {
   dir.create(figure_directory)
