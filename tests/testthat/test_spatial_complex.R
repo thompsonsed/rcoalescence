@@ -1,9 +1,8 @@
 # Tests that coalescence simulations run as expected
 context("Checking biodiversity metrics simulations")
 test_that("Biodiversity metrics correctly stored in output database", {
-  output_file = file.path("output", "data_1_10.db")
-  if (file.exists(output_file))
-  {
+  output_file <- file.path("output", "data_1_10.db")
+  if (file.exists(output_file)) {
     file.remove(output_file)
   }
   tmp <- SpatialTreeSimulation$new()
@@ -12,7 +11,7 @@ test_that("Biodiversity metrics correctly stored in output database", {
     task = 1,
     output_directory = "output",
     min_speciation_rate = 0.5,
-    sigma = 2 * (2 ** 0.5),
+    sigma = 2 * (2**0.5),
     deme = 1,
     deme_sample = 0.1,
     fine_map_file = "sample/example_fine.tif",
@@ -21,8 +20,11 @@ test_that("Biodiversity metrics correctly stored in output database", {
     uses_logging = FALSE
   )
   expect_equal(TRUE, tmp$runSimulation())
-  tmp$applySpeciationRates(speciation_rates = c(0.5, 0.7),
-                           use_spatial = TRUE)
+  tmp$applySpeciationRates(
+    speciation_rates = c(0.5, 0.7),
+    use_spatial = TRUE,
+    record_ages = TRUE
+  )
   tmp$output()
   # Make sure an output exists
   expect_equal(TRUE, file.exists(output_file))
@@ -35,13 +37,17 @@ test_that("Biodiversity metrics correctly stored in output database", {
       byrow = TRUE
     ))
   names(community_references) <-
-    c("reference",
+    c(
+      "reference",
       "speciation_rate",
       "time",
       "fragments",
-      "metacommunity_reference")
-  expect_equal(TRUE,
-               all.equal(tmp$getCommunityReferences(), community_references))
+      "metacommunity_reference"
+    )
+  expect_equal(
+    TRUE,
+    all.equal(tmp$getCommunityReferences(), community_references)
+  )
   # Check species abundances
   expected_abundances <-
     data.frame(matrix(c(0, 0, 1, 1, 2, 1, 3, 1, 4, 1), ncol = 2, byrow = TRUE))
@@ -83,9 +89,11 @@ test_that("Biodiversity metrics correctly stored in output database", {
   # Check species richness
   expect_equal(1157, tmp$getSpeciesRichness(1))
   expect_equal(1167, tmp$getSpeciesRichness(2))
-  
-  
-  
+  expected_ages <- read.csv("sample/species_ages_example_results.csv") %>%
+    select(-X)
+  expect_equal(expected_ages, tmp$getAllSpeciesAges())
+  expected_df <- read.csv("sample/species_ages_example_results_single.csv") %>% select(-X)
+  expect_equal(expected_df, tmp$getSpecesAges())
 })
 
 context("More complex spatial coalescence simulations")
@@ -96,7 +104,7 @@ test_that("Simulation with a single historical maps works as intended.", {
     task = 1,
     output_directory = "output",
     min_speciation_rate = 0.1,
-    sigma = 2 * (2 ** 0.5),
+    sigma = 2 * (2**0.5),
     deme = 1,
     deme_sample = 0.1,
     fine_map_file = "sample/example_fine.tif",
@@ -130,14 +138,14 @@ test_that("Simulation with multiple historical maps works as intended.", {
     task = 1,
     output_directory = "output",
     min_speciation_rate = 0.5,
-    sigma = 2 * (2 ** 0.5),
+    sigma = 2 * (2**0.5),
     deme = 1,
     deme_sample = 0.1,
     fine_map_file = "sample/example_fine.tif",
     coarse_map_file = "sample/example_coarse.tif",
     sample_mask_file = "sample/example_mask.tif",
     uses_logging = FALSE,
-    partial_setup=TRUE
+    partial_setup = TRUE
   )
   tmp$addHistoricalMap(
     historical_fine_map = "sample/example_historical_fine.tif",
@@ -169,7 +177,7 @@ test_that("Simulation with multiple sampling times.", {
     task = 1,
     output_directory = "output",
     min_speciation_rate = 0.5,
-    sigma = 2 * (2 ** 0.5),
+    sigma = 2 * (2**0.5),
     deme = 1,
     deme_sample = 0.1,
     fine_map_file = "sample/example_fine.tif",
@@ -179,8 +187,10 @@ test_that("Simulation with multiple sampling times.", {
     times_list = c(0.0, 1.0, 10.0, 20.0)
   )
   expect_equal(TRUE, tmp$runSimulation())
-  tmp$applySpeciationRates(speciation_rates = c(0.5),
-                           times_list = c(0.0, 1.0, 10.0, 20.0))
+  tmp$applySpeciationRates(
+    speciation_rates = c(0.5),
+    times_list = c(0.0, 1.0, 10.0, 20.0)
+  )
   tmp$output()
   community_references <-
     data.frame(matrix(
@@ -210,13 +220,17 @@ test_that("Simulation with multiple sampling times.", {
       byrow = TRUE
     ))
   names(community_references) <-
-    c("reference",
+    c(
+      "reference",
       "speciation_rate",
       "time",
       "fragments",
-      "metacommunity_reference")
-  expect_equal(TRUE,
-               all.equal(community_references, tmp$getCommunityReferences()))
+      "metacommunity_reference"
+    )
+  expect_equal(
+    TRUE,
+    all.equal(community_references, tmp$getCommunityReferences())
+  )
   expect_equal(1153, tmp$getSpeciesRichness(1))
   expect_equal(1164, tmp$getSpeciesRichness(2))
   expect_equal(1167, tmp$getSpeciesRichness(3))

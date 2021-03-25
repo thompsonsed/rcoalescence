@@ -539,7 +539,7 @@ TreeSimulation <- setRcppClass(
     },
     
     getSpeciesRichness = function(community_reference =
-                                    NA) {
+                                    NULL) {
       "Gets the community reference from the output database, or from the
         internal object if no community reference is supplied (this will return the
         last calculated species richness)."
@@ -549,7 +549,7 @@ TreeSimulation <- setRcppClass(
         }
         return(._getSpeciesRichness(community_reference))
       }
-      if (is.na(community_reference)) {
+      if (is.null(community_reference)) {
         community_reference <- 1
       }
       community_reference_vector <- as.vector(community_reference)

@@ -613,3 +613,4 @@ test_that("More complicated protracted speciation validating that the results ma
             expected_df <- read.csv("sample/protracted_sample_results.csv") %>% select(-X)
             expect_equal(expected_df, output_df)
           })
+unlink(file.path("output"), recursive = TRUE)
