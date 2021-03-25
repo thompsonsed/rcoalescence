@@ -537,8 +537,11 @@ TreeSimulation <- setRcppClass(
               no_individuals > 0 GROUP BY community_reference"
           )
         )
+      names(species_richness) <- c("community_reference", "species_richness")
       dbDisconnect(conn)
-      output_df <- getCommunityReferences() %>% left_join(species_richness)
+      output_df <- getCommunityReferences() %>% 
+        rename(community_reference=reference) %>% 
+        left_join(species_richness)
       return(output_df)
       
       
