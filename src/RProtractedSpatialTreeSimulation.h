@@ -20,6 +20,7 @@
 
 #include <Rcpp.h>
 #include "necsim/ProtractedSpatialTree.h"
+#include "RTreeSimulation.h"
 
 using namespace necsim;
 
