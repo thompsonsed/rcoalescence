@@ -1,5 +1,5 @@
 *.Rproj
-tests/testthat/output/
+tests/testthat/output
 config.status
 src/necsim/Logger.cpp
 src/necsim/main.cpp
@@ -7,10 +7,10 @@ src/necsim/cmake*
 *.DS_Store
 .Rproj.user
 .Rhistory
-lib/cmake-build-debug/CMakeFiles/
-default/
-lib/\.idea/
-tests/testthat/default/
+lib/cmake-build-debug/CMakeFiles
+default
+lib/\.idea
+tests/testthat/default
 src/\.idea/
 src/cmake-build*
 *.o
@@ -22,7 +22,7 @@ src/Makevars
 src/CMakeLists\.txt
 
 *.so
-autom4te\.cache/
+autom4te\.cache
 
 \.Rhistory
 
@@ -31,8 +31,8 @@ config\.log
 config\.status
 
 aclocal\.m4
-windows/
-output/
+windows
+output
 *.dll
 inst/doc
 inst/gdal
